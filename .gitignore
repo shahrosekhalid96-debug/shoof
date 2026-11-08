@@ -1,0 +1,4 @@
+tests/qa_results.json
+__pycache__/
+node_modules/
+*.pyc
