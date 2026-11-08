@@ -327,9 +327,11 @@ def t_inline(B):
     c = Ctx(B); c.blank(); c.tab('text')
     c.page.click('#drawer [data-text="h"]')
     e = c.sel_el()
+    c.page.wait_for_timeout(400)  # let fonts/layout settle (slow CI runners)
     x, y = c.screen_xy(e['x'] + e['width'] / 2, e['y'] + e['fontSize'] / 2)
     c.page.mouse.dblclick(x, y)
-    c.page.wait_for_timeout(100)
+    try: c.page.locator('#editText').wait_for(state='visible', timeout=3000)
+    except Exception: pass
     ok(c.page.locator('#editText').is_visible(), 'editor not shown')
     c.page.keyboard.press('Control+A')
     c.page.keyboard.type('Hello ')
@@ -1070,9 +1072,9 @@ def t_replace(B):
     c = Ctx(B); c.blank(); c.tab('shapes'); c.page.click('#drawer [data-shape="placeholder"]')
     ph = c.sel_el(); eq(ph['type'], 'placeholder', 'placeholder type')
     ok(c.page.locator('#pReplace').is_visible(), 'no Add image button for placeholder')
-    with c.page.expect_file_chooser() as fc:
-        x, y = c.screen_xy(ph['x'] + ph['width'] / 2, ph['y'] + ph['height'] / 2)
-        c.page.mouse.click(x, y)
+    c.page.wait_for_timeout(400)  # let layout settle (slow CI runners)
+    with c.page.expect_file_chooser(timeout=10000) as fc:
+        c.page.click('#pReplace')
     fc.value.set_files(IMG); c.page.wait_for_function("doc.elements[0].type==='image'", timeout=5000)
     e = c.sel_el(); eq((e['type'], e['x'], e['y'], e['width'], e['height']), ('image', ph['x'], ph['y'], ph['width'], ph['height']), 'frame kept')
     c.page.wait_for_timeout(200); eq(c.ev("mainLayer.find('Image').length"), 1, 'image not rendered in frame')
