@@ -83,7 +83,8 @@ def route(r):
 
 
 class Ctx:
-    def __init__(self, browser, w=1440, h=900, lang=None, ctx=None, init=None, wait=True):
+    def __init__(self, browser, w=1440, h=900, lang=None, ctx=None, init=None, wait=True, home=False):
+        self.keep_home = home
         self.ctx = ctx or browser.new_context(viewport={'width': w, 'height': h}, accept_downloads=True)
         self.ctx.route('**/*', route)
         self.errors = []
@@ -110,6 +111,8 @@ class Ctx:
         self.page.goto(URL)
         self.page.wait_for_function('typeof doc!=="undefined" && window.Konva && document.querySelector("#stage canvas")')
         self.page.wait_for_timeout(300)
+        if not self.keep_home:  # most tests drive the editor; the welcome screen has its own tests
+            self.ev("()=>{if(typeof hideHome==='function')hideHome()}")
 
     def ev(self, js, arg=None):
         return self.page.evaluate(js, arg) if arg is not None else self.page.evaluate(js)
@@ -157,6 +160,15 @@ class Ctx:
 
 ALLOWED_LATIN = {'rasm', 'shoof', 'sh', 'claude', 'png', 'jpg', 'jpeg', 'pdf', 'webp', 'agpl', 'gnu', 'ctrl', 'shift', 'delete',
                  'inter', 'poppins', 'playfair', 'display', 'bebas', 'neue', 'cairo', 'tajawal', 'amiri', 'ibm', 'plex', 'sans', 'arabic'}
+
+
+def en_only_strip(c, s):
+    """Remove English-only UI strings (keys with no Arabic entry; Arabic falls back to English by design)."""
+    parts = getattr(c, '_en_only', None) or c.ev("Object.keys(I18N.en).filter(k=>!(k in I18N.ar)).flatMap(k=>I18N.en[k].split(/\\{[a-z]+\\}/)).map(x=>x.trim()).filter(x=>x.length>1).sort((a,b)=>b.length-a.length)")
+    c._en_only = parts
+    for x in parts:
+        s = s.replace(x, ' ')
+    return s
 
 
 def english_words(s):
@@ -643,10 +655,11 @@ def t_a3(B):
 @test('language_switch')
 def t_lang(B):
     c = Ctx(B)
-    en = c.ev("[...document.querySelectorAll('[data-i18n]')].map(e=>e.textContent)")
+    Q = "[...document.querySelectorAll('[data-i18n]')].filter(e=>e.dataset.i18n in I18N.ar).map(e=>e.textContent)"
+    en = c.ev(Q)
     c.page.click('#langBtn'); c.page.wait_for_timeout(100)
     eq(c.ev('[document.documentElement.dir,document.documentElement.lang]'), ['rtl', 'ar'], 'AR dir/lang')
-    ar = c.ev("[...document.querySelectorAll('[data-i18n]')].map(e=>e.textContent)")
+    ar = c.ev(Q)
     same = [a for a, b in zip(en, ar) if a == b]
     ok(not same, f'untranslated: {same}')
     ok(all(re.search('[؀-ۿ]', s) for s in ar), 'non-Arabic AR string')
@@ -657,7 +670,7 @@ def t_lang(B):
     eq(c.ev('document.documentElement.dir'), 'rtl', 'lang not persisted')
     c.page.click('#langBtn'); c.page.wait_for_timeout(100)
     eq(c.ev('document.documentElement.dir'), 'ltr', 'back to EN')
-    eq(c.ev("[...document.querySelectorAll('[data-i18n]')].map(e=>e.textContent)"), en, 'EN strings restored')
+    eq(c.ev(Q), en, 'EN strings restored')
     ok(not c.errors, c.errors); c.close()
 
 
@@ -673,7 +686,7 @@ def t_l10n_extra(B):
     toast = c.ev('$("#toast").textContent')
     if not re.search('[؀-ۿ]', toast):
         leftovers.append(f'toast "{toast}"')
-    titles = [x for x in c.ev("[...document.querySelectorAll('[title]')].map(e=>e.title)") if english_words(x)]
+    titles = [x for x in c.ev("[...document.querySelectorAll('[title]')].map(e=>e.title)") if english_words(en_only_strip(c, x))]
     if titles:
         leftovers.append(f'English tooltips: {titles[:6]}')
     sizes = c.ev("$('#sizeSel').options[0].textContent")
@@ -912,6 +925,7 @@ def t_sec_payload(B):
     eq(n, 4, 'expected 4 valid elements (2 invalid dropped)')
     ok(not [u for u in EXTERNAL[before:] if 'evil' in u], 'tracking request made')
     c.page.reload(); c.page.wait_for_function('typeof doc!=="undefined" && document.querySelector("#stage canvas")'); c.page.wait_for_timeout(300)
+    c.page.click('#homeGo')  # reload lands on the welcome screen
     c.tab('layers'); c.ev('()=>doc.elements.forEach(e=>select(e.id))')
     ok(c.ev('window.__pwn') is None, 'stored XSS after reload')
     ok(not [e for e in c.errors if 'pageerror' in e], c.errors)
@@ -1033,7 +1047,7 @@ def t_no_english(B):
         c.page.click('#newBtn') if w >= 900 else c.ev("$('#newBtn').click()")
         texts += _collect_english(c)
         for s_ in texts:
-            for wd in english_words(s_):
+            for wd in english_words(en_only_strip(c, s_)):
                 bad.add(f'{wd} ("{s_[:40]}")')
         ok(not c.errors, c.errors); c.close()
     ok(not bad, f'English left in Arabic UI: {sorted(bad)[:12]}')
@@ -1396,7 +1410,7 @@ def t_tpls(B):
 def t_new(B):
     c = Ctx(B)
     c.page.click('#newBtn')
-    eq(c.page.locator('#modal [data-newsize]').count(), 8, 'size cards')
+    eq(c.page.locator('#modal [data-newsize]').count(), c.ev('SIZES.length'), 'size cards')
     ok(c.ev("$('#modalBox').innerText").find(c.ev("t('newConfirm')")) >= 0, 'unsaved-work note')
     eq(c.ev("$('#modal [data-newsize][aria-pressed=true]').dataset.newsize"), 'ig', 'current size pre-selected')
     c.page.click('#modal [data-newsize="story"]'); c.page.click('#doNew')
@@ -1525,6 +1539,157 @@ def t_r2_polish(B):
     props = c.page.inner_text('#props')
     ok('من اليسار لليمين' in props and 'من اليمين لليسار' in props, 'Arabic direction labels')
     eq(c.ev("t('nSelected',{n:2})"), 'العناصر المحددة: 2', 'Arabic plural-safe count')
+    ok(not c.errors, c.errors); c.close()
+
+
+# ---------------------------------------------------------------- sprint 3: welcome home screen + gradients
+def _home_visible(c):
+    return c.ev("homeOpen() && document.body.classList.contains('home-on') && $('#home').getBoundingClientRect().height>300")
+
+
+@test('home_welcome_screen')
+def t_home(B):
+    c = Ctx(B, home=True)
+    ok(_home_visible(c), 'home screen should show on boot')
+    eq(c.ev("['#undoBtn','#redoBtn','#exportBtn','#saveBtn','#sizeSel','#homeBtn'].filter(s=>$(s).getClientRects().length)"), [], 'editor-only header controls hidden on home')
+    eq(c.page.locator('#home .tile').count(), 7, 'category tiles')
+    eq(c.ev("[...document.querySelectorAll('#home .hsec h2')].map(h=>h.textContent)"), ['Trending', 'Picks for you'], 'rows')
+    c.page.wait_for_function("document.querySelectorAll('#home .hrow .hthumb img').length>=12", timeout=10000)
+    eq(c.ev("$('#homeGo').textContent"), 'Open the editor', 'first-visit primary action')
+    # search
+    c.page.fill('#homeSearch', 'ramadan')
+    eq(c.ev("[...document.querySelectorAll('#homeList .hname')].map(x=>x.textContent)"), ['Ramadan Kareem (bilingual)'], 'search results')
+    ok(c.ev("document.activeElement.id") == 'homeSearch', 'search keeps focus while typing')
+    c.page.fill('#homeSearch', 'zzzz'); ok(c.ev("t('noTpl')") in c.page.inner_text('#homeList'), 'no-results message')
+    c.page.fill('#homeSearch', '')
+    # keyboard shortcuts do nothing on home
+    n = c.ev('doc.elements.length'); c.page.keyboard.press('Control+a'); c.page.keyboard.press('Delete')
+    eq(c.ev('doc.elements.length'), n, 'Delete on home must not touch the design')
+    # template card opens the editor in one undo step
+    depth = c.ev('undoStack.length')
+    c.page.click('#home [data-htpl]:has-text("Event poster A4")')
+    ok(not c.ev('homeOpen()'), 'template click opens editor')
+    eq(c.ev('[doc.width,doc.height]'), [2480, 3508], 'event template applied')
+    eq(c.ev('undoStack.length'), depth + 1, 'one undo step')
+    ok(c.page.locator('#stage canvas').first.is_visible(), 'stage visible')
+    # home button: recent design card + continue
+    c.page.click('#homeBtn'); ok(_home_visible(c), 'home button')
+    eq(c.ev("$('#homeGo').textContent"), 'Continue your design', 'continue label after editing')
+    ok(c.ev("($('#home [data-recent] img')||{}).src||''").startswith('data:image/png'), 'recent design thumbnail')
+    c.page.click('#home [data-recent]'); ok(not c.ev('homeOpen()'), 'recent card returns to editor')
+    # size tile -> blank design of that size, templates filtered
+    c.page.click('#homeBtn'); c.page.click('#home [data-tile="story"]')
+    eq(c.ev('[doc.width,doc.height,doc.elements.length,homeOpen(),tplCat,curTab,$("#sizeSel").value]'), [1080, 1920, 0, False, 'story', 'templates', 'story'], 'story tile')
+    c.page.keyboard.press('Control+z'); eq(c.ev('[doc.width,doc.height]'), [2480, 3508], 'undo tile')
+    for tile, wh in [('flyer', [1748, 2480]), ('logo', [1000, 1000]), ('card', [1050, 600]), ('pres', [1920, 1080])]:
+        c.page.click('#homeBtn'); c.page.click(f'#home [data-tile="{tile}"]'); eq(c.ev('[doc.width,doc.height]'), wh, f'{tile} tile')
+    _export_check(c, 'png', 1920, 1080)
+    # blank design -> New dialog -> editor
+    c.page.click('#homeBtn'); c.page.click('#homeBlank'); ok(c.page.locator('#modal').is_visible(), 'blank opens New dialog')
+    c.page.click('#modal [data-newsize="li"]'); c.page.click('#doNew')
+    ok(not c.ev('homeOpen()') and c.ev('[doc.width,doc.height]') == [1200, 627], 'new from home')
+    ok(not c.errors, c.errors); ok(not EXTERNAL, f'external requests {EXTERNAL[:3]}'); c.close()
+
+
+@test('home_mobile_arabic_and_autosave')
+def t_home_mob(B):
+    for lang in ['en', 'ar']:
+        c = Ctx(B, 390, 844, lang=lang, home=True)
+        ok(_home_visible(c), f'{lang}: home on phone')
+        eq(c.ev('document.documentElement.scrollWidth'), 390, f'{lang}: no page overflow')
+        bb = c.page.locator('.hsearch').bounding_box(); ok(bb['x'] >= 0 and bb['x'] + bb['width'] <= 390, f'{lang}: search fits {bb}')
+        ok(c.ev("$('.htiles').scrollWidth>$('.htiles').clientWidth"), f'{lang}: tiles scroll sideways on phones')
+        tb = c.page.locator('#home .tile').first.bounding_box(); ok(tb['height'] >= 44, 'tile tap target')
+        c.page.click('#home [data-tile="ig"]'); ok(not c.ev('homeOpen()'), f'{lang}: tile opens editor')
+        c.page.click('#moreBtn'); c.page.click('#moreMenu [data-more="new"]'); c.page.keyboard.press('Escape')
+        c.page.click('#moreBtn'); c.page.click('#moreMenu [data-more="home"]'); ok(_home_visible(c), f'{lang}: Home in the phone menu')
+        ok(not c.errors, c.errors); c.close()
+    c = Ctx(B); c.blank(); c.tab('shapes'); c.page.click('#drawer [data-shape="star"]')
+    before = c.ev('JSON.stringify(doc)')
+    c.page.reload(); c.page.wait_for_function('typeof doc!=="undefined" && document.querySelector("#stage canvas")'); c.page.wait_for_timeout(400)
+    ok(_home_visible(c), 'home after reload')
+    eq(c.ev("$('#homeGo').textContent"), 'Continue your design', 'returning visitor sees Continue')
+    c.page.click('#homeGo'); eq(json.loads(c.ev('JSON.stringify(doc)')), json.loads(before), 'design kept')
+    ok(not c.errors, c.errors); c.close()
+
+
+GRAD_PIXELS = """async(kind)=>{const u=renderExport('image/png');const im=new Image();await new Promise(r=>{im.onload=r;im.src=u;});
+  const cv=document.createElement('canvas');cv.width=im.width;cv.height=im.height;const x=cv.getContext('2d');x.drawImage(im,0,0);
+  const px=(a,b)=>[...x.getImageData(a,b,1,1).data].slice(0,3);return [px(2,im.height/2),px(im.width-3,im.height/2),px(im.width/2,im.height/2),px(2,2)];}"""
+
+
+@test('gradient_fills_ui_render_export')
+def t_grad(B):
+    c = Ctx(B); c.blank(); c.tab('shapes'); c.page.click('#drawer [data-shape="rect"]')
+    depth = c.ev('undoStack.length')
+    c.page.click('#pGrad [data-gp="6"]')
+    g = c.sel_el()['fillGradient']
+    eq(g, {'type': 'linear', 'angle': 45, 'stops': [{'offset': 0, 'color': '#6c4cf5'}, {'offset': 1, 'color': '#ff6a88'}]}, 'preset gradient')
+    eq(c.ev("mainLayer.children[0].children[0].fillPriority()"), 'linear-gradient', 'Konva linear')
+    eq(c.ev('undoStack.length'), depth + 1, 'preset = one undo step')
+    ok(c.ev("$('#pGrad [data-gp=\"6\"]').getAttribute('aria-pressed')") == 'true', 'preset shows as selected')
+    c.page.click('#pGrad [data-gt="radial"]'); eq(c.sel_el()['fillGradient']['type'], 'radial', 'radial')
+    eq(c.ev("mainLayer.children[0].children[0].fillPriority()"), 'radial-gradient', 'Konva radial')
+    ok(c.page.locator('#pGA').count() == 0, 'no angle for radial')
+    c.page.click('#pGrad [data-gt="linear"]'); c.set_num('#pGA', 90); eq(c.sel_el()['fillGradient']['angle'], 90, 'angle')
+    c.set_color('#pG1', '#00ff00'); eq(c.sel_el()['fillGradient']['stops'][-1]['color'], '#00ff00', 'end colour')
+    c.page.click('#pGrad [data-gswap]'); eq([x['color'] for x in c.sel_el()['fillGradient']['stops']], ['#00ff00', '#6c4cf5'], 'swap')
+    c.set_color('#pFill', '#123456'); ok('fillGradient' not in c.sel_el() and c.sel_el()['fill'] == '#123456', 'solid colour replaces gradient')
+    c.page.click('#pGrad [data-gp="0"]'); c.page.click('#pGrad [data-gnone]'); ok('fillGradient' not in c.sel_el(), 'remove gradient')
+    # every shape type + text render a gradient
+    c.ev("()=>{['ellipse','triangle','star','line','arrow','bubble','hexagon'].forEach(addShape);addText('h');doc.elements.forEach(e=>{if(e.type!=='image')e.fillGradient=presetGrad(8,'linear');});fullRender();commit();}")
+    eq(c.ev("doc.elements.map(e=>{const g=nodeOf(e.id);const n=e.type==='text'?g.findOne('Text'):g.children[0];return n.fillPriority();})"), ['linear-gradient'] * 9, 'all shapes + text')
+    # background gradient via the Background tab; export pixels follow the gradient
+    c.blank(); c.tab('background'); c.page.click('#bGrad [data-gp="6"]'); c.set_num('#bGA', 0)
+    eq(c.ev('doc.background.gradient.angle'), 0, 'background angle')
+    left, right, mid, _ = c.page.evaluate(GRAD_PIXELS)
+    ok(abs(left[0] - 0x6c) < 12 and abs(left[2] - 0xf5) < 12, f'left edge ≈ #6c4cf5, got {left}')
+    ok(abs(right[0] - 0xff) < 12 and abs(right[2] - 0x88) < 12, f'right edge ≈ #ff6a88, got {right}')
+    _export_check(c, 'png', 1080, 1080); _export_check(c, 'pdf', 1080, 1080)
+    c.page.click('#bGrad [data-gt="radial"]'); left, right, mid, corner = c.page.evaluate(GRAD_PIXELS)
+    ok(abs(mid[0] - 0x6c) < 14 and corner[0] > 0xf0, f'radial centre/corner {mid} {corner}')
+    c.page.click('#drawer [data-bg="#ffffff"]'); ok('gradient' not in c.ev('doc.background'), 'swatch clears gradient')
+    c.page.keyboard.press('Control+z'); eq(c.ev('doc.background.gradient.type'), 'radial', 'undo restores gradient')
+    # template thumbnails + save/open keep gradients
+    before = c.ev('JSON.stringify(doc)')
+    name, data, path = c.download(lambda: c.page.click('#saveBtn'))
+    c.blank(); c.page.set_input_files('#openFile', path); c.page.wait_for_timeout(200)
+    eq(json.loads(c.ev('JSON.stringify(doc)')), json.loads(before), 'gradient round-trip')
+    ok(not c.errors, c.errors); c.close()
+
+
+@test('gradient_sanitize_and_claude_tools')
+def t_grad_sec(B):
+    c = Ctx(B)
+    got = c.ev("""()=>{const base={app:'shoof',width:500,height:500,elements:[]};const R=g=>{const d=sanitizeDoc({...base,background:{color:'#fff',gradient:g},elements:[{type:'rect',x:0,y:0,width:10,height:10,fillGradient:g}]});return [d.background.gradient||null,d.elements[0].fillGradient||null];};
+      const ok2={type:'linear',angle:30,stops:[{offset:0,color:'#000'},{offset:1,color:'#fff'}]};
+      return {
+       good:R(ok2)[1],
+       conic:R({type:'conic',stops:ok2.stops}),
+       js:R({type:'linear',stops:[{offset:0,color:'javascript:alert(1)'},{offset:1,color:'#fff'}]}),
+       url:R({type:'radial',stops:[{offset:0,color:'url(http://evil.test/x)'},{offset:1,color:'red'}]}),
+       one:R({type:'linear',stops:[{offset:0,color:'#000'}]}),
+       many:R({type:'linear',angle:1e9,stops:Array.from({length:50},(_,i)=>({offset:i/49,color:'#abcdef'}))})[1],
+       clampOff:R({type:'radial',angle:10,stops:[{offset:-5,color:'#111'},{offset:9,color:'#222'}],onload:'x',__proto__:{evil:1}})[1],
+       nan:R({type:'linear',angle:NaN,stops:ok2.stops})[1].angle,
+       str:R('linear-gradient(red,blue)'), arr:R([ok2]),
+       img:sanitizeDoc({...base,elements:[{type:'placeholder',x:0,y:0,width:10,height:10,fillGradient:ok2}]}).elements[0].fillGradient||null};}""")
+    eq(got['good'], {'type': 'linear', 'angle': 30, 'stops': [{'offset': 0, 'color': '#000'}, {'offset': 1, 'color': '#fff'}]}, 'valid gradient kept')
+    for k_ in ['conic', 'js', 'url', 'one', 'str', 'arr']:
+        eq(got[k_], [None, None], f'{k_} gradient must be dropped')
+    eq((len(got['many']['stops']), got['many']['angle']), (5, 1e9 % 360), 'stops capped at 5, angle wrapped')
+    eq(got['clampOff'], {'type': 'radial', 'stops': [{'offset': 0, 'color': '#111'}, {'offset': 1, 'color': '#222'}]}, 'offsets clamped, extra keys dropped')
+    eq(got['nan'], 0, 'NaN angle'); eq(got['img'], None, 'no gradient on image frames')
+    # Ask Claude tools can set and clear gradients; invalid ones are rejected
+    c.blank()
+    r = c.ev("""()=>{const ctx={calls:0,changes:0,deletes:0};const a=toolAdd({type:'rect',x:0,y:0,width:100,height:100,fillGradient:{type:'radial',stops:[{offset:0,color:'#f00'},{offset:1,color:'#00f'}]}},ctx);
+      const id=a.id;const out=[a.ok,byId(id).fillGradient.type];
+      out.push(toolUpdate({id,patch:{fillGradient:null}},ctx).ok,'fillGradient' in byId(id));
+      out.push(toolBg({gradient:{type:'linear',angle:90,stops:[{offset:0,color:'#fff'},{offset:1,color:'#000'}]}},ctx).ok,doc.background.gradient.angle);
+      out.push(toolBg({gradient:{type:'linear',stops:[{offset:0,color:'<x>'}]}},ctx).ok);
+      out.push(toolBg({color:'#123456'},ctx).ok,'gradient' in doc.background);
+      out.push(!!PROP_SCHEMA.fillGradient && designSummary().elements[0].fillGradient===undefined);return out;}""")
+    eq(r, [True, 'radial', True, False, True, 90, False, True, False, True], 'Claude gradient tools')
     ok(not c.errors, c.errors); c.close()
 
 
