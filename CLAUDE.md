@@ -5,7 +5,7 @@ Shoof (شوف, "look!") is a free, open-source (AGPL-3.0), browser-only Canva al
 - **Live site:** https://shahrosekhalid96-debug.github.io/shoof/ (GitHub Pages, auto-deploys on every push to `main`)
 - **Repo:** https://github.com/shahrosekhalid96-debug/shoof
 - **Claude artifact copy** (only place Ask Claude works): https://claude.ai/artifact/SC37XwK2xKrF4yu41YQpoK — slug `cbfef32e-d2be-48eb-beba-49773200fd62`, capabilities `downloads` + `sample` declared. Republish with `publish_files` (index.html; vendor/ and fonts/ already uploaded).
-- **Status:** v0.2 public preview. CEO review gave GO. 76/76 tests green locally and on GitHub Actions. Sprint 3 (2026-11-08): home screen + gradients. Sprint 4 (2026-11-09): Elements panel. Sprint 5 (2026-11-09): 50 generated English templates.
+- **Status:** v0.2 public preview. CEO review gave GO. 78/78 tests green locally and on GitHub Actions. Sprint 3 (2026-11-08): home screen + gradients. Sprint 4 (2026-11-09): Elements panel. Sprint 5 (2026-11-09): 50 generated English templates. Sprint 6 (2026-11-09): UX review fixes + axe-core WCAG 2.1 AA gate.
 
 ## Working rules (from Shary)
 - Be direct and execution-focused, minimal back-and-forth, brief explanations. Outputs must be deployable.
@@ -21,8 +21,9 @@ Shoof (شوف, "look!") is a free, open-source (AGPL-3.0), browser-only Canva al
 | `vendor/LUCIDE-LICENSE.txt` | ISC licence for the bundled Lucide icon subset (paths inlined in index.html as `ICON_SET`) |
 | `vendor/jspdf.umd.min.js` | jsPDF 4.2.1 (MIT), lazy-loaded on first PDF export |
 | `fonts/` | woff2 + `fonts.css` + OFL licences: Inter, Poppins, Playfair Display, Bebas Neue, Cairo, Tajawal, Amiri, IBM Plex Sans Arabic |
-| `tests/qa_suite.py` | Playwright suite, 76 tests (`Ctx(home=True)` keeps the welcome screen; default hides it), desktop 1440 + phone 390, blocks all external requests |
+| `tests/qa_suite.py` | Playwright suite, 78 tests (`Ctx(home=True)` keeps the welcome screen; default hides it), desktop 1440 + phone 390, blocks all external requests |
 | `tools/templates/gen_templates.py` | Template generator: style spec + content table → `GEN_TEMPLATES` block in index.html (`--check` used by tests) |
+| `tests/vendor/axe.min.js` | axe-core 4.14 (MPL-2.0), test-only accessibility gate (`accessibility_axe_wcag_aa`); not deployed |
 | `tests/security/*.json` | Malicious design files used by tests |
 | `.github/workflows/pages.yml` | Deploys site (copies index.html, LICENSE, vendor, fonts) |
 | `.github/workflows/test.yml` | Runs the QA suite on push |
@@ -39,7 +40,8 @@ Shoof (شوف, "look!") is a free, open-source (AGPL-3.0), browser-only Canva al
 - Rendering: `buildNode()` (element → Konva group), `fullRender()`.
 - Panels: `renderDrawer()` (left: templates/text/shapes/uploads/background/layers/Ask Claude/about), `renderProps()` (right/bottom sheet).
 - Export: `exportAs()` (PNG/JPG/PDF at exact design pixels), `saveFile()` (artifact `downloads` capability, else `<a download>`).
-- Ask Claude: `buildPrompt()` (~l.1097) + page tools via `claude.use('sample')`; hidden when unavailable. Design text is wrapped as untrusted data.
+- UX conventions (sprint 6): `liftBackdrop()` turns a template's full-page bottom rect into the page background (templates + starter); Background tab has `addBlock()` for a movable colour rectangle; Elements → Photo frames has "Add an image" (`#imgPick`) + labelled frames (placeholder no longer under Shapes); props panel starts with a quick-actions toolbar (`qDup/qFwd/qBwd/qLock/qDel`); gradient section is a collapsed `<details>` until used; Ctrl/⌘+wheel zooms.
+- Ask Claude: tab is ALWAYS visible; outside Claude it explains and links to `CLAUDE_URL` (the artifact). `buildPrompt()` (~l.1097) + page tools via `claude.use('sample')`; hidden when unavailable. Design text is wrapped as untrusted data.
 - `boot()` (~l.1159): language auto-detect, autosave restore (keys `shoof.autosave`, `shoof.lang`; migrates old `rasm.*`), file format `app:"shoof"` (still opens old `app:"rasm"`).
 - Features present: templates, text (fonts, effects: shadow/outline/highlight), shapes (rect, ellipse, triangle, star, line, arrow, speech bubble, hexagon, photo placeholder), images (upload/paste/drop, downscale, replace, flip, crop fit/fill, filters), background colour/image, layers, multi-select, group/ungroup, align, lock/hide, snapping, undo/redo, autosave, save/open `.shoof.json`, PNG/JPG/PDF, mobile bottom sheet + "⋯" menu.
 
@@ -67,5 +69,6 @@ gh run list -R shahrosekhalid96-debug/shoof
 6. Brand kit (logo, colours, fonts).
 7. Later: multi-page designs, resize/adapt to other formats, background removal, animation.
 - Also: one automated "gates" addition — axe-core contrast check, page-weight budget, screenshot comparison.
+- UX next (from the sprint 6 review): drag elements from the panel onto the canvas, right-click context menu, keyboard focus/selection of canvas elements without the Layers panel, onboarding tips on first visit.
 - Gradient follow-ups: multi-stop editor (data model already allows 5 stops), gradient on image frames/placeholders.
-- Open items: test Ask Claude for real inside the claude.ai artifact; LICENSE is the SPDX copy of AGPL-3.0 (official text, gnu.org was unreachable).
+- Open items: test Ask Claude for real inside the claude.ai artifact — Shary's "Browser 2" Chrome cannot reach `*.claudeusercontent.com` (fetch fails, artifact frame shows an error page), so test it in another browser/network; the artifact is private, so the public site's "Open Shoof in Claude" link only works for Shary until he shares it; LICENSE is the SPDX copy of AGPL-3.0 (official text, gnu.org was unreachable).

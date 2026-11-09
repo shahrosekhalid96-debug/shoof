@@ -20,6 +20,8 @@ button,select,input,textarea{font:inherit;color:inherit}
 button{cursor:pointer;border:1px solid var(--line);background:#fff;border-radius:8px;padding:6px 10px;transition:background .15s,transform .1s;display:inline-flex;align-items:center;justify-content:center;gap:6px}
 button:hover{background:#f6f6fa}button:active{transform:translateY(1px)}
 button.primary{background:var(--accent);border-color:var(--accent);color:#fff}button.primary:hover{background:#5a3be0}
+a.btnlink{display:flex;align-items:center;justify-content:center;min-height:40px;border-radius:10px;text-decoration:none;font-weight:600}
+a.btnlink.primary{background:var(--accent);color:#fff}a.btnlink.primary:hover{background:#5a3be0}
 button.icon{padding:6px 8px;min-width:34px;min-height:34px}
 button svg{width:18px;height:18px;flex:none}
 button:disabled{opacity:.4;cursor:default}
@@ -58,6 +60,14 @@ html[lang=ar] .drawer h3,html[lang=ar] .props h3{letter-spacing:0;font-size:13px
 .shape-grid button:hover{border-color:var(--accent)}
 .props label.sub{display:block;font-size:12px;color:var(--muted);margin:8px 0 6px}
 .shape-grid.el4{grid-template-columns:repeat(4,1fr);gap:6px}
+.shape-grid.cap button{aspect-ratio:auto;padding:6px 2px 4px;gap:2px;display:flex;flex-direction:column;align-items:center}
+.shape-grid.cap span{font-size:11px;color:var(--muted);line-height:1.2}
+.props .quick{display:flex;gap:6px;margin:0 0 12px;padding-bottom:12px;border-bottom:1px solid var(--line)}
+.props .quick button{flex:1;padding:6px 0;min-height:36px}
+.props .quick button.danger{color:var(--danger)}
+details.gdet>summary{cursor:pointer;font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin:14px 0 8px;list-style:none}
+details.gdet>summary::-webkit-details-marker{display:none}
+details.gdet>summary::before{content:'▸ '}details.gdet[open]>summary::before{content:'▾ '}
 .icon-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
 .icon-grid button{aspect-ratio:1/1;display:grid;place-items:center;padding:0;color:var(--ink)}
 .icon-grid svg{width:24px;height:24px}
@@ -259,6 +269,7 @@ footer.credit{font-size:11.5px;color:var(--muted);margin-top:12px;line-height:1.
   </div>
   <input type="file" id="openFile" accept=".json,.shoof,.rasm,application/json" hidden>
   <input type="file" id="replaceFile" accept="image/*" hidden>
+  <input type="file" id="imgPick" accept="image/*" multiple hidden>
 </header>
 <div class="main">
   <nav class="rail" id="rail">
@@ -268,7 +279,7 @@ footer.credit{font-size:11.5px;color:var(--muted);margin-top:12px;line-height:1.
     <button data-tab="uploads"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 16V4M7 9l5-5 5 5M4 20h16"/></svg><span data-i18n="uploads">Uploads</span></button>
     <button data-tab="background"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 16l5-5 4 4 3-3 6 6"/></svg><span data-i18n="background">Background</span></button>
     <button data-tab="layers"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l9 5-9 5-9-5 9-5zM3 13l9 5 9-5"/></svg><span data-i18n="layers">Layers</span></button>
-    <button data-tab="claude" id="claudeTab" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></svg><span data-i18n="askClaude">Ask Claude</span></button>
+    <button data-tab="claude" id="claudeTab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></svg><span data-i18n="askClaude">Ask Claude</span></button>
     <button data-tab="about" class="about-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7v.5"/></svg><span data-i18n="about">About</span></button>
   </nav>
   <aside class="drawer" id="drawer"></aside>
@@ -344,7 +355,11 @@ const I18N={
   homeContinue:'Continue your design',homeOpenEditor:'Open the editor',homeBlank:'Blank design',homeCats:'Start with a size',homeTrending:'Trending',homePicks:'Picks for you',homeRecent:'Your design',
   homeResults:'Templates for “{q}”',homeNewHint:'Blank {name} ready. Pick a template or add text and shapes.',
   tile_ig:'Instagram post',tile_story:'Story',tile_poster:'Poster',tile_flyer:'Flyer',tile_logo:'Logo',tile_card:'Business card',tile_pres:'Presentation',
-  elements:'Elements',searchEl:'Search icons, shapes, stickers…',elShapes:'Shapes',elLines:'Lines',elFrames:'Photo frames',elStickers:'Stickers',elCharts:'Charts',elIcons:'Icons',
+  elements:'Elements',bgHint:'The background colour always fills the whole page. Want a coloured area you can move and resize? Add a colour block.',addBlock:'Add colour block',
+  addImageBtn:'Add an image',frc_rect:'Square',frc_rounded:'Rounded',frc_circle:'Circle',frc_blob:'Blob',frc_arch:'Arch',frc_hexagon:'Hexagon',frc_heart:'Heart',frc_diamond:'Diamond',frameHint:'Frames are photo placeholders: add one, then click it to put your photo inside.',
+  claudeOff:'Ask Claude works when Shoof is opened inside Claude (claude.ai). On this website it is switched off, so your designs never leave your browser.',claudeOpen:'Open Shoof in Claude',
+  quick:'Quick actions',qDup:'Duplicate',qDel:'Delete',qLock:'Lock',qUnlock:'Unlock',qFwd:'Bring forward',qBwd:'Send backward',
+searchEl:'Search icons, shapes, stickers…',elShapes:'Shapes',elLines:'Lines',elFrames:'Photo frames',elStickers:'Stickers',elCharts:'Charts',elIcons:'Icons',
   elMoreIcons:'Show all {n} icons',elNone:'Nothing matches. Try “arrow”, “heart” or “sale”.',iconCredit:'Icons: Lucide (ISC licence)',sh_icon:'Icon',sh_chart:'Chart',
   ln_solid:'Line',ln_dash:'Dashed line',ln_dot:'Dotted line',ln_thick:'Thick line',ln_arrow:'Arrow line',ln_both:'Double arrow',
   fr_rect:'Square frame',fr_rounded:'Rounded frame',fr_circle:'Circle frame',fr_blob:'Blob frame',fr_arch:'Arch frame',fr_hexagon:'Hexagon frame',fr_heart:'Heart frame',fr_diamond:'Diamond frame',
@@ -736,6 +751,7 @@ function addText(kind){const s=k();const ar=LANG==='ar';const base={fill:ink(),a
  else e=el('text',{...base,text:t('defBody'),fontFamily:ar?'Tajawal':'Inter',fontSize:Math.round(36*s),width:Math.round(700*s)});
  e.height=e.fontSize*1.3;addEl(e);}
 function addShape(type){if(!SHAPES.includes(type))return;const s=k();const sz=Math.round(320*s);const p={fill:'#6c4cf5',stroke:'',strokeWidth:0,width:sz,height:sz};if(type==='arrow')Object.assign(p,{width:Math.round(420*s),height:Math.round(220*s)});if(type==='bubble')Object.assign(p,{width:Math.round(380*s),height:Math.round(300*s)});if(type==='line')Object.assign(p,{fill:'#1d2330',width:Math.round(500*s),height:Math.max(4,Math.round(8*s))});if(type==='rect')p.radius=Math.round(24*s);if(type==='line'){delete p.stroke;delete p.strokeWidth;}addEl(el(type,p));}
+function addBlock(){const s=k();const bg=hex6(doc.background.color||'#ffffff').toLowerCase();addEl(el('rect',{fill:bg==='#6c4cf5'?'#ffb020':'#6c4cf5',stroke:'',strokeWidth:0,radius:0,width:Math.round(doc.width*0.6),height:Math.round(doc.height*0.4)}));}
 function addIcon(name){if(!hasIcon(name))return;const sz=Math.round(200*k());addEl(el('icon',{icon:name,stroke:ink(),strokeWidth:2,fill:'',width:sz,height:sz}));}
 function addLine(kind){const s=k();const p={fill:ink(),width:Math.round(500*s),height:Math.max(4,Math.round(8*s))};
  if(kind==='dash'||kind==='dot')p.dash=kind;if(kind==='arrow'||kind==='both')p.ends=kind;if(kind==='thick')p.height=Math.max(8,Math.round(24*s));addEl(el('line',p));}
@@ -806,6 +822,7 @@ function readFiles(files,add){[...files].forEach(f=>{if(!f)return;prepImage(f).t
 let replaceTarget=null;
 function pickImageFor(id){replaceTarget=id;$('#replaceFile').click();}
 function replaceImage(id,url){const e=byId(id);if(!e||e.locked||!safeImg(url))return;if(e.type==='placeholder'){e.type='image';delete e.fill;}if(e.type!=='image')return;e.src=url;if(!('radius' in e))e.radius=0;bump(e);selId=id;fullRender();commit();}
+$('#imgPick').addEventListener('change',ev=>{const f=[...ev.target.files];ev.target.value='';readFiles(f,true);});
 $('#replaceFile').addEventListener('change',ev=>{const f=ev.target.files[0];ev.target.value='';const id=replaceTarget;replaceTarget=null;if(!f||!id)return;prepImage(f).then(u=>{rememberUpload(u);replaceImage(id,u);}).catch(()=>toast(t('imgFail')));});
 
 /* ============ templates ============ */
@@ -949,7 +966,9 @@ function makeThumbs(){makeStickerThumbs();const job=++_thumbJob;let i=0;
 function thumbsDone(){if(curTab==='templates')renderDrawer();if(homeOpen()){if(homeWork&&doc.elements.length){try{homeRecentImg=renderExport('image/png',Math.min(1,360/Math.max(doc.width,doc.height)));}catch(e){}}const hl=$('#homeList');if(hl)hl.innerHTML=homeListHTML();}}
 /* first-run design matches the UI language */
 function starterTemplate(){return TEMPLATES.find(t=>t.key===(LANG==='ar'?'hiring_ar':'hiring'))||TEMPLATES[0];}
-function useTemplate(i){const tp=TEMPLATES[i];if(!tp)return;applyDoc(sanitizeDoc(tp.make()));commit();}
+/* a full-page plain rectangle at the bottom of a template is really the page background: lift it so background colours work */
+function liftBackdrop(d){const e=d.elements[0];if(e&&e.type==='rect'&&e.x<=0&&e.y<=0&&e.x+e.width>=d.width&&e.y+e.height>=d.height&&!e.radius&&!e.strokeWidth&&!e.fillGradient&&!e.shadowColor&&e.opacity===1&&e.fill&&!e.groupId){d.background.color=e.fill;d.elements.shift();}return d;}
+function useTemplate(i){const tp=TEMPLATES[i];if(!tp)return;applyDoc(liftBackdrop(sanitizeDoc(tp.make())));commit();}
 function sizeIdFor(){const s=SIZES.find(s=>s.w===doc.width&&s.h===doc.height);return s?s.id:'custom';}
 
 /* ============ icons ============ */
@@ -967,6 +986,8 @@ const ICON={
  apT:SVG('<path d="M3 4h18M7 8v10h4V8zM13 8v6h4V8z"/>'),apM:SVG('<path d="M3 12h18M7 6v12h4V6zM13 8v8h4V8z"/>'),apB:SVG('<path d="M3 20h18M7 6v10h4V6zM13 10v6h4v-6z"/>'),
  noFill:SVG('<circle cx="12" cy="12" r="8"/><path d="M6.5 17.5l11-11"/>'),
  search:SVG('<circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/>',{sw:2}),
+ trash:SVG('<path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/>'),
+ up:SVG('<path d="M12 19V5M6 11l6-6 6 6"/>',{sw:2}),down:SVG('<path d="M12 5v14M6 13l6 6 6-6"/>',{sw:2}),
  copy:SVG('<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/>')
 };
 const TYPE_GLYPH={icon:'✦',chart:'▥',arrow:'→',bubble:'◔',hexagon:'⬡',text:'T',rect:'▭',ellipse:'○',triangle:'△',star:'☆',line:'—',image:'▣',placeholder:'⬚'};
@@ -1022,9 +1043,11 @@ function frameSVG(m){const inner=m==='rect'?'<rect x="6" y="6" width="88" height
 function elementsHTML(){const q=elQ.trim().toLowerCase(),hit=(...xs)=>!q||xs.join(' ').toLowerCase().includes(q);let h='',any=false;
  const sec=(key,items,cls)=>{if(!items.length)return;any=true;h+=`<h3>${esc(t(key))}</h3><div class="${cls||'shape-grid el4'}">${items.join('')}</div>`;};
  sec('elShapes',[...Object.keys(SHAPE_SVG).filter(x=>hit(t('sh_'+x),x,'shape')).map(x=>`<button data-shape="${x}" ${ic('sh_'+x)}><svg width="36" height="36" viewBox="0 0 36 36" fill="#6c4cf5" aria-hidden="true">${SHAPE_SVG[x]}</svg></button>`),
-  ...(hit(t('addPlaceholder'),'placeholder photo frame image')?[`<button data-shape="placeholder" ${ic('addPlaceholder')}><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#6c4cf5" stroke-width="1.6" stroke-dasharray="2.5 2" aria-hidden="true"><rect x="2.5" y="4" width="19" height="16" rx="2"/></svg></button>`]:[])]);
+]);
  sec('elLines',Object.keys(LINE_SVG).filter(x=>hit(t('ln_'+x),'line divider arrow',x)).map(x=>`<button data-line="${x}" ${ic('ln_'+x)}><svg width="36" height="36" viewBox="0 0 36 36" fill="none" stroke="#6c4cf5" stroke-width="3" stroke-linecap="round" aria-hidden="true">${LINE_SVG[x]}</svg></button>`));
- sec('elFrames',FRAMES.filter(x=>hit(t('fr_'+x),'frame photo image mask picture',x)).map(x=>`<button data-frame="${x}" ${ic('fr_'+x)}>${frameSVG(x)}</button>`));
+ if(hit(t('addImageBtn'),'image photo picture upload')){any=true;h+=`<h3>${esc(t('elFrames'))}</h3><button class="wide primary" data-add-image>${ICON.image}${esc(t('addImageBtn'))}</button><p class="note">${esc(t('frameHint'))}</p>`;}
+ const fr=FRAMES.filter(x=>hit(t('fr_'+x),'frame photo image mask picture placeholder',x));
+ if(fr.length){if(!h.includes('data-add-image'))h+=`<h3>${esc(t('elFrames'))}</h3>`;any=true;h+=`<div class="shape-grid el4 cap">${fr.map(x=>`<button data-frame="${x}" ${ic('fr_'+x)}>${frameSVG(x)}<span>${esc(t('frc_'+x))}</span></button>`).join('')}</div>`;}
  sec('elStickers',STICKERS.map((st,i)=>[st,i]).filter(([st])=>hit(t('st_'+st.key),st.kw,'sticker badge')).map(([st,i])=>`<button data-sticker="${i}" ${ic('st_'+st.key)}>${stickerThumbs[i]?`<img alt="" src="${esc(stickerThumbs[i])}">`:''}</button>`),'sticker-grid');
  sec('elCharts',CHART_TYPES.filter(x=>hit(t('ch_'+x),'chart graph data stats',x)).map(x=>`<button data-chart="${x}" ${ic('ch_'+x)}><svg width="36" height="36" viewBox="0 0 36 36" fill="none" stroke="#6c4cf5" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${CHART_SVG[x]}</svg></button>`));
  let icons=ICON_NAMES.filter(n=>hit(n.replace(/-/g,' '),ICON_TAGS[n]||'','icon'));const total=icons.length;if(!q&&!elAllIcons)icons=icons.slice(0,30);
@@ -1041,7 +1064,7 @@ function renderDrawer(){const d=$('#drawer');let h='';
  else if(curTab==='text'){h=dhead('text')+`<div class="add-text"><button data-text="h" style="font:800 22px Poppins,Cairo">${esc(t('addHeading'))}</button><button data-text="s" style="font:600 17px Inter,Tajawal">${esc(t('addSub'))}</button><button data-text="b" style="font:400 14px Inter,Tajawal">${esc(t('addBody'))}</button><button data-text="ar" style="font:700 18px Cairo,Poppins" dir="auto">${esc(t('addAr'))}</button></div>`;}
  else if(curTab==='shapes'){h=dhead('elements')+`<input type="search" id="elSearch" class="search" dir="auto" maxlength="60" value="${esc(elQ)}" placeholder="${esc(t('searchEl'))}" aria-label="${esc(t('searchEl'))}"><div id="elBody">${elementsHTML()}</div>`;}
  else if(curTab==='uploads'){h=dhead('uploads')+`<label class="drop" id="drop">${ICON.upload}${esc(t('dropHere'))}<small>${esc(t('uploadNote'))}</small><input type="file" id="upFile" accept="image/*" multiple hidden></label><button class="wide" data-shape="placeholder">${ICON.image}${esc(t('addPlaceholder'))}</button><div class="uploads">`+uploads.map((u,i)=>`<button data-up="${i}" ${ic('addImg')}><img alt="" src="${esc(u)}"></button>`).join('')+'</div>';}
- else if(curTab==='background'){const cur=safeColor(doc.background.color,'#ffffff').toLowerCase();h=dhead('bgColor')+`<div class="swatches">`+SWATCH.map(c=>`<button data-bg="${c}" style="background:${c}" aria-pressed="${c===cur&&!doc.background.gradient}" aria-label="${c}"></button>`).join('')+`</div><div class="row"><label for="bgPick">${esc(t('bgColor'))}</label><input type="color" id="bgPick" value="${esc(hex6(cur))}"></div>${gradUI('b',doc.background.gradient)}<h3>${esc(t('bgImage'))}</h3><label class="drop">${ICON.upload}${esc(t('dropHere'))}<small>${esc(t('uploadNote'))}</small><input type="file" id="bgFile" accept="image/*" hidden></label>${doc.background.image?`<button id="bgClear" class="wide">${esc(t('removeBg'))}</button>`:''}`;}
+ else if(curTab==='background'){const cur=safeColor(doc.background.color,'#ffffff').toLowerCase();h=dhead('bgColor')+`<div class="swatches">`+SWATCH.map(c=>`<button data-bg="${c}" style="background:${c}" aria-pressed="${c===cur&&!doc.background.gradient}" aria-label="${c}"></button>`).join('')+`</div><div class="row"><label for="bgPick">${esc(t('bgColor'))}</label><input type="color" id="bgPick" value="${esc(hex6(cur))}"></div><p class="hint">${esc(t('bgHint'))}</p><button class="wide" id="bgBlock">${esc('+ '+t('addBlock'))}</button>${gradUI('b',doc.background.gradient,true)}<h3>${esc(t('bgImage'))}</h3><label class="drop">${ICON.upload}${esc(t('dropHere'))}<small>${esc(t('uploadNote'))}</small><input type="file" id="bgFile" accept="image/*" hidden></label>${doc.background.image?`<button id="bgClear" class="wide">${esc(t('removeBg'))}</button>`:''}`;}
  else if(curTab==='layers'){h=dhead('layers')+(doc.elements.length?'<ul class="layers">'+doc.elements.slice().reverse().map(e=>{const id=esc(e.id);const nm=e.type==='text'?(String(e.text).split('\n')[0]||' '):t('sh_'+e.type);return `<li data-layer="${id}" class="${sel().includes(e.id)?'on':''}${e.groupId?' grp':''}" tabindex="0"><span class="ty" aria-hidden="true">${TYPE_GLYPH[e.type]||'•'}</span><span class="nm" dir="auto">${esc(nm.slice(0,80))}</span><button data-vis="${id}" ${ic('showHide')} aria-pressed="${!!e.hidden}">${e.hidden?ICON.eyeOff:ICON.eye}</button><button data-lock="${id}" ${ic('lockToggle')} aria-pressed="${!!e.locked}">${e.locked?ICON.lock:ICON.unlock}</button></li>`;}).join('')+'</ul>':`<p class="empty">${esc(t('noLayers'))}</p>`);}
  else if(curTab==='claude'){h=renderClaudeHTML();}
  else if(curTab==='about'){h=dhead('aboutTitle')+`<p class="empty">${esc(t('aboutBody'))}</p><p class="empty">${esc(t('privacy'))}</p><p class="empty" dir="auto">${esc(t('shortcuts'))}</p>
@@ -1050,7 +1073,7 @@ function renderDrawer(){const d=$('#drawer');let h='';
   <footer class="credit">${esc(t('versionLine'))} · ${esc(t('copyright'))}</footer>`;}
  d.innerHTML=h;
  if(curTab==='uploads'){const dz=$('#drop');['dragover','dragenter'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.add('over');}));['dragleave','drop'].forEach(ev=>dz.addEventListener(ev,()=>dz.classList.remove('over')));dz.addEventListener('drop',e=>{e.preventDefault();e.stopPropagation();readFiles(e.dataTransfer.files,true);});$('#upFile').addEventListener('change',e=>{readFiles(e.target.files,true);e.target.value='';});}
- if(curTab==='background'){$('#bgPick').addEventListener('input',e=>{const c=safeColor(e.target.value,null);if(!c)return;doc.background.color=c;delete doc.background.gradient;fullRender(true);});$('#bgPick').addEventListener('change',()=>{commit();renderDrawer();});
+ if(curTab==='background'){$('#bgBlock').onclick=addBlock;$('#bgPick').addEventListener('input',e=>{const c=safeColor(e.target.value,null);if(!c)return;doc.background.color=c;delete doc.background.gradient;fullRender(true);});$('#bgPick').addEventListener('change',()=>{commit();renderDrawer();});
   bindGrad($('#bGrad'),()=>doc.background.gradient||null,(g,live)=>{g=g&&safeGrad(g);if(g)doc.background.gradient=g;else delete doc.background.gradient;fullRender(true);if(!live){commit();renderDrawer();}});
   $('#bgFile').addEventListener('change',e=>{const f=e.target.files[0];e.target.value='';if(!f)return;prepImage(f).then(u=>{doc.background.image=u;fullRender();commit();renderDrawer();}).catch(()=>toast(t('imgFail')));});
   const c=$('#bgClear');if(c)c.onclick=()=>{doc.background.image=null;fullRender();commit();renderDrawer();};}
@@ -1059,9 +1082,10 @@ function renderDrawer(){const d=$('#drawer');let h='';
   document.querySelectorAll('#tplCats [data-cat]').forEach(b=>b.onclick=()=>{tplCat=b.dataset.cat;renderDrawer();});}
  if(curTab==='shapes'){const q=$('#elSearch');q.addEventListener('input',()=>{elQ=q.value.slice(0,60);$('#elBody').innerHTML=elementsHTML();});}
 }
-$('#drawer').addEventListener('click',ev=>{const b=ev.target.closest('[data-icon],[data-line],[data-frame],[data-sticker],[data-chart],[data-more-icons],[data-tpl],[data-text],[data-shape],[data-up],[data-bg],[data-vis],[data-lock],[data-layer],[data-close-drawer]');if(!b)return;const ds=b.dataset;
+$('#drawer').addEventListener('click',ev=>{const b=ev.target.closest('[data-add-image],[data-icon],[data-line],[data-frame],[data-sticker],[data-chart],[data-more-icons],[data-tpl],[data-text],[data-shape],[data-up],[data-bg],[data-vis],[data-lock],[data-layer],[data-close-drawer]');if(!b)return;const ds=b.dataset;
  if(ds.closeDrawer!==undefined){setDrawer(false);return;}
  if(ds.icon){addIcon(ds.icon);return;}if(ds.line){addLine(ds.line);return;}if(ds.frame){addFrame(ds.frame);return;}if(ds.sticker!==undefined){addSticker(+ds.sticker);return;}if(ds.chart){addChart(ds.chart);return;}
+ if(ds.addImage!==undefined){$('#imgPick').click();return;}
  if(ds.moreIcons!==undefined){elAllIcons=true;$('#elBody').innerHTML=elementsHTML();return;}
  if(ds.tpl!==undefined)useTemplate(+ds.tpl);else if(ds.text)addText(ds.text);else if(ds.shape==='placeholder')addPlaceholder();else if(ds.shape)addShape(ds.shape);
  else if(ds.up!==undefined){const u=uploads[+ds.up];const s=byId(selId);if(s&&s.type==='placeholder')replaceImage(s.id,u);else addImage(u);}
@@ -1081,7 +1105,7 @@ function renderProps(){const p=$('#props');{const key=sel().join(',');if(key!==_
  if(!e){p.innerHTML=`${closeBtn}<h3 class="first">${esc(t('page'))}</h3><p class="empty">${esc(t('nothing'))}</p><div class="row"><label for="pBg">${esc(t('bgColor'))}</label><input type="color" id="pBg" value="${esc(hex6(doc.background.color||'#ffffff'))}"></div><p class="empty"><bdi dir="ltr">${Number(doc.width)} × ${Number(doc.height)}</bdi> ${esc(t('px'))}</p>`;
   $('#pBg').oninput=ev=>{const c=safeColor(ev.target.value,null);if(c){doc.background.color=c;delete doc.background.gradient;fullRender(true);}};$('#pBg').onchange=()=>commit();bindPropsClose();return;}
  const S=sel();if(S.length>1){renderMultiProps(p,closeBtn,S);return;}
- let h=closeBtn;
+ let h=closeBtn+`<div class="quick" role="toolbar" aria-label="${esc(t('quick'))}"><button class="icon" id="qDup" ${ic('qDup')}>${ICON.copy}</button><button class="icon" id="qFwd" ${ic('qFwd')}>${ICON.up}</button><button class="icon" id="qBwd" ${ic('qBwd')}>${ICON.down}</button><button class="icon" id="qLock" aria-pressed="${!!e.locked}" ${ic(e.locked?'qUnlock':'qLock')}>${e.locked?ICON.lock:ICON.unlock}</button><button class="icon danger" id="qDel" ${ic('qDel')} ${e.locked?'disabled':''}>${ICON.trash}</button></div>`;
  if(e.groupId)h+=`<p class="hint">${esc(t('inGroup'))}</p><button id="pSelGroup" class="wide">${esc(t('selectGroup'))}</button>`;
  if(e.type==='text'){const ar=hasArabic(e.text);
   h+=`<p class="hint">${esc(t('textHint'))}</p><button id="pEditCanvas" class="wide">${esc(t('editOnCanvas'))}</button>
@@ -1140,7 +1164,7 @@ function renderProps(){const p=$('#props');{const key=sel().join(',');if(key!==_
  on('pLh','change',ev=>setNum('lineHeight',ev.target.value,0.5,5));on('pLs','change',ev=>{const e2=byId(selId);if(e2&&hasArabic(e2.text)){renderProps();return;}setNum('letterSpacing',ev.target.value,-50,200);});
  on('pOp','input',ev=>{const v=parseFloat(ev.target.value);if(Number.isFinite(v))setProp('opacity',clamp(v,0,1),true);});on('pOp','change',()=>commit());
  [['pX','x',-LIM.coord,LIM.coord],['pY','y',-LIM.coord,LIM.coord],['pW','width',1,LIM.coord],['pH','height',1,LIM.coord],['pR','rotation',-360,360]].forEach(([id,key,a,b])=>on(id,'change',ev=>setNum(key,ev.target.value,a,b)));
- on('pDup','click',dupSel);on('pDel','click',delSel);on('pLock','click',()=>setProp('locked',!e.locked));
+ on('pDup','click',dupSel);on('pDel','click',delSel);on('qDup','click',dupSel);on('qDel','click',delSel);on('qFwd','click',()=>order('fwd'));on('qBwd','click',()=>order('bwd'));on('qLock','click',()=>setProp('locked',!e.locked));on('pLock','click',()=>setProp('locked',!e.locked));
  on('pReplace','click',()=>pickImageFor(e.id));
  on('pSelGroup','click',()=>select(e.id));
  on('pFlipX','click',()=>setProp('flipX',!e.flipX));on('pFlipY','click',()=>setProp('flipY',!e.flipY));
@@ -1170,7 +1194,7 @@ function renderProps(){const p=$('#props');{const key=sel().join(',');if(key!==_
  bindPropsClose();
 }
 /* gradient editor shared by the properties panel (prefix p) and the Background tab (prefix b) */
-function gradUI(px,g){const same=i=>{const pg=presetGrad(i,g&&g.type);return !!g&&JSON.stringify(pg.stops)===JSON.stringify(g.stops);};
+function gradUI(px,g,open){if(!open&&!g)return `<details class="gdet"><summary>${esc(t('gradient'))}</summary>${gradUI(px,g,true).replace(/^<h3>.*?<\/h3>/,'')}</details>`;const same=i=>{const pg=presetGrad(i,g&&g.type);return !!g&&JSON.stringify(pg.stops)===JSON.stringify(g.stops);};
  let h=`<h3>${esc(t('gradient'))}</h3><div class="gradbox" id="${px}Grad"><div class="gpresets">`+GRAD_PRESETS.map((_,i)=>`<button data-gp="${i}" style="background:${esc(gradCSS(presetGrad(i)))}" aria-pressed="${same(i)}" ${ic('gradPreset').replace(/\{n\}/g,i+1)}></button>`).join('')+'</div>';
  if(g){const lin=g.type==='linear';h+=`<div class="row"><label>${esc(t('gradType'))}</label><div class="seg">${[['linear','gradLinear'],['radial','gradRadial']].map(a=>`<button data-gt="${a[0]}" class="${g.type===a[0]?'on':''}" aria-pressed="${g.type===a[0]}">${esc(t(a[1]))}</button>`).join('')}</div></div>
   <div class="row"><label for="${px}G0">${esc(t('gradColors'))}</label><input type="color" id="${px}G0" data-gs="0" value="${esc(hex6(g.stops[0].color))}"><input type="color" id="${px}G1" data-gs="1" value="${esc(hex6(g.stops[g.stops.length-1].color))}" aria-label="${esc(t('gradColors'))} 2"><button class="icon" data-gswap ${ic('gradSwap')}>⇄</button></div>
@@ -1249,6 +1273,7 @@ $('#newBtn').onclick=openNewDialog;
 function switchLang(){LANG=LANG==='en'?'ar':'en';try{localStorage.setItem('shoof.lang',LANG);}catch(e){}applyLang();}
 $('#langBtn').onclick=switchLang;
 $('#undoBtn').onclick=undo;$('#redoBtn').onclick=redo;
+$('#stageArea').addEventListener('wheel',ev=>{if(!(ev.ctrlKey||ev.metaKey))return;ev.preventDefault();scale=clamp(scale*Math.exp(-ev.deltaY*0.0025),0.05,4);applyZoom();},{passive:false});
 $('#zoomIn').onclick=()=>{scale=Math.min(4,scale*1.2);applyZoom();};$('#zoomOut').onclick=()=>{scale=Math.max(0.05,scale/1.2);applyZoom();};$('#zoomFit').onclick=fitZoom;
 $('#propsToggle').onclick=()=>{const p=$('#props');if(p.classList.contains('mob'))closeSheet();else{setDrawer(false);p.classList.add('mob');}};
 const sizeSel=$('#sizeSel'),sizeSelM=$('#sizeSelM');
@@ -1293,9 +1318,10 @@ const CLAUDE_MAX_CALLS=50,CLAUDE_MAX_DELETES=20,CLAUDE_MAX_TEXT=5000;
 async function initClaude(){try{if(!(window.claude&&typeof claude.use==='function'))return;const s=await claude.use('sample');if(typeof s!=='function')return;sample=s;
   try{const l=typeof s.limits==='function'?await s.limits():null;claudeTools=!!(l&&l.tools);}catch(e){claudeTools=false;}
   $('#claudeTab').hidden=false;}catch(err){hideClaude();}}
-function hideClaude(){sample=null;$('#claudeTab').hidden=true;if(curTab==='claude'){curTab='templates';document.querySelectorAll('#rail button').forEach(x=>x.classList.toggle('on',x.dataset.tab==='templates'));renderDrawer();}}
+function hideClaude(){sample=null;if(curTab==='claude')renderDrawer();}
 const QA=[['post','qaPost'],['translate','qaTranslate'],['rewrite','qaRewrite'],['caption','qaCaption'],['bilingual','qaBilingual'],['restyle','qaRestyle'],['fix','qaFix']];
-function renderClaudeHTML(){return dhead('askClaude')+`<p class="empty">${esc(t('claudeIntro'))}</p><p class="note">${esc(t('claudePrivacy'))}</p>
+const CLAUDE_URL='https://claude.ai/artifact/SC37XwK2xKrF4yu41YQpoK';
+function renderClaudeHTML(){if(!sample)return dhead('askClaude')+`<p class="hint">${esc(t('claudeOff'))}</p><a class="wide primary btnlink" href="${CLAUDE_URL}" target="_blank" rel="noopener">${esc(t('claudeOpen'))}</a>`;return dhead('askClaude')+`<p class="empty">${esc(t('claudeIntro'))}</p><p class="note">${esc(t('claudePrivacy'))}</p>
  <textarea id="cPrompt" dir="auto" maxlength="2000" placeholder="${esc(t('claudePh'))}" ${CS.busy?'disabled':''}>${esc(CS.prompt)}</textarea>
  <div class="claude-row"><button class="primary" id="cSend" ${CS.busy?'disabled':''}>${esc(t('claudeSend'))}</button><button id="cStop" ${CS.busy?'':'hidden'}>${esc(t('claudeStop'))}</button></div>
  <h3>${esc(t('claudeActions'))}</h3><div class="chips">${QA.map(q=>`<button data-qa="${q[0]}" ${CS.busy?'disabled':''}>${esc(t(q[1]))}</button>`).join('')}</div>
@@ -1447,10 +1473,10 @@ async function runClaude(action){
  let restored=false,bad=false,s=null;
  try{s=localStorage.getItem('shoof.autosave');}catch(e){}
  if(s){try{doc=sanitizeDoc(JSON.parse(s));restored=doc.elements.length>0;}catch(e){bad=true;try{localStorage.setItem('shoof.autosave.bad',s.slice(0,2e6));}catch(_){}try{localStorage.removeItem('shoof.autosave');}catch(_){}}}
- if(!restored)doc=sanitizeDoc(starterTemplate().make());
+ if(!restored)doc=liftBackdrop(sanitizeDoc(starterTemplate().make()));
  resetHistory();
  applyLang();
- try{fullRender();}catch(e){doc=sanitizeDoc(starterTemplate().make());resetHistory();fullRender();bad=true;}
+ try{fullRender();}catch(e){doc=liftBackdrop(sanitizeDoc(starterTemplate().make()));resetHistory();fullRender();bad=true;}
  syncSize();fitZoom();
  homeWork=restored;showHome();
  if(bad)toast(t('autosaveBad'),4000);else if(restored)toast(t('restored'));

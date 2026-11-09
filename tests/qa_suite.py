@@ -218,7 +218,7 @@ def t_templates(B):
     n = c.page.locator('#drawer .tpl').count()
     eq(n, c.ev('TEMPLATES.length'), 'template count')
     for i in range(n):
-        exp = c.ev(f'(()=>{{const d=TEMPLATES[{i}].make();return [d.elements.length,d.width,d.height]}})()')
+        exp = c.ev(f'(()=>{{const d=liftBackdrop(sanitizeDoc(TEMPLATES[{i}].make()));return [d.elements.length,d.width,d.height]}})()')
         c.page.click(f'#drawer .tpl[data-tpl="{i}"]')
         c.page.wait_for_timeout(30)
         got = c.ev('[doc.elements.length,doc.width,doc.height,mainLayer.children.length]')
@@ -1083,7 +1083,7 @@ def t_lock_inputs(B):
 
 @test('image_placeholder_and_replace')
 def t_replace(B):
-    c = Ctx(B); c.blank(); c.tab('shapes'); c.page.click('#drawer [data-shape="placeholder"]')
+    c = Ctx(B); c.blank(); c.tab('shapes'); c.page.click('#drawer [data-frame="rect"]')
     ph = c.sel_el(); eq(ph['type'], 'placeholder', 'placeholder type')
     ok(c.page.locator('#pReplace').is_visible(), 'no Add image button for placeholder')
     c.page.wait_for_timeout(400)  # let layout settle (slow CI runners)
@@ -1150,11 +1150,13 @@ window.claude={use:async(cap)=>{if(cap!=='sample')return null;if(window.__useRej
 def t_claude_hidden(B):
     c = Ctx(B)
     ok(c.ev('window.claude') is None, 'test setup: window.claude should be absent')
-    ok(not c.page.locator('#claudeTab').is_visible(), 'Ask Claude visible outside Claude')
+    ok(c.page.locator('#claudeTab').is_visible(), 'Ask Claude tab should always be findable')
+    c.tab('claude'); ok(c.page.locator('#cPrompt').count() == 0 and 'inside Claude' in c.page.inner_text('#drawer'), 'outside Claude: explanation, no prompt box')
+    eq(c.ev("$('#drawer a.btnlink').getAttribute('href')"), c.ev('CLAUDE_URL'), 'link to the Claude copy')
     c.close()
     for setup in ['window.__sampleNull=true;', "window.__useReject={code:'not_granted',message:'no'};", "window.__useReject={code:'capability_unavailable',message:'no'};"]:
         c = Ctx(B, init=setup + CLAUDE_MOCK); c.page.wait_for_timeout(200)
-        ok(not c.page.locator('#claudeTab').is_visible(), f'Ask Claude visible with {setup}')
+        c.tab('claude'); ok(c.page.locator('#cPrompt').count() == 0, f'Ask Claude usable with {setup}')
         ok(not c.errors, c.errors); c.close()
 
 
@@ -1224,7 +1226,7 @@ def t_claude_err(B):
     # sampling disabled hides the feature
     c.ev("()=>{window.__mockImpl=async()=>{throw {code:'sampling_disabled',message:'off'};};}")
     c.page.click('#drawer [data-qa="fix"]'); c.page.wait_for_timeout(300)
-    ok(not c.page.locator('#claudeTab').is_visible(), 'tab still visible after sampling_disabled')
+    ok(c.page.locator('#cPrompt').count() == 0 and 'inside Claude' in c.page.inner_text('#drawer'), 'still usable after sampling_disabled')
     ok(not c.errors, c.errors); c.close()
 
 
@@ -1622,6 +1624,7 @@ GRAD_PIXELS = """async(kind)=>{const u=renderExport('image/png');const im=new Im
 def t_grad(B):
     c = Ctx(B); c.blank(); c.tab('shapes'); c.page.click('#drawer [data-shape="rect"]')
     depth = c.ev('undoStack.length')
+    ok(c.ev("!$('#props details.gdet').open"), 'gradient section collapsed until used'); c.page.click('#props details.gdet summary')
     c.page.click('#pGrad [data-gp="6"]')
     g = c.sel_el()['fillGradient']
     eq(g, {'type': 'linear', 'angle': 45, 'stops': [{'offset': 0, 'color': '#6c4cf5'}, {'offset': 1, 'color': '#ff6a88'}]}, 'preset gradient')
@@ -1635,7 +1638,7 @@ def t_grad(B):
     c.set_color('#pG1', '#00ff00'); eq(c.sel_el()['fillGradient']['stops'][-1]['color'], '#00ff00', 'end colour')
     c.page.click('#pGrad [data-gswap]'); eq([x['color'] for x in c.sel_el()['fillGradient']['stops']], ['#00ff00', '#6c4cf5'], 'swap')
     c.set_color('#pFill', '#123456'); ok('fillGradient' not in c.sel_el() and c.sel_el()['fill'] == '#123456', 'solid colour replaces gradient')
-    c.page.click('#pGrad [data-gp="0"]'); c.page.click('#pGrad [data-gnone]'); ok('fillGradient' not in c.sel_el(), 'remove gradient')
+    c.page.click('#props details.gdet summary'); c.page.click('#pGrad [data-gp="0"]'); c.page.click('#pGrad [data-gnone]'); ok('fillGradient' not in c.sel_el(), 'remove gradient')
     # every shape type + text render a gradient
     c.ev("()=>{['ellipse','triangle','star','line','arrow','bubble','hexagon'].forEach(addShape);addText('h');doc.elements.forEach(e=>{if(e.type!=='image')e.fillGradient=presetGrad(8,'linear');});fullRender();commit();}")
     eq(c.ev("doc.elements.map(e=>{const g=nodeOf(e.id);const n=e.type==='text'?g.findOne('Text'):g.children[0];return n.fillPriority();})"), ['linear-gradient'] * 9, 'all shapes + text')
@@ -1849,6 +1852,63 @@ def t_gen_tpl(B):
         c.ev(f"useTemplate(TEMPLATES.findIndex(t=>t.key==='{key}'))"); eq(c.ev('[doc.width,doc.height]'), wh, key)
     _export_check(c, 'png', 2480, 3508)
     ok(not c.errors, c.errors); ok(not EXTERNAL, EXTERNAL[:3]); c.close()
+
+
+# ---------------------------------------------------------------- sprint 6: UX review fixes + accessibility gate
+AXE_JS = os.path.join(ROOT, 'tests', 'vendor', 'axe.min.js')   # axe-core (MPL-2.0), test-only, injected locally
+
+
+def axe_violations(c):
+    c.page.add_script_tag(path=AXE_JS)
+    return c.page.evaluate("async()=>{const r=await axe.run(document,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21a','wcag21aa']},resultTypes:['violations']});return r.violations.map(v=>v.id+' x'+v.nodes.length+' '+v.nodes[0].target.join(' '))}")
+
+
+@test('accessibility_axe_wcag_aa')
+def t_axe(B):
+    probs = []
+    for lang, w, h in [('en', 1440, 900), ('ar', 390, 844)]:
+        c = Ctx(B, w, h, lang=lang, home=True); c.page.wait_for_timeout(400)
+        probs += [f'{lang}{w} home: {v}' for v in axe_violations(c)]
+        c.ev('hideHome()')
+        for tab in ['templates', 'shapes', 'background', 'layers', 'claude']:
+            c.tab(tab); c.page.wait_for_timeout(100); probs += [f'{lang}{w} {tab}: {v}' for v in axe_violations(c)]
+        c.ev("()=>{setDrawer(false);select(doc.elements.find(e=>e.type==='text').id)}"); c.page.wait_for_timeout(100)
+        probs += [f'{lang}{w} props: {v}' for v in axe_violations(c)]
+        ok(not c.errors, c.errors); c.close()
+    eq(probs, [], 'axe WCAG 2.1 AA violations')
+
+
+@test('ux_background_block_frames_quick_actions_zoom')
+def t_ux6(B):
+    c = Ctx(B)
+    # template backdrop lifted: background swatches visibly change the page
+    c.ev("useTemplate(TEMPLATES.findIndex(t=>t.key==='hiring'))")
+    eq(c.ev("[doc.background.color, doc.elements[0].type==='rect'&&doc.elements[0].width>=doc.width]"), ['#0f2742', False], 'full-page rect lifted into the page background')
+    c.tab('background'); c.page.click('#drawer [data-bg="#ffffff"]')
+    corner, = c.page.evaluate(PIX, [[5, 1075]]); ok(min(corner) > 240, f'background swatch visible {corner}')
+    ok('fills the whole page' in c.page.inner_text('#drawer'), 'background hint')
+    n = c.ev('doc.elements.length'); c.page.click('#bgBlock'); e = c.sel_el()
+    ok(c.ev('doc.elements.length') == n + 1 and e['type'] == 'rect' and e['width'] < 1080 and not e['locked'], f'colour block is a movable rect {e}')
+    ok(c.page.locator('#pW').is_visible() or c.page.locator('#pW').count() == 1, 'block can be resized')
+    # Elements: no placeholder among shapes; labelled frames; Add image
+    c.tab('shapes')
+    eq(c.page.locator('#elBody .shape-grid [data-shape="placeholder"]').count(), 0, 'placeholder removed from Shapes')
+    eq(c.ev("[...document.querySelectorAll('#elBody [data-frame] span')].map(s=>s.textContent)")[:3], ['Square', 'Rounded', 'Circle'], 'frames have visible labels')
+    n = c.ev('doc.elements.length')
+    with c.page.expect_file_chooser() as fc: c.page.click('#elBody [data-add-image]')
+    fc.value.set_files(IMG); c.page.wait_for_function(f'doc.elements.length==={n + 1}')
+    eq(c.sel_el()['type'], 'image', 'Add an image adds a photo')
+    # quick actions toolbar at the top of the properties panel
+    ok(c.page.locator('#props .quick').bounding_box()['y'] < 200, 'quick actions at the top')
+    n = c.ev('doc.elements.length'); c.page.click('#qDup'); eq(c.ev('doc.elements.length'), n + 1, 'quick duplicate')
+    c.page.click('#qLock'); ok(c.sel_el()['locked'], 'quick lock'); c.page.click('#qLock'); ok(not c.sel_el()['locked'], 'quick unlock')
+    i0 = c.ev('doc.elements.findIndex(e=>e.id===selId)'); c.page.click('#qBwd'); eq(c.ev('doc.elements.findIndex(e=>e.id===selId)'), i0 - 1, 'send backward')
+    c.page.click('#qDel'); eq(c.ev('doc.elements.length'), n, 'quick delete')
+    # Ctrl + wheel zooms the canvas; plain wheel does not
+    z = c.ev('scale'); bb = c.page.locator('#stageArea').bounding_box(); c.page.mouse.move(bb['x'] + 200, bb['y'] + 200)
+    c.page.mouse.wheel(0, 200); eq(c.ev('scale'), z, 'plain wheel must not zoom')
+    c.page.keyboard.down('Control'); c.page.mouse.wheel(0, -300); c.page.keyboard.up('Control'); ok(c.ev('scale') > z, 'ctrl+wheel zoom in')
+    ok(not c.errors, c.errors); c.close()
 
 
 # ================================================================ runner
