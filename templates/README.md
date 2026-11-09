@@ -2,6 +2,15 @@
 
 A template is a Shoof document: the same JSON that **Save** produces (`.shoof.json`), plus a few metadata fields. Files live in `templates/<category>/<name>.json` and are listed in `templates/index.json` (from v0.3). Categories: `social`, `poster`, `story`, `arabic`, `photo`.
 
+## Generated template set (50 English templates)
+Most built-in templates come from **`tools/templates/gen_templates.py`**: a style spec (12 palettes, 3 font pairs, 11 layout recipes such as `bold`, `center`, `photo`, `promo`, `quote`, `list`, `event`, `story`, `card`, `logo`, `slide`) plus a content table. The script writes the result into `index.html` between the `@generated-templates` markers; never edit that block by hand.
+
+```bash
+python3 tools/templates/gen_templates.py           # rebuild the block in index.html
+python3 tools/templates/gen_templates.py --check   # CI: fail if index.html is stale
+```
+To add a template, add one row to the content table `T` (key, name, categories, keywords, size, recipe, palette, fonts, content). The QA test `generated_templates_quality` renders every template and fails on text off the page, overlapping text boxes or elements dropped by the validator. Topic categories: `promo`, `event`, `hiring`, `quote`, `tips`, `food`, `realestate`, `business`, `seasonal`.
+
 ## Example
 ```json
 {

@@ -219,8 +219,8 @@ def t_templates(B):
     eq(n, c.ev('TEMPLATES.length'), 'template count')
     for i in range(n):
         exp = c.ev(f'(()=>{{const d=TEMPLATES[{i}].make();return [d.elements.length,d.width,d.height]}})()')
-        c.page.locator('#drawer .tpl').nth(i).click()
-        c.page.wait_for_timeout(80)
+        c.page.click(f'#drawer .tpl[data-tpl="{i}"]')
+        c.page.wait_for_timeout(30)
         got = c.ev('[doc.elements.length,doc.width,doc.height,mainLayer.children.length]')
         eq(got[:3], exp, f'template {i} elements/size')
         eq(got[3], exp[0], f'template {i} Konva node count')
@@ -547,7 +547,7 @@ def t_bg(B):
 @test('save_new_open_roundtrip')
 def t_roundtrip(B):
     c = Ctx(B)
-    c.page.locator('#drawer .tpl').nth(1).click(); c.tab('uploads')
+    c.page.click('#drawer .tpl[data-tpl="1"]'); c.tab('uploads')
     c.page.set_input_files('#upFile', IMG)
     c.page.wait_for_function("doc.elements.some(e=>e.type==='image')")
     before = c.ev('JSON.stringify(doc)')
@@ -987,7 +987,7 @@ def t_undo_size2(B):
     eq(c.ev('$("#sizeSel").value'), 'story', 'size select after redo')
     st = c.ev('[stage.width(),stage.height()]'); ok(abs(st[0] / st[1] - 1080 / 1920) < 0.02, f'stage after redo {st}')
     _export_check(c, 'png', 1080, 1920)
-    c.page.locator('#drawer .tpl').nth(2).click(); c.page.wait_for_timeout(100)   # A4 template
+    c.page.click('#drawer .tpl[data-tpl="2"]'); c.page.wait_for_timeout(100)   # A4 template
     c.page.keyboard.press('Control+z'); c.page.wait_for_timeout(100)
     eq(c.ev('[doc.width,doc.height]'), [1080, 1920], 'undo of template size')
     eq(c.ev('$("#sizeSel").value'), 'story', 'size select after template undo')
@@ -1389,7 +1389,7 @@ def t_tpls(B):
             c.page.click(f'#tplCats [data-cat="{cat}"]')
             eq(c.page.locator('#drawer .tpl').count(), sum(1 for t in info if cat in t['c']), f'{lang}: category {cat}')
         c.page.click('#tplCats [data-cat="all"]')
-        for q, n in [('ramadan', 1), ('رمضان', 1), ('photo', None), ('zzzzqq', 0)]:
+        for q, n in [('ramadan', 3), ('رمضان', 1), ('photo', None), ('zzzzqq', 0)]:
             c.page.fill('#tplSearch', q); c.page.wait_for_timeout(50)
             cnt = c.page.locator('#drawer .tpl').count()
             if n is None:
@@ -1399,7 +1399,7 @@ def t_tpls(B):
         ok(c.page.locator('#tplGrid .empty').is_visible(), 'no-results message')
         c.page.fill('#tplSearch', '')
         # every template renders and its frame can be filled
-        c.page.locator('#drawer .tpl').nth(c.ev("TEMPLATES.findIndex(t=>t.key==='product')")).click(); c.page.wait_for_timeout(100)
+        c.page.click('#drawer .tpl[data-tpl="%d"]' % c.ev("TEMPLATES.findIndex(t=>t.key==='product')")); c.page.wait_for_timeout(100)
         ph = c.ev("doc.elements.find(e=>e.type==='placeholder')")
         ok(ph, 'photo template has no placeholder')
         c.ev(f"replaceImage({ph['id']!r},{TINY_PNG!r})"); eq(c.ev(f"byId({ph['id']!r}).type"), 'image', 'fill template photo')
@@ -1558,7 +1558,7 @@ def t_home(B):
     eq(c.ev("$('#homeGo').textContent"), 'Open the editor', 'first-visit primary action')
     # search
     c.page.fill('#homeSearch', 'ramadan')
-    eq(c.ev("[...document.querySelectorAll('#homeList .hname')].map(x=>x.textContent)"), ['Ramadan Kareem (bilingual)'], 'search results')
+    ok('Ramadan Kareem (bilingual)' in c.ev("[...document.querySelectorAll('#homeList .hname')].map(x=>x.textContent)"), 'search results')
     ok(c.ev("document.activeElement.id") == 'homeSearch', 'search keeps focus while typing')
     c.page.fill('#homeSearch', 'zzzz'); ok(c.ev("t('noTpl')") in c.page.inner_text('#homeList'), 'no-results message')
     c.page.fill('#homeSearch', '')
@@ -1810,6 +1810,45 @@ def t_el_sec(B):
     bb = c.page.locator('#drawer [data-icon]').first.bounding_box(); ok(bb['width'] >= 40, f'icon tap target {bb}')
     c.page.click('#drawer [data-icon="star"]'); eq(c.sel_el()['type'], 'icon', 'add icon on phone')
     ok(not c.errors, c.errors); c.close()
+
+
+# ---------------------------------------------------------------- sprint 5: 50 generated English templates
+TPL_LAYOUT_CHECK = """()=>{const out=[];GEN_TEMPLATES.forEach(g=>{const i=TEMPLATES.findIndex(t=>t.key===g.key);const d=sanitizeDoc(TEMPLATES[i].make());
+ if(d.elements.length!==g.els.length)out.push([g.key,'dropped '+(g.els.length-d.elements.length)]);
+ const st=new Konva.Stage({container:document.createElement('div'),width:d.width,height:d.height});const l=new Konva.Layer();st.add(l);
+ const boxes=d.elements.map(e=>{const n=buildNode(e);l.add(n);const tx=n.findOne('Text');if(e.type!=='text')return null;
+   // real text extent: widest line
+   const w=Math.max(...tx.textArr.map(a=>a.width));const al=tx.align();const x0=e.x+(al==='center'?(e.width-w)/2:al==='right'?e.width-w:0);
+   return {x:x0,y:e.y,w,h:tx.height(),t:e.text.slice(0,20),over:tx.textArr.some(a=>a.width>e.width+1)};});
+ const M=4;boxes.forEach((b,i)=>{if(!b)return;if(b.over)out.push([g.key,'word wider than box: '+b.t]);
+  if(b.x<-1||b.y<-1||b.x+b.w>d.width+1||b.y+b.h>d.height+1)out.push([g.key,'off page: '+b.t]);
+  boxes.forEach((c,j)=>{if(!c||j<=i)return;if(b.x<c.x+c.w-M&&c.x<b.x+b.w-M&&b.y<c.y+c.h-M&&c.y<b.y+b.h-M)out.push([g.key,'overlap: '+b.t+' | '+c.t]);});});
+ st.destroy();});return out;}"""
+
+
+@test('generated_templates_quality')
+def t_gen_tpl(B):
+    import subprocess
+    r = subprocess.run([sys.executable, os.path.join(ROOT, 'tools', 'templates', 'gen_templates.py'), '--check'], capture_output=True, text=True)
+    ok(r.returncode == 0, f'generated block is stale: {r.stdout}{r.stderr}')
+    c = Ctx(B)
+    eq(c.ev('GEN_TEMPLATES.length'), 50, '50 generated templates'); eq(c.ev('TEMPLATES.length'), 67, 'total templates')
+    eq(c.ev('new Set(TEMPLATES.map(t=>t.key)).size'), 67, 'unique keys')
+    eq(c.ev("TPL_CATS.filter(k=>k!=='all'&&!TEMPLATES.some(t=>t.cats.includes(k)))"), [], 'every category has templates')
+    eq(c.ev("GEN_TEMPLATES.filter(g=>!I18N.en['tpl_'+g.key]||/[\\u0600-\\u06ff]/.test(JSON.stringify(g)))").__len__(), 0, 'names set, English only')
+    eq(c.ev(TPL_LAYOUT_CHECK), [], 'layout: no dropped elements, text off page or overlapping text')
+    t0 = time.time(); c.page.wait_for_function("Object.values(tplThumbs).filter(Boolean).length===TEMPLATES.length", timeout=20000)
+    METRICS['all_thumbs_s'] = round(time.time() - t0, 1)
+    c.tab('templates'); c.page.fill('#tplSearch', 'ramadan')
+    names = c.ev("[...document.querySelectorAll('#tplGrid .tpl span')].map(x=>x.textContent)")
+    ok({'Ramadan Kareem', 'Ramadan hours'} <= set(names), f'search ramadan {names}')
+    c.page.fill('#tplSearch', ''); c.page.click('#tplCats [data-cat="realestate"]')
+    eq(c.page.locator('#tplGrid .tpl').count(), 4, 'real estate category')
+    c.page.click('#tplGrid .tpl >> nth=0'); ok(c.ev('doc.elements.length') > 3, 'apply generated template')
+    for key, wh in [('card_modern', [1050, 600]), ('slide_pitch', [1920, 1080]), ('ramadan_hours', [1080, 1920]), ('opening_offer', [2480, 3508])]:
+        c.ev(f"useTemplate(TEMPLATES.findIndex(t=>t.key==='{key}'))"); eq(c.ev('[doc.width,doc.height]'), wh, key)
+    _export_check(c, 'png', 2480, 3508)
+    ok(not c.errors, c.errors); ok(not EXTERNAL, EXTERNAL[:3]); c.close()
 
 
 # ================================================================ runner

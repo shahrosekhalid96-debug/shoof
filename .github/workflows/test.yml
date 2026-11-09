@@ -20,7 +20,7 @@ jobs:
           python -m playwright install --with-deps chromium
       # The suite auto-detects Chrome (/usr/bin/google-chrome is preinstalled on ubuntu-latest)
       # and otherwise falls back to Playwright's Chromium. Fonts come from fonts/ in the repo.
-      - name: Run QA suite (75 tests, desktop + phone, EN + AR, offline)
+      - name: Run QA suite (76 tests, desktop + phone, EN + AR, offline)
         run: python tests/qa_suite.py
       - name: Upload results
         if: always()

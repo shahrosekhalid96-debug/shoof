@@ -22,7 +22,7 @@ Arabic is fully supported, not added as an afterthought. The interface switches 
 
 ### Features (v0.2)
 - **Welcome home screen**: big template search, "start with a size" tiles (Instagram post, Story, Poster, Flyer, Logo, Business card, Presentation), Trending and Picks rows, and a "Continue your design" card
-- **17 templates**, filterable by category (Social, Posters, Stories, Arabic, With photo) and searchable in EN and AR. Sizes cover Instagram, Stories/Reels, LinkedIn, Facebook, X and YouTube thumbnails, plus A4 and A3 posters.
+- **67 templates** (50 English templates built by a generator script, plus 17 originals incl. Arabic and bilingual), filterable by format (Social, Posters, Stories, With photo) and topic (Sale & promo, Events, Hiring, Quotes, Tips, Food, Real estate, Business, Seasonal, Arabic) and searchable in EN and AR. Sizes cover Instagram, Stories/Reels, LinkedIn, Facebook, X and YouTube thumbnails, plus A4 and A3 posters.
 - **New-design dialog** with 12 size presets or a custom size (16–10000 px)
 - **Text**: 8 bundled fonts (Latin: Inter, Poppins, Playfair Display, Bebas Neue; Arabic: Cairo, Tajawal, Amiri, IBM Plex Sans Arabic), plus size, colour, alignment, line height and letter spacing (automatically 0 for Arabic)
 - **Text effects**: shadow, outline and highlight box
