@@ -41,7 +41,7 @@ FONTS = {  # display font, body font
 }
 # average glyph width / font size, used to estimate wrapping
 CW = {('Poppins', True): 0.62, ('Poppins', False): 0.57, ('Inter', True): 0.57, ('Inter', False): 0.53,
-      ('Bebas Neue', True): 0.42, ('Bebas Neue', False): 0.42, ('Playfair Display', True): 0.58, ('Playfair Display', False): 0.53}
+      ('Bebas Neue', True): 0.47, ('Bebas Neue', False): 0.47, ('Playfair Display', True): 0.58, ('Playfair Display', False): 0.53}
 
 
 def lines(text, font, size, width, bold):
@@ -62,7 +62,7 @@ def lines(text, font, size, width, bold):
 
 def fit(text, font, size, width, bold, max_lines):
     """Shrink size until the text fits in max_lines; never wider than the box."""
-    longest = max(len(w) for w in re.split(r'\s+', text) if w)
+    longest = max(len(w) for w in re.split(r'[ \n]+', text) if w)
     size = min(size, width / (longest * CW[(font, bold)] * 1.1))
     while size > 10 and lines(text, font, size, width, bold) > max_lines:
         size *= 0.94
@@ -151,16 +151,18 @@ def r_bold(W, H, P, F, c):
 def r_center(W, H, P, F, c):
     s = W / 1080; m = 100 * s; D, B = F
     els = [E(-W * 0.2, H - W * 0.38, W * 0.55, W * 0.55, P['accent2']), E(W * 0.78, -W * 0.12, W * 0.36, W * 0.36, P['accent2'])]
+    els.append(R(46 * s, 46 * s, W - 92 * s, H - 92 * s, '', radius=round(36 * s), stroke=P['accent'], strokeWidth=round(4 * s), opacity=0.55))
     y = m + 50 * s
     if c.get('icon'):
-        els.append(I(c['icon'], W / 2 - 70 * s, y, 140 * s, P['accent'], sw=1.75)); y += 190 * s
+        els += [E(W / 2 - 90 * s, y - 20 * s, 180 * s, 180 * s, P['surface'], shadowColor='#000000', shadowBlur=round(24 * s), shadowY=round(8 * s), shadowOpacity=0.1),
+                I(c['icon'], W / 2 - 55 * s, y + 15 * s, 110 * s, P['accent'], sw=1.75)]; y += 210 * s
     f = Flow(m, y, W - 2 * m, 'center')
     if c.get('kicker'): f.text(c['kicker'].upper(), B, 30 * s, P['accent'], bold=True, max_lines=1, gap=24 * s, ls=round(4 * s))
-    f.text(c['title'], D, (160 if D == 'Bebas Neue' else 104) * s, P['ink'], bold=D != 'Bebas Neue', lh=1.05, max_lines=3, gap=30 * s)
-    if c.get('sub'): f.text(c['sub'], B, 40 * s, P['muted'], lh=1.4, max_lines=3)
+    f.text(c['title'], D, (160 if D == 'Bebas Neue' else 104) * s, P['ink'], bold=D != 'Bebas Neue', lh=1.05, max_lines=c['title'].count('\n') + 1 if '\n' in c['title'] else 3, gap=30 * s)
+    if c.get('sub'): f.text(c['sub'], B, 38 * s, P['muted'], lh=1.4, max_lines=2)
     els += f.els
     if c.get('cta'):
-        p, h, _ = pill(W / 2, H - m - 110 * s, c['cta'], B, 32 * s, P['accent'], P['on'], align='center'); els += p
+        p, h, _ = pill(W / 2, max(H - m - 110 * s, f.y + 40 * s), c['cta'], B, 32 * s, P['accent'], P['on'], align='center'); els += p
     return els
 
 
@@ -168,7 +170,7 @@ def r_photo(W, H, P, F, c):
     """Photo frame on top, text below; the photo shrinks if the text needs room above the bottom pill."""
     s = W / 1080; m = 80 * s; D, B = F
     ph = H * (0.5 if H > W else 0.46)
-    bottom = H - m - (96 if c.get('price') else 90) * s - 30 * s if (c.get('price') or c.get('cta')) else H - m
+    bottom = H - m - 90 * s - 30 * s if c.get('cta') else H - m
     for _ in range(3):
         f = Flow(m, m + ph + 60 * s, W - 2 * m)
         if c.get('kicker'): f.text(c['kicker'].upper(), B, 28 * s, P['accent'], bold=True, max_lines=1, gap=18 * s, ls=round(3 * s))
@@ -177,68 +179,103 @@ def r_photo(W, H, P, F, c):
         over = f.y - bottom
         if over <= 0: break
         ph = max(H * 0.28, ph - over)
-    els = [PH(m, m, W - 2 * m, ph, P['accent2'], radius=round(36 * s), **({'mask': c['mask']} if c.get('mask') else {}))]
+    els = [R(m + 26 * s, m + 26 * s, W - 2 * m, ph, '', radius=round(36 * s), stroke=P['accent'], strokeWidth=round(4 * s)) if not c.get('mask') else E(m + 26 * s, m + 26 * s, W - 2 * m, ph, P['accent2'], opacity=0.5),
+           PH(m, m, W - 2 * m, ph, P['accent2'], radius=round(36 * s), **({'mask': c['mask']} if c.get('mask') else {}))]
     els += f.els
     if c.get('price'):
-        p, h, w = pill(W - m, H - m - 96 * s, c['price'], B, 34 * s, P['accent'], P['on']); p[0]['x'] = round(W - m - w); p[1]['x'] = round(W - m - w); els += p
+        dd = 210 * s
+        els += [E(W - m - dd + 30 * s, m + ph - dd * 0.6, dd, dd, P['accent'], shadowColor='#000000', shadowBlur=round(20 * s), shadowY=round(6 * s), shadowOpacity=0.15)]
+        fsz = fit(c['price'], B, 44 * s, dd * 0.78, True, 2)
+        els.append(dict(type='text', text=c['price'], x=round(W - m - dd + 30 * s + dd * 0.11), y=round(m + ph - dd * 0.6 + dd / 2 - lines(c['price'], B, fsz, dd * 0.78, True) * fsz * 0.6), width=round(dd * 0.78), fontFamily=B, fontSize=fsz, bold=True, fill=P['on'], align='center', lineHeight=1.2))
+        if c.get('cta'):
+            p, h, _ = pill(m, H - m - 90 * s, c['cta'], B, 30 * s, P['ink'], P['bg']); els += p
     elif c.get('cta'):
         p, h, _ = pill(m, H - m - 90 * s, c['cta'], B, 30 * s, P['ink'], P['bg']); els += p
     return els
 
 
 def r_promo(W, H, P, F, c):
-    s = W / 1080; m = 90 * s; D, B = F
-    split = 0.64 if H > W * 1.2 else 0.62
-    els = [R(0, H * split, W, H * (1 - split), P['accent2']), S('star', W - m - 230 * s, m, 230 * s, 230 * s, P['accent'])]
-    f = Flow(m, m + 20 * s, W - 2 * m - 230 * s)
-    if c.get('kicker'): f.text(c['kicker'].upper(), B, 32 * s, P['ink'], bold=True, max_lines=1, gap=10 * s, ls=round(4 * s))
-    f.text(c['big'].replace(' ', '\n') if H > W * 1.2 else c['big'], 'Bebas Neue', (380 if H > W * 1.2 else 330) * s, P['accent'], lh=0.95, max_lines=2 if H > W * 1.2 else 1, gap=0)
+    """Big offer number, a round product photo with a star sticker, and a colour band with the message and button."""
+    s = W / 1080; m = 80 * s; D, B = F
+    tall = H > W * 1.2
+    split = 0.6 if tall else 0.6
+    d = (420 if tall else 400) * s
+    els = [R(0, H * split, W, H * (1 - split), P['accent2']),
+           E(W - m - d + 30 * s, H * split - d - 6 * s, d, d, '', stroke=P['accent'], strokeWidth=round(4 * s)),
+           PH(W - m - d, H * split - d - 30 * s, d, d, P['surface'], mask='circle'),
+           S('star', W - m - d - 40 * s, H * split - d - 70 * s, 200 * s, 200 * s, P['accent']),
+           dict(type='text', text=c.get('sticker', 'HOT'), x=round(W - m - d - 40 * s), y=round(H * split - d - 70 * s + 76 * s), width=round(200 * s), fontFamily='Bebas Neue', fontSize=round(50 * s), fill=P['on'], align='center', lineHeight=1.0)]
+    f = Flow(m, m, W - 2 * m - d - 20 * s)
+    if c.get('kicker'): f.text(c['kicker'].upper(), B, 32 * s, P['ink'], bold=True, max_lines=1, gap=14 * s, ls=round(4 * s))
+    f.text(c['big'].replace(' ', '\u00a0') if len(c['big']) <= 8 and not tall else c['big'], 'Bebas Neue', (380 if tall else 250) * s, P['accent'], lh=0.92, max_lines=2, gap=0)
     els += f.els
     f2 = Flow(m, H * split + 60 * s, W - 2 * m)
-    f2.text(c['title'], D, (110 if D == 'Bebas Neue' else 76) * s, P['ink'], bold=D != 'Bebas Neue', lh=1.05, max_lines=2, gap=20 * s)
+    f2.text(c['title'], D, (110 if D == 'Bebas Neue' else 76) * s, P['ink'], bold=D != 'Bebas Neue', lh=1.05, max_lines=2, gap=18 * s)
     if c.get('sub'): f2.text(c['sub'], B, 32 * s, P['muted'], lh=1.4, max_lines=2)
     els += f2.els
+    if c.get('cta'):
+        p, h, w = pill(W - m, H * split - 36 * s, c['cta'], B, 30 * s, P['ink'], P['bg']); p[0]['x'] = round(W - m - w); p[1]['x'] = round(W - m - w); els += p
     return els
 
 
 def r_quote(W, H, P, F, c):
-    s = W / 1080; m = 110 * s; D, B = F
-    els = [I('quote', m, m, 120 * s, P['accent'], sw=1.5, fill=P['accent'])]
-    f = Flow(m, m + 190 * s, W - 2 * m)
-    f.text(c['title'], 'Playfair Display', 84 * s, P['ink'], lh=1.3, max_lines=6, gap=50 * s)
+    """Floating card with a quote mark badge, serif quote, avatar slot and name; contour texture behind."""
+    s = W / 1080; m = 70 * s; D, B = F
+    els = [PAT('contours', W * 0.35, -W * 0.25, W * 0.95, W * 0.95, P['accent'], 0.22, 30 * s),
+           R(m, m, W - 2 * m, H - 2 * m, P['surface'], radius=round(44 * s), shadowColor='#000000', shadowBlur=round(40 * s), shadowY=round(14 * s), shadowOpacity=0.12),
+           R(m, m + 120 * s, 14 * s, 260 * s, P['accent'], radius=round(7 * s)),
+           E(m + 80 * s, m + 70 * s, 130 * s, 130 * s, P['accent']),
+           I('quote', m + 113 * s, m + 103 * s, 64 * s, P['on'], sw=1.5, fill=P['on'])]
+    f = Flow(m + 80 * s, m + 250 * s, W - 2 * m - 160 * s)
+    f.text(c['title'], 'Playfair Display', 70 * s, P['ink'], lh=1.3, max_lines=6)
     els += f.els
-    els.append(S('line', m, f.y, 120 * s, 8 * s, P['accent']))
-    f.space(50 * s)
-    f.text(c['sub'], B, 34 * s, P['ink'], bold=True, max_lines=1, gap=8 * s)
-    if c.get('body'): f.text(c['body'], B, 28 * s, P['muted'], max_lines=1)
-    els += f.els[-2:] if c.get('body') else f.els[-1:]
-    used = f.y - m
-    return shift(els, max(0, (H - used) / 2 - m - 20 * s))
+    ay = max(f.y + 60 * s, H - m - 210 * s)
+    els += [PH(m + 80 * s, ay, 120 * s, 120 * s, P['accent2'], mask='circle'),
+            dict(type='text', x=round(m + 230 * s), y=round(ay + 22 * s), width=round(W - 2 * m - 320 * s), text=c['sub'], fontFamily=B, fontSize=round(34 * s), bold=True, fill=P['ink'], align='left', lineHeight=1.2)]
+    if c.get('body'):
+        els.append(dict(type='text', x=round(m + 230 * s), y=round(ay + 70 * s), width=round(W - 2 * m - 320 * s), text=c['body'], fontFamily=B, fontSize=round(26 * s), fill=P['muted'], align='left', lineHeight=1.2))
+    return els
 
 
 def r_list(W, H, P, F, c):
-    s = W / 1080; m = 90 * s; D, B = F
-    els = [R(0, 0, W, 16 * s, P['accent'])]
-    f = Flow(m, m + 20 * s, W - 2 * m)
-    if c.get('kicker'): f.text(c['kicker'].upper(), B, 28 * s, P['accent'], bold=True, max_lines=1, gap=18 * s, ls=round(3 * s))
-    f.text(c['title'], D, (120 if D == 'Bebas Neue' else 78) * s, P['ink'], bold=D != 'Bebas Neue', lh=1.05, max_lines=2, gap=50 * s)
-    els += f.els
-    items = c['items']
-    avail = H - f.y - m - (60 * s if c.get('foot') else 0)
+    """Coloured header band with a watermark icon, then floating cards with number (or check) badges on a connector line."""
+    s = W / 1080; m = 80 * s; D, B = F
     tall = H > W * 1.4
-    row = min(avail / len(items), (260 if tall else 190) * s)
-    for i, it in enumerate(items):
-        y = f.y + i * row
-        d = min((100 if tall else 84) * s, row * 0.6)
-        if c.get('checks'): els.append(I('circle-check', m, y, d, P['accent'], sw=2))
+    band = H * (0.30 if tall else 0.40)
+    on = P['on']
+    els = [R(0, 0, W, band, P['accent']),
+           PAT('dotGrid', 0, 0, W, band, on, 0.16, 28 * s),
+           I(c.get('icon', 'sparkles'), W - m - 300 * s, band - 330 * s, 300 * s, on, sw=1.25)]
+    els[-1]['opacity'] = 0.22
+    f = Flow(m, m + 10 * s, W - 2 * m - 200 * s)
+    if c.get('kicker'): f.text(c['kicker'].upper(), B, 28 * s, on, bold=True, max_lines=1, gap=18 * s, ls=round(4 * s))
+    f.text(c['title'], D, (130 if D == 'Bebas Neue' else 80) * s, on, bold=D != 'Bebas Neue', lh=1.05, max_lines=2)
+    over = f.y - (band - 70 * s)
+    if over > 0:
+        band += over; els[0]['height'] = round(band); els[1]['height'] = round(band); els[2]['y'] = round(band - 330 * s)
+    els += f.els
+    items = c['items']; n = len(items)
+    foot_h = 90 * s if c.get('foot') else 0
+    top = band - 50 * s
+    avail = H - top - m - foot_h - 20 * s
+    gap = 22 * s
+    ch = min((avail - gap * (n - 1)) / n, (280 if tall else 150) * s)
+    if tall and n > 1: gap = min(70 * s, max(gap, (avail - n * ch) / (n - 1)))
+    d = min(ch * 0.56, (110 if tall else 84) * s)
+    els.append(S('line', m + 34 * s + d / 2 - 3 * s, top + ch / 2, 6 * s, (n - 1) * (ch + gap), P['accent2']))
+    for k, it in enumerate(items):
+        y = top + k * (ch + gap)
+        els.append(R(m, y, W - 2 * m, ch, P['surface'], radius=round(26 * s), shadowColor='#000000', shadowBlur=round(28 * s), shadowY=round(8 * s), shadowOpacity=0.1))
+        bx, by = m + 34 * s, y + (ch - d) / 2
+        if c.get('checks'):
+            els += [E(bx, by, d, d, P['accent']), I('check', bx + d * 0.2, by + d * 0.2, d * 0.6, on, sw=3)]
         else:
-            els += [E(m, y, d, d, P['accent']), dict(type='text', x=round(m), y=round(y + d * 0.2), width=round(d), text=str(i + 1), fontFamily=B, fontSize=round(d * 0.5), bold=True, fill=P['on'], align='center', lineHeight=1.2)]
-        tw = W - 2 * m - d - 30 * s
-        fs = fit(it, B, (50 if tall else 38) * s, tw, False, 2)
-        nl = lines(it, B, fs, tw, False)
-        els.append(dict(type='text', x=round(m + d + 30 * s), y=round(y + d / 2 - nl * fs * 1.3 / 2), width=round(tw), text=it, fontFamily=B, fontSize=fs, fill=P['ink'], align='left', lineHeight=1.3))
+            els += [E(bx, by, d, d, P['accent']), dict(type='text', x=round(bx), y=round(by + d * 0.2), width=round(d), text=str(k + 1), fontFamily=B, fontSize=round(d * 0.5), bold=True, fill=on, align='center', lineHeight=1.2)]
+        tx = bx + d + 30 * s; tw = W - m - 30 * s - tx
+        fs = fit(it, B, (54 if tall else 36) * s, tw, True, 2); nl = lines(it, B, fs, tw, True)
+        els.append(dict(type='text', x=round(tx), y=round(y + ch / 2 - nl * fs * 1.25 / 2), width=round(tw), text=it, fontFamily=B, fontSize=fs, bold=True, fill=P['ink'], align='left', lineHeight=1.25))
     if c.get('foot'):
-        els.append(dict(type='text', x=round(m), y=round(H - m - 30 * s), width=round(W - 2 * m), text=c['foot'], fontFamily=B, fontSize=round(28 * s), bold=True, fill=P['muted'], align='left', lineHeight=1.2))
+        p, h, w = pill(W / 2, H - m - foot_h + 10 * s, c['foot'], B, 28 * s, P['accent2'], P['ink'], align='center'); els += p
     return els
 
 
@@ -262,23 +299,31 @@ def r_event(W, H, P, F, c):
 
 
 def r_story(W, H, P, F, c):
+    """Big headline up top, then a floating card (tilted card behind it) holding the message and the button."""
     s = W / 1080; m = 90 * s; D, B = F
     els = [E(-W * 0.3, -W * 0.25, W * 0.9, W * 0.9, P['accent2'])]
-    y = 260 * s
+    y = 230 * s
     if c.get('badge'):
-        p, h, _ = pill(m, y, c['badge'], B, 26 * s, P['accent'], P['on']); els += p; y += h + 60 * s
+        p, h, _ = pill(m, y, c['badge'], B, 26 * s, P['accent'], P['on']); els += p; y += h + 50 * s
     f = Flow(m, y, W - 2 * m)
-    f.text(c['title'], D, (260 if D == 'Bebas Neue' else 160) * s, P['ink'], bold=D != 'Bebas Neue', lh=1.0, max_lines=4, gap=50 * s)
-    if c.get('sub'): f.text(c['sub'], B, 52 * s, P['muted'], lh=1.4, max_lines=4)
-    block = els[1:] + f.els
-    if not c.get('photo'):
-        dy = max(0, (H - 300 * s) * 0.46 - (f.y - 260 * s) / 2 - 260 * s)
-        shift(block, dy); f.y += dy
-    els = els[:1] + block
-    if c.get('photo'): els.append(PH(m, f.y + 80 * s, W - 2 * m, min(640 * s, H - f.y - 480 * s), P['accent2'], radius=round(40 * s)))
+    f.text(c['title'], D, (250 if D == 'Bebas Neue' else 150) * s, P['ink'], bold=D != 'Bebas Neue', lh=1.0, max_lines=4, gap=60 * s)
+    els += f.els
+    card_y = f.y
+    if c.get('photo'):
+        ph = min(560 * s, H - card_y - 760 * s)
+        els += [R(m + 30 * s, card_y + 24 * s, W - 2 * m, ph, P['accent'], radius=round(40 * s), rotation=3), PH(m, card_y, W - 2 * m, ph, P['accent2'], radius=round(40 * s))]
+        card_y += ph + 70 * s
+    f2 = Flow(m + 60 * s, 0, W - 2 * m - 120 * s)
+    if c.get('sub'): f2.text(c['sub'], B, 46 * s, P['ink'], lh=1.4, max_lines=4)
+    ch = f2.y + 120 * s + (190 * s if c.get('cta') else 0)
+    card_y = card_y + max(0, (H - 160 * s - card_y - ch) / 2)
+    els.append(RR(W / 2, card_y + ch / 2 + 20 * s, W - 2 * m - 40 * s, ch, -4, P['accent'], radius=round(40 * s), opacity=0.35))
+    els.append(R(m, card_y, W - 2 * m, ch, P['surface'], radius=round(40 * s), shadowColor='#000000', shadowBlur=round(40 * s), shadowY=round(14 * s), shadowOpacity=0.12))
+    for e in f2.els: e['y'] = round(e['y'] + card_y + 60 * s)
+    els += f2.els
     if c.get('cta'):
-        p, h, w = pill(m, H - 300 * s, c['cta'], B, 40 * s, P['ink'], P['bg']); els += p
-        els.append(I('arrow-up', W - m - 90 * s, H - 300 * s, 90 * s, P['ink'], sw=2))
+        p, h, w = pill(m + 60 * s, card_y + ch - 160 * s, c['cta'], B, 40 * s, P['accent'], P['on']); els += p
+        els += [E(W - m - 160 * s, card_y + ch - 165 * s, 100 * s, 100 * s, P['ink']), I('arrow-right', W - m - 135 * s, card_y + ch - 140 * s, 50 * s, P['bg'], sw=2.5)]
     return els
 
 
@@ -518,12 +563,12 @@ SIZE = dict(sq=(1080, 1080), story=(1080, 1920), a4=(2480, 3508), card=(1050, 60
 # key, name, categories, keywords, size, recipe, palette, fonts, content
 T = [
  # promo (6)
- ('summer_sale', 'Summer sale', ['promo', 'social'], 'sale discount summer offer', 'sq', 'promo', 'coral', 'modern', dict(kicker='Summer sale', big='50% OFF', title='Everything must go', sub='This weekend only, in store and online.')),
+ ('summer_sale', 'Summer sale', ['promo', 'social'], 'sale discount summer offer', 'sq', 'promo', 'coral', 'modern', dict(cta='Shop now', kicker='Summer sale', big='50% OFF', title='Everything must go', sub='This weekend only, in store and online.')),
  ('flash_sale', 'Flash sale', ['promo', 'social'], 'flash sale discount hours deal', 'sq', 'bold', 'black', 'loud', dict(badge='TODAY ONLY', title='FLASH SALE\n24 HOURS', sub='Up to 70% off selected items', cta='Shop now', shape='star')),
  ('new_arrivals', 'New arrivals', ['promo', 'social', 'photo'], 'new arrivals collection fashion shop', 'sq', 'photo', 'sand', 'classic', dict(kicker='Just landed', title='The autumn collection', sub='Soft fabrics, warm colours, made to last.', cta='Explore')),
  ('bogo', 'Buy one get one', ['promo', 'social'], 'buy one get one free bogo offer deal', 'sq', 'center', 'lemon', 'loud', dict(icon='gift', kicker='Limited offer', title='BUY ONE\nGET ONE FREE', sub='On all drinks, every Tuesday.', cta='Visit us')),
  ('free_delivery', 'Free delivery', ['promo', 'story'], 'free delivery shipping order online', 'story', 'story', 'sky', 'modern', dict(badge='THIS WEEK', title='Free delivery on every order', sub='No minimum spend. Order before 9 pm for next-day delivery.', cta='Order now')),
- ('opening_offer', 'Grand opening offer', ['promo', 'poster'], 'grand opening launch store discount', 'a4', 'promo', 'violet', 'modern', dict(kicker='Grand opening', big='30% OFF', title='Our new store is open', sub='Opening week offers on everything. See you there.')),
+ ('opening_offer', 'Grand opening offer', ['promo', 'poster'], 'grand opening launch store discount', 'a4', 'promo', 'violet', 'modern', dict(cta='Visit us', kicker='Grand opening', big='30% OFF', title='Our new store is open', sub='Opening week offers on everything. See you there.')),
  # events (5)
  ('workshop', 'Workshop', ['event', 'social'], 'workshop class training learn event', 'sq', 'event', 'violet', 'modern', dict(month='MAR', day='14', kicker='Free workshop', title='Design basics for beginners', info=[('clock', '6:00 – 8:00 pm'), ('map-pin', 'Community Hall, Room 2')], cta='Register')),
  ('webinar', 'Webinar', ['event', 'social'], 'webinar online live talk zoom', 'sq', 'event', 'navy', 'modern', dict(month='APR', day='02', kicker='Live webinar', title='Grow your small business online', info=[('monitor', 'Online · 45 minutes'), ('users', 'Free for everyone')], cta='Save your seat')),
@@ -533,7 +578,7 @@ T = [
  # hiring (4)
  ('hiring_designer', 'Hiring: designer', ['hiring', 'social'], 'job hiring designer vacancy career', 'sq', 'bold', 'violet', 'modern', dict(badge='WE ARE HIRING', title='Graphic designer', sub='Full-time · Riyadh or remote', body='You love clean layouts, bold colour and working with a friendly team.', cta='Apply now')),
  ('hiring_drivers', 'Hiring: drivers', ['hiring', 'social'], 'job hiring driver delivery vacancy', 'sq', 'center', 'lemon', 'loud', dict(icon='truck', kicker='Now hiring', title='DELIVERY DRIVERS', sub='Flexible shifts, weekly pay and fuel support.', cta='Apply today')),
- ('internship', 'Internship', ['hiring', 'social'], 'internship students graduate program job', 'sq', 'list', 'sky', 'modern', dict(kicker='Summer internship', title='What you will get', items=['Real projects from day one', 'A mentor who has your back', 'A paid 10-week program'], foot='Apply by 30 April')),
+ ('internship', 'Internship', ['hiring', 'social'], 'internship students graduate program job', 'sq', 'list', 'sky', 'modern', dict(icon='graduation-cap', kicker='Summer internship', title='What you will get', items=['Real projects from day one', 'A mentor who has your back', 'A paid 10-week program'], foot='Apply by 30 April')),
  ('join_team_story', 'Join our team (story)', ['hiring', 'story'], 'job hiring team career story', 'story', 'story', 'mint', 'modern', dict(badge='CAREERS', title='Join our team', sub='We are looking for friendly people to help our customers every day.', cta='Apply now', photo=True)),
  # quotes (4)
  ('quote_motivation', 'Motivational quote', ['quote', 'social'], 'quote motivation inspiration', 'sq', 'quote', 'sand', 'classic', dict(title='Small steps every day add up to big results.', sub='Your name', body='@yourhandle')),
@@ -541,16 +586,16 @@ T = [
  ('monday_quote', 'Monday motivation', ['quote', 'social'], 'monday motivation quote week', 'sq', 'center', 'pink', 'classic', dict(icon='sun', kicker='Monday motivation', title='Start where you are. Use what you have.', sub='Have a great week, everyone.')),
  ('founder_quote', 'Founder quote', ['quote', 'social'], 'founder ceo quote leadership', 'sq', 'quote', 'navy', 'classic', dict(title='We started with one idea: make good design free for everyone.', sub='Founder name', body='Founder, Your Company')),
  # tips (5)
- ('tips_productivity', '5 productivity tips', ['tips', 'social'], 'tips productivity list advice', 'sq', 'list', 'mint', 'modern', dict(kicker='Work smarter', title='5 productivity tips', items=['Plan tomorrow tonight', 'Do the hardest task first', 'Batch your emails', 'Take short breaks', 'Say no more often'])),
- ('how_to', 'How-to steps', ['tips', 'social'], 'how to steps guide tutorial', 'sq', 'list', 'violet', 'modern', dict(kicker='Quick guide', title='How to brew better coffee', items=['Use freshly ground beans', 'Heat water to 93 °C', 'Brew for four minutes'], foot='Save this for later')),
+ ('tips_productivity', '5 productivity tips', ['tips', 'social'], 'tips productivity list advice', 'sq', 'list', 'mint', 'modern', dict(icon='zap', kicker='Work smarter', title='5 productivity tips', items=['Plan tomorrow tonight', 'Do the hardest task first', 'Batch your emails', 'Take short breaks', 'Say no more often'])),
+ ('how_to', 'How-to steps', ['tips', 'social'], 'how to steps guide tutorial', 'sq', 'list', 'violet', 'modern', dict(icon='coffee', kicker='Quick guide', title='How to brew better coffee', items=['Use freshly ground beans', 'Heat water to 93 °C', 'Brew for four minutes'], foot='Save this for later')),
  ('did_you_know', 'Did you know?', ['tips', 'social'], 'did you know fact trivia', 'sq', 'center', 'sky', 'modern', dict(icon='lightbulb', kicker='Did you know?', title='Honey never spoils.', sub='Archaeologists have found pots of honey over 3,000 years old that are still good to eat.')),
- ('checklist', 'Checklist', ['tips', 'social'], 'checklist todo list tasks', 'sq', 'list', 'lemon', 'modern', dict(kicker='Before you post', title='Your social checklist', items=['Clear headline', 'One call to action', 'Brand colours', 'Proofread twice'], checks=True)),
- ('faq', 'FAQ', ['tips', 'story'], 'faq questions answers help', 'story', 'list', 'coral', 'modern', dict(kicker='You asked', title='Frequently asked questions', items=['Do you deliver? Yes, citywide.', 'Opening hours? 9 am – 11 pm daily.', 'Can I return items? Within 14 days.', 'Gift cards? Available in store.'], foot='More questions? Send us a message')),
+ ('checklist', 'Checklist', ['tips', 'social'], 'checklist todo list tasks', 'sq', 'list', 'lemon', 'modern', dict(icon='clipboard-list', kicker='Before you post', title='Your social checklist', items=['Clear headline', 'One call to action', 'Brand colours', 'Proofread twice'], checks=True)),
+ ('faq', 'FAQ', ['tips', 'story'], 'faq questions answers help', 'story', 'list', 'coral', 'modern', dict(icon='message-circle', kicker='You asked', title='Frequently asked questions', items=['Do you deliver? Yes, citywide.', 'Opening hours? 9 am – 11 pm daily.', 'Can I return items? Within 14 days.', 'Gift cards? Available in store.'], foot='More questions? Send us a message')),
  # food (5)
  ('menu_special', 'Menu special', ['food', 'social', 'photo'], 'menu special dish restaurant food', 'sq', 'photo', 'coral', 'classic', dict(kicker="Chef's special", title='Grilled salmon bowl', sub='Fresh salmon, rice, avocado and sesame dressing.', price='45 SAR')),
  ('coffee_promo', 'Coffee promo', ['food', 'social'], 'coffee cafe drink promo latte', 'sq', 'center', 'sand', 'classic', dict(icon='coffee', kicker='Morning deal', title='Any coffee + croissant', sub='Only 18 SAR before 11 am.', cta='See you soon')),
  ('new_dish', 'New on the menu', ['food', 'story', 'photo'], 'new dish menu restaurant food story', 'story', 'story', 'forest', 'classic', dict(badge='NEW', title='Something new on the menu', sub='Slow-cooked lamb with saffron rice. Try it this week.', cta='Book a table', photo=True)),
- ('breakfast', 'Breakfast deal', ['food', 'social'], 'breakfast deal morning restaurant', 'sq', 'promo', 'lemon', 'modern', dict(kicker='Breakfast deal', big='2 FOR 1', title='Weekend breakfast', sub='Saturday and Sunday, 8 am to noon.')),
+ ('breakfast', 'Breakfast deal', ['food', 'social'], 'breakfast deal morning restaurant', 'sq', 'promo', 'lemon', 'modern', dict(cta='Book a table', kicker='Breakfast deal', big='2 FOR 1', title='Weekend breakfast', sub='Saturday and Sunday, 8 am to noon.')),
  ('bakery', 'Bakery', ['food', 'social', 'photo'], 'bakery bread cake pastry fresh', 'sq', 'photo', 'pink', 'classic', dict(kicker='Fresh every morning', title='Baked with love', sub='Sourdough, pastries and cakes made in house.', cta='Order ahead', mask='arch')),
  # real estate (4)
  ('just_listed', 'Just listed', ['realestate', 'social', 'photo'], 'real estate just listed home apartment property', 'sq', 'photo', 'navy', 'modern', dict(kicker='Just listed', title='3-bedroom family home', sub='Garden, parking and close to schools.', price='Call for price')),
@@ -568,15 +613,15 @@ T = [
  ('thank_you', 'Thank you post', ['business', 'social'], 'thank you customers followers milestone', 'sq', 'center', 'violet', 'classic', dict(icon='heart', kicker='10,000 followers', title='Thank you for being here', sub='We could not do it without you.')),
  # seasonal (6)
  ('ramadan_en', 'Ramadan Kareem', ['seasonal', 'social'], 'ramadan kareem islamic month greeting', 'sq', 'center', 'night', 'classic', dict(icon='moon-star', kicker='Ramadan Kareem', title='Wishing you a blessed month', sub='From all of us at Your Company.')),
- ('ramadan_hours', 'Ramadan hours', ['seasonal', 'story'], 'ramadan opening hours timings iftar suhoor', 'story', 'list', 'night', 'modern', dict(kicker='Ramadan', title='Our opening hours', items=['Sat – Thu: 8 pm – 2 am', 'Friday: 9 pm – 3 am', 'Iftar boxes: order by 4 pm'], foot='Ramadan Kareem from our team')),
+ ('ramadan_hours', 'Ramadan hours', ['seasonal', 'story'], 'ramadan opening hours timings iftar suhoor', 'story', 'list', 'night', 'modern', dict(icon='moon-star', kicker='Ramadan', title='Our opening hours', items=['Sat – Thu: 8 pm – 2 am', 'Friday: 9 pm – 3 am', 'Iftar boxes: order by 4 pm'], foot='Ramadan Kareem from our team')),
  ('eid_mubarak', 'Eid Mubarak', ['seasonal', 'social'], 'eid mubarak greeting celebration', 'sq', 'center', 'forest', 'classic', dict(icon='sparkles', kicker='Eid Mubarak', title='Joy, peace and togetherness', sub='Wishing you and your family a happy Eid.')),
  ('national_day', 'Saudi National Day', ['seasonal', 'social'], 'saudi national day september celebration ksa', 'sq', 'center', 'green', 'modern', dict(icon='star', kicker='23 September', title='Happy Saudi National Day', sub='Proud of our home. Celebrating together.')),
- ('white_friday', 'White Friday sale', ['seasonal', 'promo', 'social'], 'white friday black friday sale november', 'sq', 'promo', 'black', 'loud', dict(kicker='White Friday', big='UP TO 70%', title='Our biggest sale of the year', sub='Starts Thursday at midnight. While stocks last.')),
+ ('white_friday', 'White Friday sale', ['seasonal', 'promo', 'social'], 'white friday black friday sale november', 'sq', 'promo', 'black', 'loud', dict(cta='Shop the sale', kicker='White Friday', big='UP TO 70%', title='Our biggest sale of the year', sub='Starts Thursday at midnight. While stocks last.')),
  ('new_year', 'Happy New Year', ['seasonal', 'social'], 'new year celebration greeting', 'sq', 'center', 'night', 'loud', dict(icon='party-popper', kicker='Hello, 2027', title='HAPPY NEW YEAR', sub='Thank you for an amazing year.')),
  # product / announcements (3)
  ('product_launch', 'Product launch', ['promo', 'social', 'photo'], 'product launch new release', 'sq', 'photo', 'sky', 'modern', dict(kicker='Introducing', title='The new Shoof bottle', sub='Keeps drinks cold for 24 hours.', price='79 SAR', mask='blob')),
  ('coming_soon', 'Coming soon', ['promo', 'story'], 'coming soon launch teaser countdown', 'story', 'story', 'black', 'loud', dict(badge='STAY TUNED', title='SOMETHING NEW IS COMING', sub='Turn on notifications so you don’t miss it.', cta='Follow us')),
- ('giveaway', 'Giveaway', ['promo', 'social'], 'giveaway contest win prize', 'sq', 'list', 'pink', 'modern', dict(kicker='Giveaway', title='Win a gift box worth 500 SAR', items=['Follow our account', 'Like this post', 'Tag two friends'], foot='Winner announced Friday')),
+ ('giveaway', 'Giveaway', ['promo', 'social'], 'giveaway contest win prize', 'sq', 'list', 'pink', 'modern', dict(icon='gift', kicker='Giveaway', title='Win a gift box worth 500 SAR', items=['Follow our account', 'Like this post', 'Tag two friends'], foot='Winner announced Friday')),
  # editorial posters (6)
  ('poster_editorial', 'Editorial fashion poster', ['poster', 'photo'], 'editorial fashion magazine model portrait diagonal', 'a4', 'custom:editorial', 'violet', 'modern', dict(bg='#ffffff')),
  ('poster_passion', 'Diagonal quote poster', ['poster', 'quote', 'story'], 'quote passion motivation diagonal stripes', 'story', 'custom:passion', 'coral', 'modern', dict(bg='#ffc477')),
@@ -594,13 +639,21 @@ T = [
 CAT_ORDER = ['promo', 'event', 'hiring', 'quote', 'tips', 'food', 'realestate', 'business', 'seasonal']
 
 
+def with_bg(els, W, H, bg):
+    """Every page starts with a background block (role 'bg') so the background can be clicked, recoloured, moved and resized."""
+    e = els[0] if els else None
+    if e and e['type'] == 'rect' and e['x'] <= 0 and e['y'] <= 0 and e['x'] + e['width'] >= W and e['y'] + e['height'] >= H and not e.get('radius') and not e.get('opacity', 1) < 1:
+        e['role'] = 'bg'; return els
+    return [R(0, 0, W, H, bg, role='bg')] + els
+
+
 def build():
     out, keys = [], set()
     for key, name, cats, kw, size, recipe, pal, fonts, content in T:
         assert key not in keys, key; keys.add(key)
         W, H = SIZE[size]; P = PAL[pal]
         if recipe.startswith('deck:'):
-            out.append(dict(key=key, name=name, cats=cats, kw=kw, w=W, h=H, pages=[dict(bg=bg, els=els) for bg, els in DECKS[recipe[5:]]()]))
+            out.append(dict(key=key, name=name, cats=cats, kw=kw, w=W, h=H, pages=[dict(bg=bg, els=with_bg(els, W, H, bg)) for bg, els in DECKS[recipe[5:]]()]))
             continue
         if recipe.startswith('custom:'):
             els = CUSTOM[recipe[7:]](W, H, P, FONTS[fonts], content)
@@ -608,7 +661,8 @@ def build():
             els = [e for e in RECIPES[recipe](W, H, P, FONTS[fonts], content)]
             d = None if content.get('plain') else deco(recipe, W, H, P)
             if d: els.insert(0, d)
-        out.append(dict(key=key, name=name, cats=cats, kw=kw, w=W, h=H, bg=content.get('bg', P['bg']), els=els))
+        bg = content.get('bg', P['bg'])
+        out.append(dict(key=key, name=name, cats=cats, kw=kw, w=W, h=H, bg=bg, els=with_bg(els, W, H, bg)))
     return out
 
 

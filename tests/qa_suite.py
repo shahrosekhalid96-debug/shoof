@@ -220,7 +220,7 @@ def t_templates(B):
     n = c.page.locator('#drawer .tpl').count()
     eq(n, c.ev('TEMPLATES.length'), 'template count')
     for i in range(n):
-        exp = c.ev(f'(()=>{{const d=liftBackdrop(sanitizeDoc(TEMPLATES[{i}].make()));return [d.elements.length,d.width,d.height]}})()')
+        exp = c.ev(f'(()=>{{const d=withBgBlocks(sanitizeDoc(TEMPLATES[{i}].make()));return [d.elements.length,d.width,d.height]}})()')
         c.page.click(f'#drawer .tpl[data-tpl="{i}"]')
         c.page.wait_for_timeout(30)
         got = c.ev('[doc.elements.length,doc.width,doc.height,mainLayer.children.length]')
@@ -558,7 +558,7 @@ def t_roundtrip(B):
     ok(name.endswith('.json'), f'filename {name}')
     eq(json.loads(data), json.loads(before), 'saved file content')
     c.page.click('#newBtn'); c.page.click('#doNew')
-    eq(c.ev('doc.elements.length'), 0, 'new design not blank')
+    eq(c.ev("doc.elements.map(e=>e.role||e.type)"), ['bg'], 'new design = just an editable background block')
     c.page.set_input_files('#openFile', path); c.page.wait_for_timeout(300)
     eq(json.loads(c.ev('JSON.stringify(doc)')), json.loads(before), 'reopened doc')
     eq(c.ev('mainLayer.children.length'), json.loads(before)['pages'][0]['elements'].__len__(), 'nodes after open')
@@ -1419,7 +1419,7 @@ def t_new(B):
     ok(c.ev("$('#modalBox').innerText").find(c.ev("t('newConfirm')")) >= 0, 'unsaved-work note')
     eq(c.ev("$('#modal [data-newsize][aria-pressed=true]').dataset.newsize"), 'ig', 'current size pre-selected')
     c.page.click('#modal [data-newsize="story"]'); c.page.click('#doNew')
-    eq(c.ev('[doc.width,doc.height,doc.elements.length]'), [1080, 1920, 0], 'new story design')
+    eq(c.ev("[doc.width,doc.height,doc.elements.filter(e=>e.role!=='bg').length,doc.elements.filter(e=>e.role==='bg').length]"), [1080, 1920, 0, 1], 'new story design')
     eq(c.ev('$("#sizeSel").value'), 'story', 'size select synced')
     c.page.keyboard.press('Control+z'); eq(c.ev('[doc.width,doc.height]'), [1080, 1080], 'undo new design')
     ok(c.ev('doc.elements.length') > 0, 'undo did not restore content')
@@ -1584,7 +1584,7 @@ def t_home(B):
     c.page.click('#home [data-recent]'); ok(not c.ev('homeOpen()'), 'recent card returns to editor')
     # size tile -> blank design of that size, templates filtered
     c.page.click('#homeBtn'); c.page.click('#home [data-tile="story"]')
-    eq(c.ev('[doc.width,doc.height,doc.elements.length,homeOpen(),tplCat,curTab,$("#sizeSel").value]'), [1080, 1920, 0, False, 'story', 'templates', 'story'], 'story tile')
+    eq(c.ev('[doc.width,doc.height,doc.elements.filter(e=>e.role!=="bg").length,homeOpen(),tplCat,curTab,$("#sizeSel").value]'), [1080, 1920, 0, False, 'story', 'templates', 'story'], 'story tile')
     c.page.keyboard.press('Control+z'); eq(c.ev('[doc.width,doc.height]'), [2480, 3508], 'undo tile')
     for tile, wh in [('flyer', [1748, 2480]), ('logo', [1000, 1000]), ('card', [1050, 600]), ('pres', [1920, 1080])]:
         c.page.click('#homeBtn'); c.page.click(f'#home [data-tile="{tile}"]'); eq(c.ev('[doc.width,doc.height]'), wh, f'{tile} tile')
@@ -2032,10 +2032,10 @@ def t_pages(B):
     depth = c.ev('undoStack.length')
     c.page.click('#pagesBar [data-pg="add"]'); eq(c.ev('[doc.pages.length,doc.page]'), [2, 1], 'add page'); eq(c.ev('undoStack.length'), depth + 1, 'add = one undo step')
     c.ev("()=>{addText('h')}"); tid = c.ev('selId')
-    c.page.click('#pagesBar [data-pg="dup"]'); eq(c.ev('[doc.pages.length,doc.page,doc.elements.length]'), [3, 2, 1], 'duplicate page')
-    ok(c.ev('doc.elements[0].id') != tid, 'duplicated page gets new ids')
+    c.page.click('#pagesBar [data-pg="dup"]'); eq(c.ev("[doc.pages.length,doc.page,doc.elements.length,doc.elements[0].role]"), [3, 2, 2, 'bg'], 'duplicate page (new pages start with a background block)')
+    ok(tid not in c.ev('doc.elements.map(e=>e.id)'), 'duplicated page gets new ids')
     c.page.click('#pagesBar [data-pg="left"]'); eq(c.ev('doc.page'), 1, 'move page left')
-    c.page.click('#pagesBar .pg >> nth=0'); eq(c.ev('[doc.page,doc.elements.length]'), [0, 0], 'switch to page 1')
+    c.page.click('#pagesBar .pg >> nth=0'); eq(c.ev('doc.page'), 0, 'switch to page 1')
     c.page.keyboard.press('PageDown'); eq(c.ev('doc.page'), 1, 'PageDown')
     c.page.click('#pagesBar [data-pg="del"]'); eq(c.ev('doc.pages.length'), 2, 'delete page')
     c.page.keyboard.press('Control+z'); eq(c.ev('doc.pages.length'), 3, 'undo restores page')
@@ -2075,6 +2075,23 @@ def t_pages(B):
     bad = c.ev("(()=>{const r=[];const P=(n)=>({app:'shoof',width:100,height:100,pages:Array.from({length:n},()=>({background:{color:'#fff'},elements:[]}))});try{sanitizeDoc(P(41));r.push('41 ok');}catch(e){r.push(e.message);}try{sanitizeDoc(P(0));r.push('0 ok');}catch(e){r.push(e.message);}try{sanitizeDoc({app:'shoof',width:100,height:100,pages:[{elements:'x'}]});r.push('bad ok');}catch(e){r.push(e.message);}return r;})()")
     eq(bad, ['fileTooBig', 'notRasm', 'notRasm'], 'page limits validated')
     ok(not c.errors, c.errors); ok(not EXTERNAL, EXTERNAL[:3]); c.close()
+
+
+@test('everything_editable_backgrounds')
+def t_editable(B):
+    c = Ctx(B)
+    bad = c.ev("TEMPLATES.map((t,i)=>{const d=withBgBlocks(sanitizeDoc(t.make()));return d.pages.every(p=>p.background.image||p.elements.filter(e=>e.role==='bg').length===1&&p.elements[0].role==='bg')?null:t.key;}).filter(Boolean)")
+    eq(bad, [], 'every page of every template starts with one background block')
+    for key in ['deck_swiss', 'deck_pastel', 'deck_warm']:
+        c.ev(f"useTemplate(TEMPLATES.findIndex(t=>t.key==='{key}'))")
+        for pg in range(c.ev('doc.pages.length')):
+            c.ev(f'gotoPage({pg})'); c.page.keyboard.press('Escape'); c.page.wait_for_timeout(120)
+            pt = c.ev("(()=>{for(let y=5;y<stage.height();y+=13)for(let x=5;x<stage.width();x+=13){const h=stage.getIntersection({x,y});const g=h&&h.findAncestor('.item');if(g&&byId(g.id()).role==='bg')return [x,y];}return null;})()")
+            ok(pt, f'{key} slide {pg + 1}: some background is visible'); sb = c.page.locator('#stage').bounding_box(); c.page.mouse.click(sb['x'] + pt[0], sb['y'] + pt[1])
+            eq(c.ev("selId&&byId(selId).role"), 'bg', f'{key} slide {pg + 1}: clicking the background selects it')
+        c.tab('background'); c.page.click('#drawer [data-bg="#22c55e"]'); eq(c.ev('bgColorNow()'), '#22c55e', f'{key}: recolour slide background')
+    c.page.click('#pagesBar [data-pg="add"]'); eq(c.ev("doc.elements.map(e=>e.role)"), ['bg'], 'new page has a background block')
+    ok(not c.errors, c.errors); c.close()
 
 
 # ================================================================ runner
