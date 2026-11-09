@@ -1999,7 +1999,13 @@ def t_library(B):
     ok(any(x['type'] == 'placeholder' for x in added), 'phone has a photo slot')
     ph = [x for x in added if x['type'] == 'placeholder'][0]
     sb = c.page.locator('#stage').bounding_box(); f = sb['width'] / 1080
-    with c.page.expect_file_chooser() as fc: c.page.mouse.click(sb['x'] + (ph['x'] + ph['width'] / 2) * f, sb['y'] + (ph['y'] + ph['height'] / 2) * f)
+    c.page.wait_for_timeout(200)  # let Konva redraw its hit canvas after the add
+    for attempt in range(2):
+        try:
+            with c.page.expect_file_chooser(timeout=4000) as fc: c.page.mouse.click(sb['x'] + (ph['x'] + ph['width'] / 2) * f, sb['y'] + (ph['y'] + ph['height'] / 2) * f)
+            break
+        except Exception:
+            ok(attempt == 0, 'clicking the phone screen did not open the photo picker'); c.page.wait_for_timeout(300)
     fc.value.set_files(IMG); c.page.wait_for_function("doc.elements.some(e=>e.type==='image')")
     for i in range(1, c.ev('MOCKUPS.length')): c.page.click(f'#elBody [data-mockup="{i}"]')
     for i in range(c.ev('INFOS.length')): c.page.click(f'#elBody [data-info="{i}"]')
