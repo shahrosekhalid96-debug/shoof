@@ -83,7 +83,7 @@ def route(r):
 
 
 class Ctx:
-    def __init__(self, browser, w=1440, h=900, lang=None, ctx=None, init=None, wait=True, home=False):
+    def __init__(self, browser, w=1440, h=900, lang=None, ctx=None, init=None, wait=True, home=False, tips=False):
         self.keep_home = home
         self.ctx = ctx or browser.new_context(viewport={'width': w, 'height': h}, accept_downloads=True)
         self.ctx.route('**/*', route)
@@ -94,6 +94,8 @@ class Ctx:
         p.on('console', self._console)
         if lang:
             p.add_init_script(f"try{{if(!sessionStorage.getItem('qa_l')){{localStorage.setItem('shoof.lang','{lang}');sessionStorage.setItem('qa_l','1')}}}}catch(e){{}}")
+        if not tips:  # first-visit tips have their own test
+            p.add_init_script("try{localStorage.setItem('shoof.tips','1')}catch(e){}")
         if init:
             p.add_init_script(init)
         if wait:
@@ -164,7 +166,7 @@ ALLOWED_LATIN = {'rasm', 'shoof', 'sh', 'claude', 'png', 'jpg', 'jpeg', 'pdf', '
 
 def en_only_strip(c, s):
     """Remove English-only UI strings (keys with no Arabic entry; Arabic falls back to English by design)."""
-    parts = getattr(c, '_en_only', None) or c.ev("Object.keys(I18N.en).filter(k=>!(k in I18N.ar)).flatMap(k=>I18N.en[k].split(/\\{[a-z]+\\}/)).concat(typeof ICON_NAMES!=='undefined'?ICON_NAMES.map(n=>n.replace(/-/g,' ')):[]).map(x=>x.trim()).filter(x=>x.length>1).sort((a,b)=>b.length-a.length)")
+    parts = getattr(c, '_en_only', None) or c.ev("Object.keys(I18N.en).filter(k=>!(k in I18N.ar)).flatMap(k=>I18N.en[k].split(/\\{[a-z]+\\}/)).concat(typeof ICON_NAMES!=='undefined'?ICON_NAMES.map(n=>n.replace(/-/g,' ')):[]).map(x=>x.trim()).filter(x=>x.length>2).sort((a,b)=>b.length-a.length)")
     c._en_only = parts
     for x in parts:
         s = s.replace(x, ' ')
@@ -533,12 +535,13 @@ def t_sizes(B):
 def t_bg(B):
     c = Ctx(B); c.blank(); c.tab('background')
     c.page.click('#drawer [data-bg="#0ea5e9"]')
-    eq(c.ev('doc.background.color'), '#0ea5e9', 'swatch')
-    eq(c.ev('bgRect.fill()'), '#0ea5e9', 'bgRect fill')
-    c.set_color('#bgPick', '#abcdef'); eq(c.ev('doc.background.color'), '#abcdef', 'picker')
+    eq(c.ev('bgColorNow()'), '#0ea5e9', 'swatch')
+    eq(c.ev('nodeOf(bgBlock().id).children[0].fill()'), '#0ea5e9', 'background block fill')
+    eq(c.ev("doc.elements[0].role"), 'bg', 'background block at the bottom')
+    c.set_color('#bgPick', '#abcdef'); eq(c.ev('bgColorNow()'), '#abcdef', 'picker')
     c.page.set_input_files('#bgFile', IMG2)
     c.page.wait_for_function('doc.background.image', timeout=5000); c.page.wait_for_timeout(200)
-    ok(c.ev('!!bgImgNode'), 'bg image node')
+    ok(c.ev('!!bgImgNode') and c.ev('!bgBlock()'), 'bg image node, full-page colour block removed so the image shows')
     c.page.click('#bgClear'); ok(c.ev('doc.background.image') is None, 'remove bg image')
     ok(c.ev('!bgImgNode'), 'bg node removed')
     ok(not c.errors, c.errors); c.close()
@@ -1183,7 +1186,7 @@ def t_claude_tools(B):
         r = c.ev('window.__toolResults')
         eq([x['ok'] for x in r], [True, False, True, False, True, False, False, False], f'{lang}: tool validation results {r}')
         d = c.ev('doc')
-        eq(d['background']['color'], '#123456', 'background')
+        eq(c.ev('bgColorNow()'), '#123456', 'background'); d['elements'] = [e for e in d['elements'] if e.get('role') != 'bg']
         new = [e for e in d['elements'] if e.get('text') == 'Hello'][0]
         ok(re.fullmatch(r'#[0-9a-f]{3,8}', new['fill'], re.I), f'unsafe fill accepted: {new["fill"]}')
         r0 = d['elements'][0]; eq((r0['fill'], r0['type']), ('#ff0000', 'rect'), 'update applied without type change'); ok('src' not in r0, 'src injected')
@@ -1222,7 +1225,7 @@ def t_claude_err(B):
     c.page.click('#drawer [data-qa="restyle"]'); c.page.wait_for_timeout(150)
     ok(c.page.locator('#cStop').is_visible(), 'no Stop button while running')
     c.page.click('#cStop'); c.page.wait_for_function('!CS.busy')
-    eq(c.ev('doc.background.color'), '#00ff00', 'stop discarded partial work'); eq(c.ev('undoStack.length'), depth + 1, 'stop: not one undo step')
+    eq(c.ev('bgColorNow()'), '#00ff00', 'stop discarded partial work'); eq(c.ev('undoStack.length'), depth + 1, 'stop: not one undo step')
     # sampling disabled hides the feature
     c.ev("()=>{window.__mockImpl=async()=>{throw {code:'sampling_disabled',message:'off'};};}")
     c.page.click('#drawer [data-qa="fix"]'); c.page.wait_for_timeout(300)
@@ -1236,7 +1239,7 @@ def t_claude_json(B):
     c.ev(r"""()=>{window.__mockImpl=async(input,opts)=>{if(opts.tools)throw new Error('tools passed although unsupported');return {text:'```json\n'+JSON.stringify({reply:'Added a title',ops:[{op:'background',color:'#fafafa'},{op:'add',element:{type:'text',x:80,y:80,width:600,text:'عنوان',fontFamily:'Cairo',fontSize:80,dir:'rtl',align:'right'}},{op:'add',element:{type:'image',x:0,y:0,width:5,height:5,src:'data:image/png;base64,AAAA'}}]})+'\n```'};};}""")
     depth = c.ev('undoStack.length')
     c.tab('claude'); c.page.fill('#cPrompt', 'A title please'); c.page.click('#cSend'); c.page.wait_for_function('!CS.busy && window.__calls===1')
-    eq(c.ev('doc.elements.map(e=>e.type)'), ['text'], 'ops not applied / image accepted')
+    eq(c.ev("doc.elements.filter(e=>e.role!=='bg').map(e=>e.type)"), ['text'], 'ops not applied / image accepted')
     eq(c.ev('undoStack.length'), depth + 1, 'JSON-mode action not one undo step')
     eq(c.page.inner_text('#cReply').strip(), 'Added a title', 'reply')
     ok('A title please' in c.ev('window.__prompts[0]'), 'user request missing from prompt')
@@ -1644,15 +1647,15 @@ def t_grad(B):
     eq(c.ev("doc.elements.map(e=>{const g=nodeOf(e.id);const n=e.type==='text'?g.findOne('Text'):g.children[0];return n.fillPriority();})"), ['linear-gradient'] * 9, 'all shapes + text')
     # background gradient via the Background tab; export pixels follow the gradient
     c.blank(); c.tab('background'); c.page.click('#bGrad [data-gp="6"]'); c.set_num('#bGA', 0)
-    eq(c.ev('doc.background.gradient.angle'), 0, 'background angle')
+    eq(c.ev('bgGradNow().angle'), 0, 'background angle')
     left, right, mid, _ = c.page.evaluate(GRAD_PIXELS)
     ok(abs(left[0] - 0x6c) < 12 and abs(left[2] - 0xf5) < 12, f'left edge ≈ #6c4cf5, got {left}')
     ok(abs(right[0] - 0xff) < 12 and abs(right[2] - 0x88) < 12, f'right edge ≈ #ff6a88, got {right}')
     _export_check(c, 'png', 1080, 1080); _export_check(c, 'pdf', 1080, 1080)
     c.page.click('#bGrad [data-gt="radial"]'); left, right, mid, corner = c.page.evaluate(GRAD_PIXELS)
     ok(abs(mid[0] - 0x6c) < 14 and corner[0] > 0xf0, f'radial centre/corner {mid} {corner}')
-    c.page.click('#drawer [data-bg="#ffffff"]'); ok('gradient' not in c.ev('doc.background'), 'swatch clears gradient')
-    c.page.keyboard.press('Control+z'); eq(c.ev('doc.background.gradient.type'), 'radial', 'undo restores gradient')
+    c.page.click('#drawer [data-bg="#ffffff"]'); ok(c.ev('bgGradNow()') is None, 'swatch clears gradient')
+    c.page.keyboard.press('Control+z'); eq(c.ev('bgGradNow().type'), 'radial', 'undo restores gradient')
     # template thumbnails + save/open keep gradients
     before = c.ev('JSON.stringify(doc)')
     name, data, path = c.download(lambda: c.page.click('#saveBtn'))
@@ -1688,9 +1691,9 @@ def t_grad_sec(B):
     r = c.ev("""()=>{const ctx={calls:0,changes:0,deletes:0};const a=toolAdd({type:'rect',x:0,y:0,width:100,height:100,fillGradient:{type:'radial',stops:[{offset:0,color:'#f00'},{offset:1,color:'#00f'}]}},ctx);
       const id=a.id;const out=[a.ok,byId(id).fillGradient.type];
       out.push(toolUpdate({id,patch:{fillGradient:null}},ctx).ok,'fillGradient' in byId(id));
-      out.push(toolBg({gradient:{type:'linear',angle:90,stops:[{offset:0,color:'#fff'},{offset:1,color:'#000'}]}},ctx).ok,doc.background.gradient.angle);
+      out.push(toolBg({gradient:{type:'linear',angle:90,stops:[{offset:0,color:'#fff'},{offset:1,color:'#000'}]}},ctx).ok,bgGradNow().angle);
       out.push(toolBg({gradient:{type:'linear',stops:[{offset:0,color:'<x>'}]}},ctx).ok);
-      out.push(toolBg({color:'#123456'},ctx).ok,'gradient' in doc.background);
+      out.push(toolBg({color:'#123456'},ctx).ok,!!bgGradNow());
       out.push(!!PROP_SCHEMA.fillGradient && designSummary().elements[0].fillGradient===undefined);return out;}""")
     eq(r, [True, 'radial', True, False, True, 90, False, True, False, True], 'Claude gradient tools')
     ok(not c.errors, c.errors); c.close()
@@ -1883,13 +1886,19 @@ def t_ux6(B):
     c = Ctx(B)
     # template backdrop lifted: background swatches visibly change the page
     c.ev("useTemplate(TEMPLATES.findIndex(t=>t.key==='hiring'))")
-    eq(c.ev("[doc.background.color, doc.elements[0].type==='rect'&&doc.elements[0].width>=doc.width]"), ['#0f2742', False], 'full-page rect lifted into the page background')
+    eq(c.ev("[bgColorNow(), doc.elements[0].role, doc.elements.filter(e=>e.role==='bg').length]"), ['#0f2742', 'bg', 1], 'full-page rect becomes the background block')
     c.tab('background'); c.page.click('#drawer [data-bg="#ffffff"]')
     corner, = c.page.evaluate(PIX, [[5, 1075]]); ok(min(corner) > 240, f'background swatch visible {corner}')
-    ok('fills the whole page' in c.page.inner_text('#drawer'), 'background hint')
-    n = c.ev('doc.elements.length'); c.page.click('#bgBlock'); e = c.sel_el()
-    ok(c.ev('doc.elements.length') == n + 1 and e['type'] == 'rect' and e['width'] < 1080 and not e['locked'], f'colour block is a movable rect {e}')
-    ok(c.page.locator('#pW').is_visible() or c.page.locator('#pW').count() == 1, 'block can be resized')
+    ok('block on your page' in c.page.inner_text('#drawer'), 'background hint')
+    eq(c.ev("[sel().length, byId(selId)&&byId(selId).role]"), [1, 'bg'], 'picking a colour selects the background block')
+    c.set_num('#pW', 500); c.set_num('#pX', 100); e = c.ev('bgBlock()'); eq((e['width'], e['x']), (500, 100), 'background block resized and moved')
+    c.page.keyboard.press('Escape'); c.page.keyboard.press('Control+a'); ok(c.ev("!sel().includes(bgBlock().id)"), 'select-all skips the background')
+    c.page.keyboard.press('Escape'); sb = c.page.locator('#stage').bounding_box(); bx, by = sb['x'] + (150 / 1080) * sb['width'], sb['y'] + (1000 / 1080) * sb['height']
+    c.page.mouse.click(bx, by); eq(c.ev("byId(selId)&&byId(selId).role"), 'bg', 'click selects the background block')
+    c.page.keyboard.press('Control+d'); eq(c.ev("doc.elements.filter(e=>e.role==='bg').length"), 1, 'duplicate is a normal block, not a second background')
+    c.page.keyboard.press('Control+z'); c.page.keyboard.press('Escape')
+    x0 = c.ev('bgBlock().x'); c.page.mouse.move(bx, by); c.page.mouse.down(); c.page.mouse.move(bx + 80, by - 40, steps=6); c.page.mouse.up()
+    eq(c.ev('bgBlock().x'), x0, 'dragging an unselected background draws a selection box instead of moving it')
     # Elements: no placeholder among shapes; labelled frames; Add image
     c.tab('shapes')
     eq(c.page.locator('#elBody .shape-grid [data-shape="placeholder"]').count(), 0, 'placeholder removed from Shapes')
@@ -1908,6 +1917,57 @@ def t_ux6(B):
     z = c.ev('scale'); bb = c.page.locator('#stageArea').bounding_box(); c.page.mouse.move(bb['x'] + 200, bb['y'] + 200)
     c.page.mouse.wheel(0, 200); eq(c.ev('scale'), z, 'plain wheel must not zoom')
     c.page.keyboard.down('Control'); c.page.mouse.wheel(0, -300); c.page.keyboard.up('Control'); ok(c.ev('scale') > z, 'ctrl+wheel zoom in')
+    ok(not c.errors, c.errors); c.close()
+
+
+@test('ux_drag_drop_context_menu_keyboard_tips')
+def t_ux7(B):
+    c = Ctx(B); c.blank(); c.tab('shapes')
+    ok(c.ev("$('#elBody [data-icon=\"heart\"]').draggable"), 'panel items are draggable')
+    depth = c.ev('undoStack.length')
+    c.ev("""()=>{const sa=$('#stageArea'),sr=$('#stage').getBoundingClientRect();const dt=new DataTransfer();
+      $('#elBody [data-icon="heart"]').dispatchEvent(new DragEvent('dragstart',{bubbles:true,dataTransfer:dt}));
+      sa.dispatchEvent(new DragEvent('drop',{bubbles:true,cancelable:true,dataTransfer:dt,clientX:sr.left+sr.width*0.25,clientY:sr.top+sr.height*0.75}));}""")
+    e = c.sel_el(); eq(e['type'], 'icon', 'dropped icon added')
+    ok(abs(e['x'] + e['width'] / 2 - 270) < 4 and abs(e['y'] + e['height'] / 2 - 810) < 4, f'placed where dropped {e}')
+    eq(c.ev('undoStack.length'), depth + 1, 'drop = one undo step')
+    c.page.keyboard.press('Control+z'); eq(c.ev('doc.elements.length'), 0, 'undo removes the dropped item')
+    # right-click menu
+    c.ev("()=>{addShape('rect');addText('h');}")
+    sb = c.page.locator('#stage').bounding_box()
+    c.page.mouse.click(sb['x'] + sb['width'] / 2, sb['y'] + sb['height'] / 2, button='right')
+    ok(c.page.locator('#ctxMenu').is_visible(), 'context menu opens')
+    eq(c.ev("document.activeElement.getAttribute('role')"), 'menuitem', 'focus moves into the menu')
+    items = c.ev("[...document.querySelectorAll('#ctxMenu [data-ctx]')].map(b=>b.dataset.ctx)")
+    ok({'dup', 'copy', 'front', 'back', 'lock', 'del'} <= set(items), f'menu items {items}')
+    n = c.ev('doc.elements.length'); c.page.click('#ctxMenu [data-ctx="dup"]'); eq(c.ev('doc.elements.length'), n + 1, 'menu duplicate')
+    ok(not c.page.locator('#ctxMenu').is_visible(), 'menu closes after an action')
+    c.page.mouse.click(sb['x'] + sb['width'] / 2, sb['y'] + sb['height'] / 2, button='right'); c.page.keyboard.press('Escape')
+    ok(not c.page.locator('#ctxMenu').is_visible(), 'Escape closes the menu')
+    c.page.keyboard.press('Escape'); c.page.mouse.click(sb['x'] + 5, sb['y'] + 5, button='right')
+    eq(c.ev("[...document.querySelectorAll('#ctxMenu [data-ctx]')].map(b=>b.dataset.ctx)"), ['all', 'paste'] if c.ev('!!clip') else ['all'], 'empty-canvas menu'); c.page.keyboard.press('Escape')
+    # keyboard: Tab cycles items on the focused canvas, announces them, then lets focus leave
+    c.ev("()=>{select(null);$('#stageArea').focus()}")
+    names = []
+    for _ in range(c.ev('doc.elements.length')):
+        c.page.keyboard.press('Tab'); names.append(c.ev('selId'))
+        eq(c.ev("document.activeElement.id"), 'stageArea', 'focus stays on canvas while cycling')
+    eq(len(set(names)), c.ev('doc.elements.length'), 'Tab visits every item')
+    c.page.wait_for_timeout(80); ok('selected' in c.ev("$('#srStatus').textContent"), 'screen-reader announcement')
+    c.page.keyboard.press('Tab'); ok(c.ev('selId') is None and c.ev("document.activeElement.id") != 'stageArea', 'Tab after the last item leaves the canvas')
+    c.ev("()=>{$('#stageArea').focus();select(doc.elements.find(e=>e.type==='text').id)}"); c.page.keyboard.press('Enter')
+    ok(c.ev("getComputedStyle($('#editText')).display")!='none', 'Enter edits text'); c.page.keyboard.press('Escape')
+    c.ev("()=>{$('#stageArea').focus()}"); c.page.keyboard.press('Shift+F10'); ok(c.page.locator('#ctxMenu').is_visible(), 'Shift+F10 opens the menu'); c.page.keyboard.press('Escape')
+    eq(c.ev("$('#stageArea').getAttribute('aria-label')").startswith('Design canvas'), True, 'canvas has an accessible name')
+    ok(not c.errors, c.errors); c.close()
+    # first-visit tips: shown once, 3 steps, remembered
+    c = Ctx(B, home=True, tips=True); ok(not c.page.locator('#tips').is_visible(), 'no tips over the home screen')
+    c.page.click('#homeGo'); ok(c.page.locator('#tips').is_visible(), 'tips on first visit')
+    for i in range(2):
+        c.page.click('#tipNext')
+    eq(c.ev("$('#tipNext').textContent"), 'Got it', 'last step'); c.page.click('#tipNext'); ok(not c.page.locator('#tips').is_visible(), 'tips closed')
+    c.page.reload(); c.page.wait_for_function('typeof doc!=="undefined" && document.querySelector("#stage canvas")'); c.page.click('#homeGo')
+    ok(not c.page.locator('#tips').is_visible(), 'tips only once')
     ok(not c.errors, c.errors); c.close()
 
 
