@@ -164,7 +164,7 @@ ALLOWED_LATIN = {'rasm', 'shoof', 'sh', 'claude', 'png', 'jpg', 'jpeg', 'pdf', '
 
 def en_only_strip(c, s):
     """Remove English-only UI strings (keys with no Arabic entry; Arabic falls back to English by design)."""
-    parts = getattr(c, '_en_only', None) or c.ev("Object.keys(I18N.en).filter(k=>!(k in I18N.ar)).flatMap(k=>I18N.en[k].split(/\\{[a-z]+\\}/)).map(x=>x.trim()).filter(x=>x.length>1).sort((a,b)=>b.length-a.length)")
+    parts = getattr(c, '_en_only', None) or c.ev("Object.keys(I18N.en).filter(k=>!(k in I18N.ar)).flatMap(k=>I18N.en[k].split(/\\{[a-z]+\\}/)).concat(typeof ICON_NAMES!=='undefined'?ICON_NAMES.map(n=>n.replace(/-/g,' ')):[]).map(x=>x.trim()).filter(x=>x.length>1).sort((a,b)=>b.length-a.length)")
     c._en_only = parts
     for x in parts:
         s = s.replace(x, ' ')
@@ -1690,6 +1690,125 @@ def t_grad_sec(B):
       out.push(toolBg({color:'#123456'},ctx).ok,'gradient' in doc.background);
       out.push(!!PROP_SCHEMA.fillGradient && designSummary().elements[0].fillGradient===undefined);return out;}""")
     eq(r, [True, 'radial', True, False, True, 90, False, True, False, True], 'Claude gradient tools')
+    ok(not c.errors, c.errors); c.close()
+
+
+# ---------------------------------------------------------------- sprint 4: elements panel
+PIX = """async(pts)=>{const u=renderExport('image/png');const im=new Image();await new Promise(r=>{im.onload=r;im.src=u;});
+  const cv=document.createElement('canvas');cv.width=im.width;cv.height=im.height;const x=cv.getContext('2d');x.drawImage(im,0,0);
+  return pts.map(([a,b])=>[...x.getImageData(a,b,1,1).data].slice(0,3));}"""
+
+
+@test('elements_panel_search_and_add')
+def t_elements(B):
+    c = Ctx(B); c.blank(); c.tab('shapes')
+    eq(c.ev("[...document.querySelectorAll('#elBody h3')].map(h=>h.textContent)"), ['Shapes', 'Lines', 'Photo frames', 'Stickers', 'Charts', 'Icons'], 'sections')
+    eq(c.page.locator('#drawer [data-icon]').count(), 30, 'first 30 icons shown')
+    c.page.click('#drawer [data-more-icons]'); eq(c.page.locator('#drawer [data-icon]').count(), c.ev('ICON_NAMES.length'), 'show all icons')
+    ok(c.ev('ICON_NAMES.length') >= 200, 'at least 200 icons bundled')
+    c.page.fill('#elSearch', 'heart')
+    names = c.ev("[...document.querySelectorAll('#elBody [data-icon]')].map(b=>b.dataset.icon)")
+    ok('heart' in names and c.page.locator('#elBody [data-frame="heart"]').count() == 1, f'search heart {names}')
+    ok(c.ev("document.activeElement.id") == 'elSearch', 'search keeps focus')
+    c.page.fill('#elSearch', 'zzzz'); ok('Nothing matches' in c.page.inner_text('#elBody'), 'no results')
+    c.page.fill('#elSearch', 'sale'); ok(c.page.locator('#elBody [data-sticker]').count() >= 1, 'sticker search by keyword')
+    c.page.fill('#elSearch', '')
+    depth = c.ev('undoStack.length')
+    c.page.click('#elBody [data-icon="heart"]')
+    e = c.sel_el(); eq((e['type'], e['icon'], e['fill']), ('icon', 'heart', ''), 'icon added'); eq(c.ev('undoStack.length'), depth + 1, 'one undo step')
+    for kind, exp in [('dash', {'dash': 'dash'}), ('dot', {'dash': 'dot'}), ('arrow', {'ends': 'arrow'}), ('both', {'ends': 'both'})]:
+        c.page.click(f'#elBody [data-line="{kind}"]'); e = c.sel_el()
+        ok(e['type'] == 'line' and all(e.get(k_) == v for k_, v in exp.items()), f'line {kind}: {e}')
+    for m in ['circle', 'blob', 'arch', 'hexagon', 'heart', 'diamond']:
+        c.page.click(f'#elBody [data-frame="{m}"]'); eq((c.sel_el()['type'], c.sel_el().get('mask')), ('placeholder', m), f'frame {m}')
+    c.page.click('#elBody [data-frame="rounded"]'); ok(c.sel_el()['radius'] > 0 and 'mask' not in c.sel_el(), 'rounded frame')
+    for ch in ['bar', 'line', 'pie', 'donut']:
+        c.page.click(f'#elBody [data-chart="{ch}"]'); eq((c.sel_el()['type'], c.sel_el()['chartType']), ('chart', ch), f'chart {ch}')
+    c.page.wait_for_function("document.querySelectorAll('#elBody [data-sticker] img').length===STICKERS.length", timeout=8000)
+    n0 = c.ev('doc.elements.length'); depth = c.ev('undoStack.length')
+    c.page.click('#elBody [data-sticker="0"]')
+    added = c.ev(f'doc.elements.slice({n0})')
+    ok(len(added) == 3 and len({x.get('groupId') for x in added}) == 1 and added[0].get('groupId'), f'sticker = one group {added}')
+    eq(c.ev('sel().length'), 3, 'whole sticker selected'); eq(c.ev('undoStack.length'), depth + 1, 'sticker one undo step')
+    for i in range(1, c.ev('STICKERS.length')):
+        c.page.click(f'#elBody [data-sticker="{i}"]')
+    eq(c.ev('mainLayer.children.length'), c.ev('doc.elements.length'), 'everything rendered')
+    _export_check(c, 'png', 1080, 1080); _export_check(c, 'pdf', 1080, 1080)
+    ok(not c.errors, c.errors); ok(not EXTERNAL, EXTERNAL[:3]); c.close()
+
+
+@test('elements_all_icons_render')
+def t_icons_render(B):
+    c = Ctx(B); c.blank()
+    bad = c.ev("""()=>{const out=[];doc.elements=ICON_NAMES.map((n,i)=>sanitizeEl(el('icon',{icon:n,x:(i%15)*70,y:Math.floor(i/15)*70,width:60,height:60,stroke:'#000000',strokeWidth:2,fill:''}))).filter(Boolean);fullRender();
+      doc.elements.forEach(e=>{const p=nodeOf(e.id).findOne('Path');const r=p&&p.getClientRect();if(!p||!(r.width>5||r.height>5))out.push(e.icon);});return [doc.elements.length,out];}""")
+    eq(bad[0], c.ev('ICON_NAMES.length'), 'all icons valid'); eq(bad[1], [], 'icons with empty drawing')
+    # every path parses as SVG path data
+    eq(c.ev("ICON_NAMES.filter(n=>{try{new Path2D(ICON_SET[n]);return !/^M\\s*[-\\d.]/.test(ICON_SET[n]);}catch(e){return true;}})"), [], 'paths start with absolute M')
+    ok(not c.errors, c.errors); c.close()
+
+
+@test('elements_props_chart_icon_line_mask')
+def t_el_props(B):
+    c = Ctx(B); c.blank(); c.tab('shapes')
+    c.page.click('#elBody [data-chart="bar"]')
+    c.page.click('#props [data-ct="pie"]'); eq(c.sel_el()['chartType'], 'pie', 'chart type')
+    c.page.fill('#pChData', 'North, 10\nSouth: 30\nEast 5.5\nWest\t20%\n\nbad line'); c.page.locator('#pChData').dispatch_event('change')
+    e = c.sel_el(); eq((e['values'], e['labels']), ([10, 30, 5.5, 20], ['North', 'South', 'East', 'West']), 'chart data parsed')
+    c.set_color('#pChTc', '#ff0000'); eq(c.sel_el()['textColor'], '#ff0000', 'chart text colour')
+    c.page.click('#pChLab'); eq(c.sel_el()['showLabels'], False, 'labels off')
+    eq(c.ev("nodeOf(selId).find('Arc').length"), 4, '4 pie wedges')
+    c.page.click('#props [data-ct="bar"]'); eq(c.ev("nodeOf(selId).find('Rect').length"), 5, 'hit rect + 4 bars')
+    c.page.click('#elBody [data-icon="star"]'); c.set_num('#pIsw', 3.5); eq(c.sel_el()['strokeWidth'], 3.5, 'icon weight')
+    c.set_color('#pStroke', '#00aa00'); eq(c.sel_el()['stroke'], '#00aa00', 'icon colour')
+    c.set_color('#pFill', '#ffee00'); eq(c.sel_el()['fill'], '#ffee00', 'icon fill')
+    ok(c.page.locator('#pGrad').count() == 0, 'no gradient UI for icons')
+    c.page.click('#elBody [data-line="solid"]')
+    c.page.click('#props [data-ld="dot"]'); c.page.click('#props [data-le="both"]'); e = c.sel_el(); eq((e.get('dash'), e.get('ends')), ('dot', 'both'), 'line style')
+    eq(c.ev("nodeOf(selId).findOne('Arrow').pointerAtBeginning()"), True, 'Konva arrow both ends')
+    c.page.click('#props [data-ld="solid"]'); c.page.click('#props [data-le="none"]'); e = c.sel_el(); ok('dash' not in e and 'ends' not in e, 'back to plain line')
+    # masked photo: corners stay background, centre shows the photo
+    c.blank()
+    c.ev("""()=>{const cv=document.createElement('canvas');cv.width=cv.height=200;const x=cv.getContext('2d');x.fillStyle='#ff0000';x.fillRect(0,0,200,200);addFrame('circle');const e=byId(selId);Object.assign(e,{x:0,y:0,width:1080,height:1080});replaceImage(e.id,cv.toDataURL('image/png'));}""")
+    c.page.wait_for_timeout(300)
+    eq((c.sel_el()['type'], c.sel_el()['mask']), ('image', 'circle'), 'photo keeps frame mask')
+    corner, centre = c.page.evaluate(PIX, [[20, 20], [540, 540]])
+    ok(corner[0] > 240 and corner[1] > 240 and centre[0] > 240 and centre[1] < 20, f'mask clips: corner {corner} centre {centre}')
+    c.page.click('#props [data-mask=""]'); corner, = c.page.evaluate(PIX, [[20, 20]]); ok(corner[1] < 20, 'mask removed')
+    c.page.click('#props [data-mask="heart"]'); eq(c.sel_el()['mask'], 'heart', 'mask picker')
+    c.page.keyboard.press('Control+z'); ok('mask' not in c.sel_el(), 'undo mask')
+    ok(not c.errors, c.errors); c.close()
+
+
+@test('elements_sanitize_claude_and_phone')
+def t_el_sec(B):
+    c = Ctx(B)
+    r = c.ev("""()=>{const S=x=>sanitizeEl(Object.assign({x:0,y:0,width:100,height:100},x));
+      return {unk:S({type:'icon',icon:'nope'}),proto:S({type:'icon',icon:'__proto__'}),ctor:S({type:'icon',icon:'constructor'}),
+       okIcon:S({type:'icon',icon:'heart',stroke:'javascript:x',fill:'url(x)',strokeWidth:99,fillGradient:{type:'linear',stops:[{offset:0,color:'#000'},{offset:1,color:'#fff'}]}}),
+       mask:S({type:'placeholder',mask:'evil'}).mask, mask2:S({type:'image',src:'data:image/png;base64,AAAA',mask:'circle'}).mask, mask3:S({type:'rect',mask:'circle'}).mask,
+       line:S({type:'line',dash:'<b>',ends:'both'}),
+       chart:S({type:'chart',chartType:'radar',values:['1',NaN,5,...Array(20).fill(2)],labels:['a\\u0007b','x'.repeat(99),{}],textColor:'red;x',showLabels:'yes'})};}""")
+    eq((r['unk'], r['proto'], r['ctor']), (None, None, None), 'unknown icons dropped')
+    oi = r['okIcon']; eq((oi['stroke'], oi['fill'], oi['strokeWidth'], 'fillGradient' in oi), ('#1d2330', '#1d2330', 6, False), 'icon props clamped')
+    eq((r['mask'], r['mask2'], r['mask3']), (None, 'circle', None), 'mask allow-list')
+    ok('dash' not in r['line'] and r['line']['ends'] == 'both', 'line style allow-list')
+    ch = r['chart']
+    eq((ch['chartType'], len(ch['values']), ch['values'][:3], ch['labels'][:3], len(ch['labels'][1]), ch['textColor'], 'showLabels' in ch), ('bar', 12, [0, 0, 5], ['a b', 'x' * 24, ''], 24, '#1d2330', False), 'chart sanitised')
+    c.blank()
+    out = c.ev("""()=>{const ctx={calls:0,changes:0,deletes:0};const o=[];
+      o.push(toolAdd({type:'icon',icon:'nope',x:0,y:0,width:50},ctx).ok);
+      const a=toolAdd({type:'icon',icon:'gift',x:10,y:10,width:80},ctx);o.push(a.ok,byId(a.id).height,!!byId(a.id).stroke);
+      const b=toolAdd({type:'chart',chartType:'donut',values:[1,2,3],labels:['a','b','c'],x:0,y:0,width:400,height:300},ctx);o.push(b.ok,byId(b.id).chartType);
+      const p=toolAdd({type:'placeholder',mask:'blob',x:0,y:0,width:300,height:300},ctx);o.push(byId(p.id).mask);
+      o.push(toolUpdate({id:p.id,patch:{mask:null}},ctx).ok,'mask' in byId(p.id));
+      o.push(designSummary().elements.find(e=>e.type==='chart').values.length,designSummary().elements.find(e=>e.type==='icon').icon);return o;}""")
+    eq(out, [False, True, 80, True, True, 'donut', 'blob', True, False, 3, 'gift'], 'Claude tools for elements')
+    c.ev('()=>{fullRender()}'); ok(not c.errors, c.errors); c.close()
+    c = Ctx(B, 390, 844); c.tab('shapes')
+    eq(c.ev('document.documentElement.scrollWidth'), 390, 'no overflow on phone')
+    bb = c.page.locator('#drawer [data-icon]').first.bounding_box(); ok(bb['width'] >= 40, f'icon tap target {bb}')
+    c.page.click('#drawer [data-icon="star"]'); eq(c.sel_el()['type'], 'icon', 'add icon on phone')
     ok(not c.errors, c.errors); c.close()
 
 
