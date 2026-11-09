@@ -74,6 +74,25 @@ def R(x, y, w, h, fill, **kw): return dict(type='rect', x=round(x), y=round(y), 
 def E(x, y, w, h, fill, **kw): return dict(type='ellipse', x=round(x), y=round(y), width=round(w), height=round(h), fill=fill, **kw)
 def S(kind, x, y, w, h, fill, **kw): return dict(type=kind, x=round(x), y=round(y), width=round(w), height=round(h), fill=fill, **kw)
 def I(name, x, y, sz, color, sw=2, fill=''): return dict(type='icon', icon=name, x=round(x), y=round(y), width=round(sz), height=round(sz), stroke=color, strokeWidth=sw, fill=fill)
+def PAT(kind, x, y, w, h, fill, opacity, spacing, **kw): return dict(type='pattern', pattern=kind, x=round(x), y=round(y), width=round(w), height=round(h), fill=fill, opacity=opacity, spacing=round(spacing), **kw)
+
+
+# subtle texture per recipe: gives posters depth without competing with the text
+def deco(recipe, W, H, P):
+    s = min(W, H) / 1080
+    return {
+        'bold':   lambda: PAT('dotsRadial', W * 0.52, H - W * 0.5, W * 0.62, W * 0.62, P['accent'], 0.28, 26 * s),
+        'center': lambda: PAT('dotsEdges', 0, 0, W, H, P['ink'], 0.08, 24 * s),
+        'story':  lambda: PAT('waves', 0, H * 0.55, W, H * 0.45, P['accent'], 0.14, 26 * s),
+        'promo':  lambda: PAT('dotGrid', 0, 0, W, H * 0.6, P['ink'], 0.12, 30 * s),
+        'quote':  lambda: PAT('contours', W * 0.5, H * 0.5, W * 0.8, W * 0.8, P['accent'], 0.18, 30 * s),
+        'photo':  lambda: PAT('dotsFade', W * 0.55, 0, W * 0.45, H * 0.3, P['accent'], 0.22, 22 * s),
+        'event':  lambda: PAT('dotsArrow', W * 0.64, H * 0.07, W * 0.28, W * 0.28, P['accent'], 0.4, 20 * s),
+        'list':   lambda: PAT('stripesFade', W * 0.7, 0, W * 0.3, H * 0.32, P['accent'], 0.14, 18 * s),
+        'slide':  lambda: PAT('dotsRing', W * 0.6, H * 0.06, H * 0.88, H * 0.88, P['ink'], 0.12, 22 * s),
+    }.get(recipe, lambda: None)()
+
+
 def PH(x, y, w, h, fill, **kw): return dict(type='placeholder', x=round(x), y=round(y), width=round(w), height=round(h), fill=fill, **kw)
 
 
@@ -381,6 +400,8 @@ def build():
         assert key not in keys, key; keys.add(key)
         W, H = SIZE[size]; P = PAL[pal]
         els = [e for e in RECIPES[recipe](W, H, P, FONTS[fonts], content)]
+        d = None if content.get('plain') else deco(recipe, W, H, P)
+        if d: els.insert(0, d)
         bg = {'color': P['bg'], 'image': None}
         out.append(dict(key=key, name=name, cats=cats, kw=kw, w=W, h=H, bg=P['bg'], els=els))
     return out

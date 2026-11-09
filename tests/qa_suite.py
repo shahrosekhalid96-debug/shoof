@@ -1708,7 +1708,7 @@ PIX = """async(pts)=>{const u=renderExport('image/png');const im=new Image();awa
 @test('elements_panel_search_and_add')
 def t_elements(B):
     c = Ctx(B); c.blank(); c.tab('shapes')
-    eq(c.ev("[...document.querySelectorAll('#elBody h3')].map(h=>h.textContent)"), ['Shapes', 'Lines', 'Photo frames', 'Stickers', 'Charts', 'Icons'], 'sections')
+    eq(c.ev("[...document.querySelectorAll('#elBody h3')].map(h=>h.textContent)"), ['Shapes', 'Lines', 'Photo frames', 'Mockups', 'Patterns & textures', 'Infographics', 'Stickers', 'Charts', 'Icons'], 'sections')
     eq(c.page.locator('#drawer [data-icon]').count(), 30, 'first 30 icons shown')
     c.page.click('#drawer [data-more-icons]'); eq(c.page.locator('#drawer [data-icon]').count(), c.ev('ICON_NAMES.length'), 'show all icons')
     ok(c.ev('ICON_NAMES.length') >= 200, 'at least 200 icons bundled')
@@ -1968,6 +1968,55 @@ def t_ux7(B):
     eq(c.ev("$('#tipNext').textContent"), 'Got it', 'last step'); c.page.click('#tipNext'); ok(not c.page.locator('#tips').is_visible(), 'tips closed')
     c.page.reload(); c.page.wait_for_function('typeof doc!=="undefined" && document.querySelector("#stage canvas")'); c.page.click('#homeGo')
     ok(not c.page.locator('#tips').is_visible(), 'tips only once')
+    ok(not c.errors, c.errors); c.close()
+
+
+@test('library_patterns_mockups_infographics')
+def t_library(B):
+    c = Ctx(B); c.blank(); c.tab('shapes')
+    eq(c.ev("[...document.querySelectorAll('#elBody h3')].map(h=>h.textContent)"), ['Shapes', 'Lines', 'Photo frames', 'Mockups', 'Patterns & textures', 'Infographics', 'Stickers', 'Charts', 'Icons'], 'sections')
+    c.page.wait_for_function("document.querySelectorAll('#elBody [data-pattern] img').length===PATTERNS.length && document.querySelectorAll('#elBody [data-mockup] img').length===MOCKUPS.length", timeout=8000)
+    # every pattern: added behind content, renders, exports
+    c.ev("()=>{addText('h')}")
+    for pn in c.ev('PATTERNS'):
+        c.page.click(f'#elBody [data-pattern="{pn}"]'); e = c.sel_el()
+        ok(e['type'] == 'pattern' and e['pattern'] == pn and e['opacity'] < 0.5, f'{pn} added subtle {e}')
+        ok(c.ev(f"doc.elements.findIndex(e=>e.id===selId)") < c.ev("doc.elements.findIndex(e=>e.type==='text')"), f'{pn} sits behind text')
+    _export_check(c, 'png', 1080, 1080)
+    c.page.click('#elBody [data-pattern="dotsRadial"]')
+    c.page.select_option('#pPat', 'contours'); eq(c.sel_el()['pattern'], 'contours', 'switch pattern')
+    c.set_color('#pFill2', '#ff0000'); eq(c.sel_el()['fill2'], '#ff0000', 'fade colour'); c.page.click('#pNoFill2'); ok('fill2' not in c.sel_el(), 'one colour')
+    c.set_num('#pSpacing', 40); eq(c.sel_el()['spacing'], 40, 'density')
+    # pattern pixels actually drawn (dot grid on white)
+    c.blank(); c.ev("()=>{const e=el('pattern',{pattern:'stripes',fill:'#000000',spacing:40,opacity:1,x:0,y:0,width:1080,height:1080});doc.elements.push(sanitizeEl(e));fullRender();}")
+    a, b = c.page.evaluate(PIX, [[3, 500], [30, 500]]); ok(a[0] < 40 and b[0] > 200, f'stripes drawn {a} {b}')
+    # big poster stays fast
+    t0 = c.ev("(()=>{doc=blankDoc(2480,3508);doc.elements=[sanitizeEl(el('pattern',{pattern:'dotGrid',fill:'#000000',spacing:4,x:0,y:0,width:2480,height:3508}))];const t=performance.now();fullRender();renderExport('image/png');return performance.now()-t;})()")
+    ok(t0 < 2500, f'A4 dot grid render+export {t0:.0f} ms'); METRICS['a4_pattern_ms'] = round(t0)
+    # mockups: grouped, screen is a photo slot that opens the picker on click
+    c.blank(); c.tab('shapes'); c.page.click('#elBody [data-mockup="0"]')
+    added = c.ev('doc.elements'); ok(len(added) == 3 and len({x.get('groupId') for x in added}) == 1, 'phone mockup is one group')
+    ok(any(x['type'] == 'placeholder' for x in added), 'phone has a photo slot')
+    ph = [x for x in added if x['type'] == 'placeholder'][0]
+    sb = c.page.locator('#stage').bounding_box(); f = sb['width'] / 1080
+    with c.page.expect_file_chooser() as fc: c.page.mouse.click(sb['x'] + (ph['x'] + ph['width'] / 2) * f, sb['y'] + (ph['y'] + ph['height'] / 2) * f)
+    fc.value.set_files(IMG); c.page.wait_for_function("doc.elements.some(e=>e.type==='image')")
+    for i in range(1, c.ev('MOCKUPS.length')): c.page.click(f'#elBody [data-mockup="{i}"]')
+    for i in range(c.ev('INFOS.length')): c.page.click(f'#elBody [data-info="{i}"]')
+    eq(c.ev('mainLayer.children.length'), c.ev('doc.elements.length'), 'all rendered')
+    ok(c.ev("doc.elements.some(e=>e.fillGradient)"), 'gradient step buttons kept')
+    # new shapes
+    for sh in ['blob', 'parallelogram']:
+        c.page.click(f'#elBody [data-shape="{sh}"]'); eq(c.sel_el()['type'], sh, sh)
+    c.page.click('#props details.gdet summary'); c.page.click('#pGrad [data-gp="3"]'); ok(c.sel_el().get('fillGradient'), 'gradient on new shape')
+    # validation + Ask Claude
+    r = c.ev("""()=>{const S=x=>sanitizeEl(Object.assign({x:0,y:0,width:100,height:100},x));const ctx={calls:0,changes:0,deletes:0};
+      return [S({type:'pattern',pattern:'evil'}),S({type:'pattern',pattern:'__proto__'}),S({type:'pattern',pattern:'waves',fill:'url(x)',fill2:'javascript:1',spacing:1e9,fillGradient:{type:'linear',stops:[{offset:0,color:'#000'},{offset:1,color:'#fff'}]}}),
+        toolAdd({type:'pattern',pattern:'nope',x:0,y:0,width:10},ctx).ok,toolAdd({type:'pattern',pattern:'dotGrid',x:0,y:0,width:300,height:300,opacity:0.2},ctx).ok,toolAdd({type:'blob',x:0,y:0,width:100},ctx).ok,
+        designSummary().elements.find(e=>e.type==='pattern').pattern];}""")
+    eq(r[0], None, 'unknown pattern dropped'); eq(r[1], None, 'proto pattern dropped')
+    w = r[2]; eq((w['fill'], w['fill2'], w['spacing'], 'fillGradient' in w), ('#1d2330', '#6c4cf5', 400, False), 'pattern props clamped')
+    eq(r[3:], [False, True, True, 'dotGrid'], 'Claude tools for patterns and blobs')
     ok(not c.errors, c.errors); c.close()
 
 
