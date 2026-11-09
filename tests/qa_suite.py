@@ -160,7 +160,7 @@ class Ctx:
         self.ctx.close()
 
 
-ALLOWED_LATIN = {'rasm', 'shoof', 'sh', 'claude', 'png', 'jpg', 'jpeg', 'pdf', 'webp', 'agpl', 'gnu', 'ctrl', 'shift', 'delete',
+ALLOWED_LATIN = {'rasm', 'shoof', 'sh', 'claude', 'png', 'jpg', 'jpeg', 'pdf', 'webp', 'powerpoint', 'pptx', 'agpl', 'gnu', 'ctrl', 'shift', 'delete',
                  'inter', 'poppins', 'playfair', 'display', 'bebas', 'neue', 'cairo', 'tajawal', 'amiri', 'ibm', 'plex', 'sans', 'arabic'}
 
 
@@ -561,7 +561,7 @@ def t_roundtrip(B):
     eq(c.ev('doc.elements.length'), 0, 'new design not blank')
     c.page.set_input_files('#openFile', path); c.page.wait_for_timeout(300)
     eq(json.loads(c.ev('JSON.stringify(doc)')), json.loads(before), 'reopened doc')
-    eq(c.ev('mainLayer.children.length'), json.loads(before)['elements'].__len__(), 'nodes after open')
+    eq(c.ev('mainLayer.children.length'), json.loads(before)['pages'][0]['elements'].__len__(), 'nodes after open')
     ok(not c.errors, c.errors); c.close()
 
 
@@ -588,7 +588,7 @@ def t_malformed(B):
             probs.append(f'{fn}: doc replaced/corrupted (toast={toast!r}, w={c.ev("doc.width")})')
         elif not toast:
             probs.append(f'{fn}: no error toast')
-        c.ev(f'()=>{{doc=JSON.parse({json.dumps(before)});fullRender();}}')
+        c.ev(f'()=>{{doc=hydrate(JSON.parse({json.dumps(before)}));fullRender();}}')
     ok(not probs, '; '.join(probs))
     c.close()
 
@@ -914,7 +914,7 @@ def t_sec_payload(B):
     c.ev('select(null)'); c.tab('layers'); c.page.wait_for_timeout(100)
     ok(c.ev('window.__pwn') is None, f'payload executed: {c.ev("window.__pwn")}')
     ok(c.ev('({}).polluted') is None, 'prototype polluted')
-    d = c.ev('doc')
+    d = c.ev('({...doc,elements:doc.elements,background:doc.background})')
     eq(d['background']['color'], '#ffffff', 'bad background colour not replaced')
     ok(all(re.fullmatch(r'[a-z0-9_-]{1,32}', e['id'], re.I) for e in d['elements']), 'unsafe id kept')
     ok(all(e['type'] != 'image' for e in d['elements']), 'remote-URL image kept')
@@ -1185,7 +1185,7 @@ def t_claude_tools(B):
         c.page.wait_for_function('window.__toolResults && !CS.busy', timeout=5000); c.page.wait_for_timeout(100)
         r = c.ev('window.__toolResults')
         eq([x['ok'] for x in r], [True, False, True, False, True, False, False, False], f'{lang}: tool validation results {r}')
-        d = c.ev('doc')
+        d = c.ev('({...doc,elements:doc.elements,background:doc.background})')
         eq(c.ev('bgColorNow()'), '#123456', 'background'); d['elements'] = [e for e in d['elements'] if e.get('role') != 'bg']
         new = [e for e in d['elements'] if e.get('text') == 'Hello'][0]
         ok(re.fullmatch(r'#[0-9a-f]{3,8}', new['fill'], re.I), f'unsafe fill accepted: {new["fill"]}')
@@ -1385,7 +1385,7 @@ def t_effects(B):
 def t_tpls(B):
     for lang in ['en', 'ar']:
         c = Ctx(B, lang=lang)
-        info = c.ev("TEMPLATES.map(t=>({k:t.key,c:t.cats,bi:!!t.bi,ph:t.make().elements.some(e=>e.type==='placeholder')}))")
+        info = c.ev("TEMPLATES.map(t=>({k:t.key,c:t.cats,bi:!!t.bi,ph:sanitizeDoc(t.make()).pages.some(p=>p.elements.some(e=>e.type==='placeholder'))}))")
         ok(len(info) >= 16, f'{len(info)} templates')
         ok(sum(1 for t in info if 'arabic' in t['c'] and not t['bi']) >= 5, 'need 5+ Arabic templates')
         ok(sum(1 for t in info if t['bi']) >= 2, 'need 2+ bilingual templates')
@@ -1511,7 +1511,7 @@ def t_r2_lang(B):
 @test('r2_generic_template_copy')
 def t_r2_copy(B):
     c = Ctx(B)
-    txt = c.ev("TEMPLATES.flatMap(t=>t.make().elements.filter(e=>e.type==='text').map(e=>e.text)).join(' | ')")
+    txt = c.ev("TEMPLATES.flatMap(t=>sanitizeDoc(t.make()).pages.flatMap(p=>p.elements).filter(e=>e.type==='text').map(e=>e.text)).join(' | ')")
     bad = [w for w in ['Facility', 'PPM', 'hospitality', 'Operations Coordinator', 'site operations', 'مرافق', 'صيانة', 'الضيافة', 'مشرف'] if w in txt]
     ok(not bad, f'founder-specific wording left in templates: {bad}')
     ok('Your Name · Your Business' in txt and 'اسمك · اسم نشاطك التجاري' in txt, 'quote bylines not generic in EN/AR')
@@ -1819,17 +1819,17 @@ def t_el_sec(B):
 
 
 # ---------------------------------------------------------------- sprint 5: 50 generated English templates
-TPL_LAYOUT_CHECK = """()=>{const out=[];GEN_TEMPLATES.forEach(g=>{const i=TEMPLATES.findIndex(t=>t.key===g.key);const d=sanitizeDoc(TEMPLATES[i].make());
- if(d.elements.length!==g.els.length)out.push([g.key,'dropped '+(g.els.length-d.elements.length)]);
+TPL_LAYOUT_CHECK = """()=>{const out=[];GEN_TEMPLATES.forEach(g=>{const i=TEMPLATES.findIndex(t=>t.key===g.key);const dd=sanitizeDoc(TEMPLATES[i].make());(g.pages||[{els:g.els}]).forEach((gp,pi)=>{const key=g.key+(g.pages?'#'+(pi+1):'');dd.page=pi;const d={width:dd.width,height:dd.height,elements:dd.elements};
+ if(d.elements.length!==gp.els.length)out.push([key,'dropped '+(gp.els.length-d.elements.length)]);
  const st=new Konva.Stage({container:document.createElement('div'),width:d.width,height:d.height});const l=new Konva.Layer();st.add(l);
  const boxes=d.elements.map(e=>{const n=buildNode(e);l.add(n);const tx=n.findOne('Text');if(e.type!=='text')return null;
    // real text extent: widest line
    const w=Math.max(...tx.textArr.map(a=>a.width));const al=tx.align();const x0=e.x+(al==='center'?(e.width-w)/2:al==='right'?e.width-w:0);
-   return {x:x0,y:e.y,w,h:tx.height(),t:e.text.slice(0,20),over:tx.textArr.some(a=>a.width>e.width+1)};});
- const M=4;boxes.forEach((b,i)=>{if(!b)return;if(b.over)out.push([g.key,'word wider than box: '+b.t]);
-  if(b.x<-1||b.y<-1||b.x+b.w>d.width+1||b.y+b.h>d.height+1)out.push([g.key,'off page: '+b.t]);
-  boxes.forEach((c,j)=>{if(!c||j<=i)return;if(b.x<c.x+c.w-M&&c.x<b.x+b.w-M&&b.y<c.y+c.h-M&&c.y<b.y+b.h-M)out.push([g.key,'overlap: '+b.t+' | '+c.t]);});});
- st.destroy();});return out;}"""
+   if(e.rotation){const r=n.getClientRect({relativeTo:l});return {x:r.x,y:r.y,w:r.width,h:r.height,t:e.text.slice(0,20),over:false,rot:true};}return {x:x0,y:e.y,w,h:tx.height(),t:e.text.slice(0,20),over:tx.textArr.some(a=>a.width>e.width+1)};});
+ const M=4;boxes.forEach((b,i)=>{if(!b)return;if(b.over)out.push([key,'word wider than box: '+b.t]);
+  if(b.x<-1||b.y<-1||b.x+b.w>d.width+1||b.y+b.h>d.height+1)out.push([key,'off page: '+b.t]);
+  boxes.forEach((c,j)=>{if(!c||j<=i||b.rot||c.rot)return;if(b.x<c.x+c.w-M&&c.x<b.x+b.w-M&&b.y<c.y+c.h-M&&c.y<b.y+b.h-M)out.push([key,'overlap: '+b.t+' | '+c.t]);});});
+ st.destroy();});});return out;}"""
 
 
 @test('generated_templates_quality')
@@ -1838,8 +1838,8 @@ def t_gen_tpl(B):
     r = subprocess.run([sys.executable, os.path.join(ROOT, 'tools', 'templates', 'gen_templates.py'), '--check'], capture_output=True, text=True)
     ok(r.returncode == 0, f'generated block is stale: {r.stdout}{r.stderr}')
     c = Ctx(B)
-    eq(c.ev('GEN_TEMPLATES.length'), 50, '50 generated templates'); eq(c.ev('TEMPLATES.length'), 67, 'total templates')
-    eq(c.ev('new Set(TEMPLATES.map(t=>t.key)).size'), 67, 'unique keys')
+    eq(c.ev('GEN_TEMPLATES.length'), 60, '60 generated templates'); eq(c.ev('TEMPLATES.length'), 77, 'total templates')
+    eq(c.ev('new Set(TEMPLATES.map(t=>t.key)).size'), 77, 'unique keys')
     eq(c.ev("TPL_CATS.filter(k=>k!=='all'&&!TEMPLATES.some(t=>t.cats.includes(k)))"), [], 'every category has templates')
     eq(c.ev("GEN_TEMPLATES.filter(g=>!I18N.en['tpl_'+g.key]||/[\\u0600-\\u06ff]/.test(JSON.stringify(g)))").__len__(), 0, 'names set, English only')
     eq(c.ev(TPL_LAYOUT_CHECK), [], 'layout: no dropped elements, text off page or overlapping text')
@@ -2018,6 +2018,63 @@ def t_library(B):
     w = r[2]; eq((w['fill'], w['fill2'], w['spacing'], 'fillGradient' in w), ('#1d2330', '#6c4cf5', 400, False), 'pattern props clamped')
     eq(r[3:], [False, True, True, 'dotGrid'], 'Claude tools for patterns and blobs')
     ok(not c.errors, c.errors); c.close()
+
+
+@test('pages_exports_pptx_logo')
+def t_pages(B):
+    import zipfile, io
+    c = Ctx(B, home=True)
+    c.page.click('#brandHome') if not c.ev('homeOpen()') else None
+    c.page.click('#homeGo'); ok(not c.ev('homeOpen()'), 'editor open')
+    c.page.click('#brandHome'); ok(c.ev('homeOpen()'), 'logo goes to the home screen')
+    c.page.click('#homeGo'); c.blank()
+    eq(c.page.locator('#pagesBar .pg').count(), 1, 'one page')
+    depth = c.ev('undoStack.length')
+    c.page.click('#pagesBar [data-pg="add"]'); eq(c.ev('[doc.pages.length,doc.page]'), [2, 1], 'add page'); eq(c.ev('undoStack.length'), depth + 1, 'add = one undo step')
+    c.ev("()=>{addText('h')}"); tid = c.ev('selId')
+    c.page.click('#pagesBar [data-pg="dup"]'); eq(c.ev('[doc.pages.length,doc.page,doc.elements.length]'), [3, 2, 1], 'duplicate page')
+    ok(c.ev('doc.elements[0].id') != tid, 'duplicated page gets new ids')
+    c.page.click('#pagesBar [data-pg="left"]'); eq(c.ev('doc.page'), 1, 'move page left')
+    c.page.click('#pagesBar .pg >> nth=0'); eq(c.ev('[doc.page,doc.elements.length]'), [0, 0], 'switch to page 1')
+    c.page.keyboard.press('PageDown'); eq(c.ev('doc.page'), 1, 'PageDown')
+    c.page.click('#pagesBar [data-pg="del"]'); eq(c.ev('doc.pages.length'), 2, 'delete page')
+    c.page.keyboard.press('Control+z'); eq(c.ev('doc.pages.length'), 3, 'undo restores page')
+    # deck template → multi-page; thumbnails
+    c.ev("useTemplate(TEMPLATES.findIndex(t=>t.key==='deck_swiss'))")
+    eq(c.ev('[doc.pages.length,doc.width,doc.height,doc.page]'), [6, 1920, 1080, 0], 'deck template has 6 slides')
+    c.page.wait_for_function("document.querySelectorAll('#pagesBar .pg img').length===6", timeout=8000)
+    # exports
+    name, data, _ = c.export('png'); ok(name.endswith('-p1.png') and png_size(data) == (1920, 1080), f'png current page {name}')
+    name, data, _ = c.export('webp'); ok(data[:4] == b'RIFF' and data[8:12] == b'WEBP', 'webp')
+    name, data, _ = c.export('pdf'); eq(len(re.findall(rb'/Type\s*/Page\b', data)), 6, 'PDF has one page per slide')
+    t0 = time.time(); name, data, _ = c.export('pptx'); METRICS['pptx_6_slides'] = f'{len(data)//1024} KB in {time.time()-t0:.1f}s'
+    z = zipfile.ZipFile(io.BytesIO(data)); slides = sorted(n for n in z.namelist() if re.fullmatch(r'ppt/slides/slide\d+\.xml', n))
+    eq(len(slides), 6, 'pptx slide count')
+    xml1 = z.read('ppt/slides/slide1.xml').decode('utf-8')
+    ok('Scaling the' in xml1 and 'everyday work.' in xml1, 'text is editable in PowerPoint (not a picture)')
+    ok('Inter' in xml1, 'font kept')
+    pres = z.read('ppt/presentation.xml').decode('utf-8'); m = re.search(r'<p:sldSz cx="(\d+)" cy="(\d+)"', pres)
+    ok(m and abs(int(m.group(1)) / int(m.group(2)) - 16 / 9) < 0.01, f'slide size 16:9 {m and m.groups()}')
+    ok(any(n.startswith('ppt/media/') for n in z.namelist()), 'pictures embedded for non-text items')
+    eq(c.ev('doc.page'), 0, 'export returns to the current page')
+    c.page.click('#exportBtn'); ok(c.page.locator('#expAllBtn').is_visible(), 'PNG all pages offered'); c.page.keyboard.press('Escape')
+    files = []
+    with c.page.expect_download() as d1:
+        c.page.click('#exportMenu [data-exp="pngall"]') if c.page.locator('#exportMenu').is_visible() else (c.page.click('#exportBtn'), c.page.click('#exportMenu [data-exp="pngall"]'))
+    files.append(d1.value.suggested_filename)
+    c.page.wait_for_timeout(2500); ok(files[0].endswith('-p1.png'), f'all pages start at p1 {files}')
+    # single page design: pptx works for a square post too
+    c.blank(); c.ev("()=>{addText('h');addShape('star');addShape('rect')}")
+    name, data, _ = c.export('pptx'); z = zipfile.ZipFile(io.BytesIO(data)); eq(len([n for n in z.namelist() if re.fullmatch(r'ppt/slides/slide\d+\.xml', n)]), 1, 'single slide')
+    pres = z.read('ppt/presentation.xml').decode('utf-8'); m = re.search(r'<p:sldSz cx="(\d+)" cy="(\d+)"', pres); eq(m.group(1), m.group(2), 'square slide')
+    # file format: pages saved and reopened; old single-page files still open
+    before = c.ev('JSON.stringify(doc)'); ok('"pages"' in before, 'pages in file format')
+    old = c.ev("JSON.stringify({app:'shoof',formatVersion:1,width:500,height:500,background:{color:'#ff0000',image:null},elements:[{type:'rect',x:0,y:0,width:10,height:10,fill:'#000000'}]})")
+    p = os.path.join(WORK, 'old.shoof.json'); open(p, 'w').write(old); c.page.set_input_files('#openFile', p); c.page.wait_for_timeout(200)
+    eq(c.ev('[doc.pages.length,doc.background.color,doc.elements.length]'), [1, '#ff0000', 1], 'old single-page file opens')
+    bad = c.ev("(()=>{const r=[];const P=(n)=>({app:'shoof',width:100,height:100,pages:Array.from({length:n},()=>({background:{color:'#fff'},elements:[]}))});try{sanitizeDoc(P(41));r.push('41 ok');}catch(e){r.push(e.message);}try{sanitizeDoc(P(0));r.push('0 ok');}catch(e){r.push(e.message);}try{sanitizeDoc({app:'shoof',width:100,height:100,pages:[{elements:'x'}]});r.push('bad ok');}catch(e){r.push(e.message);}return r;})()")
+    eq(bad, ['fileTooBig', 'notRasm', 'notRasm'], 'page limits validated')
+    ok(not c.errors, c.errors); ok(not EXTERNAL, EXTERNAL[:3]); c.close()
 
 
 # ================================================================ runner

@@ -5,7 +5,7 @@ Shoof (شوف, "look!") is a free, open-source (AGPL-3.0), browser-only Canva al
 - **Live site:** https://shahrosekhalid96-debug.github.io/shoof/ (GitHub Pages, auto-deploys on every push to `main`)
 - **Repo:** https://github.com/shahrosekhalid96-debug/shoof
 - **Claude artifact copy** (only place Ask Claude works): https://claude.ai/artifact/SC37XwK2xKrF4yu41YQpoK — slug `cbfef32e-d2be-48eb-beba-49773200fd62`, capabilities `downloads` + `sample` declared. Republish with `publish_files` (index.html; vendor/ and fonts/ already uploaded).
-- **Status:** v0.2 public preview. CEO review gave GO. 80/80 tests green locally and on GitHub Actions. Sprint 3 (2026-11-08): home screen + gradients. Sprint 4 (2026-11-09): Elements panel. Sprint 5 (2026-11-09): 50 generated English templates. Sprint 6 (2026-11-09): UX review fixes + axe-core WCAG 2.1 AA gate.
+- **Status:** v0.2 public preview. CEO review gave GO. 81/81 tests green locally and on GitHub Actions. Sprint 3 (2026-11-08): home screen + gradients. Sprint 4 (2026-11-09): Elements panel. Sprint 5 (2026-11-09): 50 generated English templates. Sprint 6 (2026-11-09): UX review fixes + axe-core WCAG 2.1 AA gate.
 
 ## Working rules (from Shary)
 - Be direct and execution-focused, minimal back-and-forth, brief explanations. Outputs must be deployable.
@@ -19,9 +19,10 @@ Shoof (شوف, "look!") is a free, open-source (AGPL-3.0), browser-only Canva al
 | `index.html` | The whole app (~1300 lines): HTML + CSS + JS, single file |
 | `vendor/konva.min.js` | Konva 10.9.1 (MIT) canvas engine, loaded locally |
 | `vendor/LUCIDE-LICENSE.txt` | ISC licence for the bundled Lucide icon subset (paths inlined in index.html as `ICON_SET`) |
+| `vendor/pptxgen.bundle.js` + `PPTXGENJS-LICENSE.txt` | PptxGenJS 4.0.1 (MIT, includes JSZip), lazy-loaded on first PowerPoint export (`loadPptx`) |
 | `vendor/jspdf.umd.min.js` | jsPDF 4.2.1 (MIT), lazy-loaded on first PDF export |
 | `fonts/` | woff2 + `fonts.css` + OFL licences: Inter, Poppins, Playfair Display, Bebas Neue, Cairo, Tajawal, Amiri, IBM Plex Sans Arabic |
-| `tests/qa_suite.py` | Playwright suite, 80 tests (`Ctx(tips=True)` shows first-visit tips) (`Ctx(home=True)` keeps the welcome screen; default hides it), desktop 1440 + phone 390, blocks all external requests |
+| `tests/qa_suite.py` | Playwright suite, 81 tests (`Ctx(tips=True)` shows first-visit tips) (`Ctx(home=True)` keeps the welcome screen; default hides it), desktop 1440 + phone 390, blocks all external requests |
 | `tools/templates/gen_templates.py` | Template generator: style spec + content table → `GEN_TEMPLATES` block in index.html (`--check` used by tests) |
 | `tests/vendor/axe.min.js` | axe-core 4.14 (MPL-2.0), test-only accessibility gate (`accessibility_axe_wcag_aa`); not deployed |
 | `tests/security/*.json` | Malicious design files used by tests |
@@ -40,6 +41,9 @@ Shoof (شوف, "look!") is a free, open-source (AGPL-3.0), browser-only Canva al
 - Rendering: `buildNode()` (element → Konva group), `fullRender()`.
 - Panels: `renderDrawer()` (left: templates/text/shapes/uploads/background/layers/Ask Claude/about), `renderProps()` (right/bottom sheet).
 - Export: `exportAs()` (PNG/JPG/PDF at exact design pixels), `saveFile()` (artifact `downloads` capability, else `<a download>`).
+- Pages (sprint 9): doc = `{width,height,pages:[{background,elements}],page}`; `hydrate()` adds non-enumerable `doc.elements`/`doc.background` views of the current page (so all old code works) — ALWAYS hydrate a doc built from JSON (`sanitizeDoc`, `blankDoc`, `restoreSnap` do). Old single-page files still open. Limits `LIM.pages=40`, `LIM.totalEls`. Pages bar `#pagesBar` (`renderPages/gotoPage/pageOp`, thumbs `refreshPageThumbs`), PageUp/PageDown. `setSize` scales all pages.
+- Export: PNG/JPG/WebP = current page (`-pN` suffix when multi-page), "PNG · all pages" (`pngall`), PDF = all pages, PowerPoint = all pages via `exportPptx()` (one slide per page; filled text → editable text boxes with font/size/colour/align/rotation/RTL; plain rects/ellipses → native shapes; everything else, incl. outline-only text → PNG/JPEG pictures). Logo `#brandHome` → home screen.
+- Templates: generator also has `CUSTOM` hand-composed posters (`p_*`) and multi-page `DECKS` (`d_*`, entries with `pages`); 60 generated (6 posters, 4 decks with 20 slides) + 17 originals = 77. Category `deck` (Presentations); home tile Presentation → deck.
 - Library (sprint 8): `pattern` element type (`PATTERNS`, `drawPattern()` — procedural halftone/lines/contours/dither drawn in a Konva.Shape; props pattern, fill, fill2, spacing 4–400), `addPattern()` inserts it just above the bg block at low opacity. Shapes `blob`, `parallelogram`. Grouped sets via `SETS={sticker,mockup,info}` + `setEls()/addSet()` (`MOCKUPS`: phone/tablet/laptop/browser/polaroid/card with photo slots; `INFOS`: step buttons, mind map, timeline, process, stats, percent ring). Generator adds one subtle pattern per recipe (`deco()`; `plain:True` in content opts out). Stock images Shary shared were NOT copied (watermarked/copyrighted) — these are original code-drawn equivalents.
 - Background = a real block: rect with `role:'bg'` at the bottom (`bgBlock()/ensureBgBlock()/setBgFill()/bgColorNow()/bgGradNow()`); Background tab, page colour and Ask Claude `setBackground` all write to it. Unselected it behaves like empty canvas (marquee/deselect); click selects it, then it moves/resizes; Ctrl+A skips it; clones drop the role; a background image removes a full-page block. `liftBackdrop()` marks a template's full-page bottom rect as the bg block. `doc.background.color` is only the base under it.
 - UX (sprint 7): drag items from the panel onto the page (`placeFromPanel`, one undo step); right-click / Shift+F10 actions menu (`openCtx`); canvas `#stageArea` is focusable: Tab/Shift+Tab cycle items (`cycleSel`, announced in `#srStatus`), Enter edits text; first-visit tips (`showTips`, key `shoof.tips`).

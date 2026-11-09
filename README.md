@@ -22,11 +22,13 @@ Arabic is fully supported, not added as an afterthought. The interface switches 
 
 ### Features (v0.2)
 - **Welcome home screen**: big template search, "start with a size" tiles (Instagram post, Story, Poster, Flyer, Logo, Business card, Presentation), Trending and Picks rows, and a "Continue your design" card
-- **67 templates** (50 English templates built by a generator script, plus 17 originals incl. Arabic and bilingual), filterable by format (Social, Posters, Stories, With photo) and topic (Sale & promo, Events, Hiring, Quotes, Tips, Food, Real estate, Business, Seasonal, Arabic) and searchable in EN and AR. Sizes cover Instagram, Stories/Reels, LinkedIn, Facebook, X and YouTube thumbnails, plus A4 and A3 posters.
+- **77 templates** including 4 multi-slide pitch decks and 6 editorial posters (60 built by a generator script, plus 17 originals incl. Arabic and bilingual), filterable by format (Social, Posters, Stories, With photo) and topic (Sale & promo, Events, Hiring, Quotes, Tips, Food, Real estate, Business, Seasonal, Arabic) and searchable in EN and AR. Sizes cover Instagram, Stories/Reels, LinkedIn, Facebook, X and YouTube thumbnails, plus A4 and A3 posters.
 - **New-design dialog** with 12 size presets or a custom size (16–10000 px)
 - **Text**: 8 bundled fonts (Latin: Inter, Poppins, Playfair Display, Bebas Neue; Arabic: Cairo, Tajawal, Amiri, IBM Plex Sans Arabic), plus size, colour, alignment, line height and letter spacing (automatically 0 for Arabic)
 - **Text effects**: shadow, outline and highlight box
 - **Elements panel** (searchable): shapes (incl. blob and slanted box), device mockups with photo slots (phone, tablet, laptop, browser, polaroid), 11 subtle code-drawn patterns (halftone dots, wave lines, contour rings, stripes, pixel dither), infographic blocks (step buttons, mind map, timeline, process, stats, percentage ring), line styles (dashed, dotted, arrows), photo frames with circle/blob/arch/hexagon/heart/diamond masks, 9 stickers, bar/line/pie/donut charts with editable data, and 209 Lucide icons (recolour, line weight, fill)
+- **Multi-page designs**: a pages bar to add, duplicate, reorder and delete pages (great for decks and carousels)
+- **Export**: PNG, JPG, WebP (current page or all pages), PDF (all pages) and **PowerPoint .pptx** with editable text
 - **Gradients**: linear and radial gradient fills for shapes, text and the page background, with 12 presets, two-colour editor, angle and swap
 - **Shapes**: rectangle, ellipse, triangle, star, line, arrow, speech bubble and hexagon, with fill, border, corners and shadow
 - **Images**: drag and drop, paste or upload (large images are downscaled to 2400 px), photo frames (placeholders), replace image, flip, crop (fill or fit), and brightness, contrast, blur and black & white filters

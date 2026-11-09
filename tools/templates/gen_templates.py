@@ -12,7 +12,7 @@ All templates are original. Text sizes are chosen with a rough width model so
 text wraps inside its box; the QA suite checks the real rendering (no text off
 the page, no overlapping text boxes).
 """
-import json, math, os, re, sys
+import json, math, os, re, sys  # noqa
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 INDEX = os.path.join(ROOT, 'index.html')
@@ -322,6 +322,194 @@ def r_slide(W, H, P, F, c):
     return els
 
 
+# ------------------------------------------------------------------ editorial posters (hand-composed, original)
+def TX(text, x, y, w, font, size, color, bold=False, align='left', lh=1.15, ls=0, **kw):
+    e = dict(type='text', text=text, x=round(x), y=round(y), width=round(w), fontFamily=font, fontSize=round(size), bold=bold, fill=color, align=align, lineHeight=lh)
+    if ls: e['letterSpacing'] = ls
+    e.update(kw); return e
+
+
+def RR(cx, cy, w, h, deg, fill, **kw):
+    """rect rotated about its own centre (Shoof rotates about the top-left corner)"""
+    a = math.radians(deg)
+    x = cx - (w / 2 * math.cos(a) - h / 2 * math.sin(a)); y = cy - (w / 2 * math.sin(a) + h / 2 * math.cos(a))
+    return R(x, y, w, h, fill, rotation=deg, **kw)
+
+
+def GR(a, b, angle=45, kind='linear'):
+    g = dict(type=kind, stops=[dict(offset=0, color=a), dict(offset=1, color=b)])
+    if kind == 'linear': g['angle'] = angle
+    return g
+
+
+def p_editorial(W, H, P, F, c):
+    red = '#c8374c'; ink = '#161616'
+    return [R(560, 900, 1360, 1900, red),
+            E(330, 600, 900, 900, '#888888', fillGradient=GR('#2e2e2e', '#ffffff', 300)),
+            PH(700, 520, 1080, 2520, '#d8d4d5'),
+            E(1330, 2330, 520, 520, '#888888', fillGradient=GR('#ffffff', '#2e2e2e', 300)),
+            RR(1240, 1760, 330, 3700, 33, red, opacity=0.9),
+            TX('WEAR\nTHE\nCOLOUR', 300, 1180, 1900, 'Poppins', 300, '', bold=True, lh=1.0, ls=12, stroke=ink, strokeWidth=7),
+            TX('INSTAGRAM\n@YOURSTUDIO', 120, 110, 900, 'Poppins', 46, ink, bold=True, lh=1.15, ls=4),
+            TX('STUDIO', 1660, 120, 700, 'Bebas Neue', 96, ink, align='right', ls=10),
+            I('x', 300, 1520, 70, red, sw=3), I('x', 2080, 2560, 70, red, sw=3),
+            R(400, 360, 150, 46, '', stroke=ink, strokeWidth=4), R(2100, 2920, 46, 150, '', stroke=ink, strokeWidth=4),
+            TX('WWW.YOURWEBSITE.COM', 120, 2600, 1300, 'Poppins', 40, ink, bold=True, ls=10, rotation=-90),
+            TX('WWW.YOURWEBSITE.COM', 2360, 900, 1300, 'Poppins', 40, ink, bold=True, ls=10, rotation=90),
+            TX('PEOPLE · VOL 4', 120, 3290, 1200, 'Poppins', 64, ink, ls=8),
+            TX('02', 1960, 3270, 400, 'Poppins', 96, ink, bold=True, align='right')]
+
+
+def p_passion(W, H, P, F, c):
+    teal = '#3f9fb5'
+    els = [R(0, 1300, W, 620, teal)]
+    for i in range(3): els.append(RR(60 + i * 150, 120 + i * 40, 70, 1100, 40, '#ffffff'))
+    for i in range(4): els.append(RR(780 + i * 140, 1580 + i * 20, 70, 1200, 40, '#ffffff'))
+    els += [TX('Do it with', 90, 560, 900, 'Inter', 72, '#ffffff', align='center', ls=8),
+            TX('passion', 90, 670, 900, 'Playfair Display', 190, teal, bold=True, align='center', lh=1.05, italic=True),
+            TX('or not at all', 90, 900, 900, 'Inter', 72, '#ffffff', align='center', ls=8)]
+    return els
+
+
+def p_cinematic(W, H, P, F, c):
+    gold = '#e9d8b8'
+    return [PH(0, 0, W, H, '#2a2e35'),
+            R(0, 0, W, H, '#0d0f12', fillGradient=GR('#0d0f1200', '#0d0f12ff', 90), opacity=0.95),
+            R(0, 0, W, 900, '#0d0f12', fillGradient=GR('#0d0f12cc', '#0d0f1200', 90)),
+            TX('WHAT YOU\nLEAVE BEHIND\nFOLLOWS YOU', 340, 330, 1800, 'Bebas Neue', 200, '#ffffff', align='center', lh=0.95, ls=6),
+            TX('ECHOES', 140, 2560, 2200, 'Playfair Display', 400, gold, align='center', lh=1.0, ls=60),
+            TX('A FILM BY YOUR NAME', 140, 3070, 2200, 'Inter', 56, gold, bold=True, align='center', ls=24),
+            TX('IN CINEMAS THIS WINTER', 140, 3190, 2200, 'Inter', 40, '#a9a39a', align='center', ls=16)]
+
+
+def p_swiss(W, H, P, F, c):
+    ink = '#111111'
+    names = ['Lina Haddad', 'Omar Siddiqui', 'Mei Tanaka', 'Jonas Berg', 'Amira Nasser', 'Carlos Rivera', 'Sara Lindqvist', 'Yusuf Kaya']
+    return [TX('TYPE\nFACE\nFEST', 150, 200, 2300, 'Inter', 800, ink, bold=True, lh=0.84, ls=-30),
+            TX('A weekend of type,\nposters and print', 1480, 2330, 900, 'Inter', 70, ink, bold=True, lh=1.15),
+            TX('14–15 March 2026\n10:00 – 18:00', 1480, 2550, 900, 'Inter', 60, ink, lh=1.25),
+            TX('\n'.join(names), 1480, 2770, 900, 'Inter', 44, ink, bold=True, lh=1.22),
+            TX('Main Hall\nCity Design School\n\nFree entry\nRegister online', 150, 2900, 700, 'Inter', 38, ink, bold=True, lh=1.25),
+            R(150, 2780, 120, 14, '#ff3b1f')]
+
+
+def p_geo(W, H, P, F, c):
+    return [R(0, 0, W, H, '#202227', fillGradient=GR('#5a5d68', '#16171b', 0, 'radial')),
+            PAT('contours', -300, 1200, 1800, 1800, '#ffffff', 0.08, 40),
+            S('triangle', -200, 1650, 1700, 1500, '#3a3d46', fillGradient=GR('#6b6f7c', '#1c1d22', 90)),
+            S('triangle', 1000, 1350, 1700, 1800, '#2f323a', fillGradient=GR('#8a8e9b', '#16171b', 90)),
+            E(780, 380, 960, 960, '#ffffff', opacity=0.14),
+            E(1350, 820, 520, 520, '#ffffff', opacity=0.22),
+            E(1180, 120, 160, 160, '', stroke='#ffffff', strokeWidth=5),
+            dict(type='icon', icon='moon-star', x=1210, y=150, width=100, height=100, stroke='#ffffff', strokeWidth=1.5, fill=''),
+            *[E(1235, 760 + i * 110, 50 - i * 8, 50 - i * 8, '#ffffff') for i in range(4)],
+            E(230, 1250, 240, 240, '#111216', stroke='#ffffff', strokeWidth=4),
+            TX('18+', 230, 1320, 240, 'Poppins', 80, '#ffffff', bold=True, align='center', lh=1.2),
+            E(1990, 1720, 300, 300, '#111216', stroke='#ffffff', strokeWidth=4),
+            TX('$15\nTICKETS', 1990, 1790, 300, 'Poppins', 54, '#ffffff', bold=True, align='center', lh=1.15),
+            TX('NIGHTFALL', 140, 2450, 2200, 'Poppins', 240, '#ffffff', align='center', lh=1.1, ls=40),
+            R(540, 2770, 1400, 6, '#ffffff'),
+            TX('SATURDAY 5 JULY · 10 PM – LATE', 140, 2820, 2200, 'Poppins', 70, '#ffffff', bold=True, align='center', ls=6),
+            TX('Line-up: DJ Nova · Sahara Sound · The Lows · Echo Park', 140, 2990, 2200, 'Inter', 50, '#d6d7dc', align='center'),
+            TX('Rooftop 21, King Road · Tickets at the door or online', 140, 3290, 2200, 'Inter', 38, '#a9abb3', align='center')]
+
+
+def p_halftone(W, H, P, F, c):
+    ink = '#111111'
+    return [R(0, 0, W, H, '#ffd23f'),
+            PAT('dotsRadial', 140, 760, 2200, 2200, ink, 0.9, 64),
+            E(640, 1260, 1200, 1200, '#ffd23f'),
+            TX('LOUD\nSUMMER', 640, 1480, 1200, 'Bebas Neue', 360, ink, align='center', lh=0.9, ls=6),
+            TX('MUSIC FESTIVAL · 2026', 140, 200, 2200, 'Poppins', 90, ink, bold=True, align='center', ls=20),
+            TX('20–22 JUNE · CITY PARK · ALL DAY', 140, 3200, 2200, 'Poppins', 70, ink, bold=True, align='center', ls=8)]
+
+
+# ------------------------------------------------------------------ pitch decks (1920×1080, several slides)
+def d_swiss():
+    ink, red, mut, bg = '#111111', '#ff3b1f', '#6b6b6b', '#f4f3f0'
+    lab = lambda t, x=120: TX(t, x, 90, 900, 'Inter', 24, ink, bold=True, ls=6)
+    foot = lambda n: [TX('YOUR COMPANY', 120, 980, 600, 'Inter', 20, mut, bold=True, ls=6), TX(f'{n:02d}', 1700, 975, 100, 'Inter', 22, mut, bold=True, align='right')]
+    s1 = [lab('SERIES A PITCH'), TX('01', 1280, 70, 520, 'Inter', 300, red, bold=True, align='right', lh=1.0),
+          TX('Scaling the', 120, 560, 1200, 'Inter', 120, ink, lh=1.0), TX('future of', 120, 680, 1200, 'Inter', 120, red, lh=1.0), TX('everyday work.', 120, 800, 1300, 'Inter', 120, ink, lh=1.0), *foot(1)]
+    s2 = [lab('THE PROBLEM'), TX('Teams lose nine hours a week to busywork.', 120, 220, 1500, 'Inter', 96, ink, lh=1.05),
+          *[x for i, (h, b) in enumerate([('01', 'Scattered tools and tabs'), ('02', 'Manual copy and paste'), ('03', 'No single source of truth')]) for x in
+            (R(120 + i * 570, 600, 500, 4, ink), TX(h, 120 + i * 570, 640, 500, 'Inter', 64, red, bold=True), TX(b, 120 + i * 570, 740, 480, 'Inter', 40, ink, lh=1.25))], *foot(2)]
+    s3 = [lab('YEAR IN REVIEW'), TX('2025', 120, 180, 600, 'Inter', 120, ink), TX('→', 760, 190, 120, 'Inter', 110, red),
+          TX('12%', 120, 430, 800, 'Inter', 300, red, lh=1.0), TX('Net revenue growth, quarter on quarter', 130, 760, 700, 'Inter', 34, mut, lh=1.3),
+          TX('8.4M', 1000, 430, 800, 'Inter', 300, ink, lh=1.0), TX('Tasks automated for our customers', 1010, 760, 700, 'Inter', 34, mut, lh=1.3), *foot(3)]
+    s4 = [lab('OUR SOLUTION'), TX('One calm workspace that does the busywork for you.', 120, 220, 860, 'Inter', 84, ink, lh=1.08),
+          TX('Connect your tools once. Shoof-style automations handle the rest, securely and from day one.', 120, 640, 760, 'Inter', 36, mut, lh=1.4),
+          PH(1060, 200, 740, 700, '#e3e1dc'), *foot(4)]
+    s5 = [lab('ROADMAP'), TX('2026', 120, 170, 600, 'Inter', 160, ink, lh=1.0), R(120, 600, 1680, 4, ink),
+          *[x for i, (q, b) in enumerate([('Q1', 'Launch teams plan'), ('Q2', 'Mobile apps'), ('Q3', 'Partner integrations'), ('Q4', 'Enterprise controls')]) for x in
+            (E(120 + i * 440, 584, 36, 36, red), TX(q, 120 + i * 440, 660, 400, 'Inter', 56, ink, bold=True), TX(b, 120 + i * 440, 750, 380, 'Inter', 34, mut, lh=1.3))], *foot(5)]
+    s6 = [lab('THANK YOU'), TX('Join us in building', 120, 330, 1600, 'Inter', 120, ink, lh=1.0), TX('what comes next.', 120, 460, 1600, 'Inter', 120, red, lh=1.0),
+          TX('hello@yourcompany.com  ·  yourcompany.com', 120, 700, 1400, 'Inter', 38, ink, bold=True), *foot(6)]
+    return [(bg, x) for x in (s1, s2, s3, s4, s5, s6)]
+
+
+def d_soft():
+    ink, mut = '#141414', '#5a4f48'
+    BG = lambda: R(0, 0, 1920, 1080, '#fbe3d0', fillGradient=GR('#ffd2a8', '#fff3ea', 0, 'radial'))
+    top = lambda t: [TX('YOUR COMPANY', 100, 70, 600, 'Inter', 20, ink, bold=True, ls=5), TX(t, 1220, 70, 600, 'Inter', 20, ink, bold=True, align='right', ls=5)]
+    circ = lambda x, y, d, big, small: [E(x, y, d, d, ink), TX(big, x, y + d * 0.30, d, 'Poppins', d * 0.2, '#ffffff', bold=True, align='center', lh=1.2), TX(small, x, y + d * 0.58, d, 'Inter', d * 0.075, '#e8e2dc', align='center', lh=1.2)]
+    s1 = [BG(), *top('PITCH DECK 2026'), TX('INVESTOR\nPITCH DECK', 100, 560, 1100, 'Poppins', 150, ink, lh=1.0), TX('Building the simplest way for small teams to grow.', 100, 900, 900, 'Inter', 34, mut, lh=1.3),
+          PH(1180, 170, 640, 640, '#f1d9c6', mask='circle'), S('star', 1120, 140, 90, 90, ink)]
+    s2 = [BG(), *top('MARKET'), TX('Market\nopportunity', 100, 180, 800, 'Poppins', 96, ink, lh=1.05), TX('A large, fast-growing market of small businesses that still run on spreadsheets.', 100, 480, 640, 'Inter', 32, mut, lh=1.45),
+          *circ(880, 200, 420, '$9B', 'Total market'), *circ(1340, 120, 300, '$3B', 'Serviceable'), *circ(1360, 560, 260, '$450M', 'Our 5-year goal')]
+    s3 = [BG(), *top('STRATEGY'), TX('Growth\nstrategy', 100, 180, 700, 'Poppins', 96, ink, lh=1.05),
+          *[x for i, (h, b, ic) in enumerate([('Product-led', 'Free plan that invites the whole team.', 'rocket'), ('Partners', 'Bundled with accounting and payroll tools.', 'handshake'), ('Content', 'Templates and guides that rank and convert.', 'book-open')]) for x in
+            (E(900, 170 + i * 270, 120, 120, ink), I(ic, 935, 205 + i * 270, 50, '#ffffff', sw=2), TX(h, 1060, 180 + i * 270, 700, 'Poppins', 48, ink, bold=True), TX(b, 1060, 250 + i * 270, 700, 'Inter', 32, mut, lh=1.35))]]
+    s4 = [BG(), *top('FINANCIALS'), TX('Revenue\nstreams', 100, 180, 700, 'Poppins', 96, ink, lh=1.05), TX('Subscriptions grow every quarter while churn keeps falling.', 100, 480, 620, 'Inter', 32, mut, lh=1.45),
+          dict(type='chart', chartType='bar', values=[1.2, 1.8, 2.6, 3.4, 4.9], labels=['Q1', 'Q2', 'Q3', 'Q4', 'Q5'], fill=ink, textColor=ink, showLabels=True, x=860, y=170, width=960, height=760)]
+    s5 = [BG(), *top('TEAM'), TX('Our team', 100, 150, 1000, 'Poppins', 96, ink, lh=1.05),
+          *[x for i, (n, r) in enumerate([('Your Name', 'CEO'), ('Team Member', 'CTO'), ('Team Member', 'COO'), ('Team Member', 'Advisor')]) for x in
+            (R(100 + i * 440, 360, 400, 600, '#ffffff', radius=28), PH(124 + i * 440, 384, 352, 300, '#f1d9c6', radius=18), TX(n, 124 + i * 440, 720, 352, 'Poppins', 38, ink, bold=True, align='center'), TX(r, 124 + i * 440, 780, 352, 'Inter', 30, mut, align='center'),
+             TX('One line about their experience.', 134 + i * 440, 840, 332, 'Inter', 24, mut, align='center', lh=1.35))]]
+    s6 = [BG(), *top('THANK YOU'), TX('Thank you', 100, 380, 1200, 'Poppins', 170, ink, lh=1.0), TX('hello@yourcompany.com', 100, 620, 900, 'Inter', 40, mut), S('star', 1500, 380, 220, 220, ink)]
+    return [('#fff3ea', x) for x in (s1, s2, s3, s4, s5, s6)]
+
+
+def d_warm():
+    o1, o2, wh, ink, mut = '#ff8a3d', '#e8455a', '#ffffff', '#3a1d14', '#7a5a50'
+    BG = lambda: R(0, 0, 1920, 1080, o1, fillGradient=GR(o1, o2, 135))
+    hd = lambda t, c=o2: TX(t, 120, 110, 1200, 'Poppins', 84, c, lh=1.05)
+    s1 = [BG(), TX('2026', 640, 150, 1180, 'Poppins', 360, '', bold=True, align='right', lh=1.0, stroke='#ffffffaa', strokeWidth=5),
+          TX('YOUR COMPANY', 120, 110, 700, 'Inter', 24, wh, bold=True, ls=5), TX('Pitch Deck\nPresentation', 120, 380, 1000, 'Poppins', 120, wh, lh=1.05),
+          TX('Turning ideas into scalable business opportunities', 120, 680, 900, 'Inter', 34, '#ffe9df', lh=1.35),
+          R(120, 820, 420, 84, wh, radius=42), TX('Start presentation  →', 120, 846, 420, 'Poppins', 30, o2, bold=True, align='center')]
+    s2 = [hd('Executive summary'), TX('We help growing teams plan, launch and measure their work in one place.', 120, 260, 760, 'Inter', 38, mut, lh=1.45),
+          *[x for i, (h, b, ic) in enumerate([('Vision', 'Make great work simple for every team.', 'target'), ('Mission', 'Remove busywork with smart automation.', 'rocket'), ('Values', 'Clarity, care and craft in everything.', 'heart')]) for x in
+            (R(1000, 200 + i * 260, 800, 220, '#fff4ee', radius=28), E(1040, 250 + i * 260, 120, 120, o1, fillGradient=GR(o1, o2, 135)), I(ic, 1075, 285 + i * 260, 50, wh, sw=2),
+             TX(h, 1200, 240 + i * 260, 560, 'Poppins', 44, ink, bold=True), TX(b, 1200, 306 + i * 260, 560, 'Inter', 28, mut, lh=1.35))]]
+    s3 = [hd('The problem'), PH(120, 280, 760, 640, '#ffe1d3', radius=32),
+          *[x for i, (n, b) in enumerate([('68%', 'of teams miss deadlines'), ('45%', 'of time spent on admin'), ('$2.6M', 'lost per year, per 100 staff')]) for x in
+            (TX(n, 1000, 270 + i * 230, 700, 'Poppins', 110, o2, bold=True, lh=1.0), TX(b, 1000, 400 + i * 230, 760, 'Inter', 34, mut))]]
+    s4 = [hd('Traction & milestones'),
+          *[x for i, (q, h, b) in enumerate([('Q1', '1,000 users', 'Public launch'), ('Q2', '$50K MRR', 'First paid plans'), ('Q3', '3 partners', 'Integrations live'), ('Q4', '20K users', 'Series A ready')]) for x in
+            (R(120 + i * 430, 300, 390, 560, '#fff4ee', radius=28), R(120 + i * 430, 300, 390, 150, o1, radius=28, fillGradient=GR(o1, o2, 135)), TX(q, 150 + i * 430, 340, 330, 'Poppins', 56, wh, bold=True),
+             TX(h, 150 + i * 430, 520, 330, 'Poppins', 46, ink, bold=True, lh=1.15), TX(b, 150 + i * 430, 640, 330, 'Inter', 30, mut, lh=1.35))]]
+    s5 = [BG(), PH(1060, 140, 740, 800, '#ffb08a', radius=40), TX("Let's build\nthe future\ntogether", 120, 300, 900, 'Poppins', 110, wh, lh=1.05),
+          TX('hello@yourcompany.com  ·  +966 50 000 0000', 120, 760, 900, 'Inter', 32, '#ffe9df')]
+    return [(o1, s1), ('#ffffff', s2), ('#ffffff', s3), ('#ffffff', s4), (o1, s5)]
+
+
+def d_pastel():
+    ink, pink, lil = '#141414', '#ffcfc4', '#b9a8ff'
+    blob = lambda x, y, w, h, a, b: dict(type='blob', x=x, y=y, width=w, height=h, fill=a, fillGradient=GR(a, b, 45))
+    s1 = [blob(1180, -160, 900, 1100, '#ffb3a7', '#9fb6ff'), blob(820, -120, 330, 300, '#ffc6b8', '#a9b8ff'),
+          TX('Company Name', 120, 110, 700, 'Inter', 28, ink), TX('Scale-up\nPitch Deck', 120, 380, 1000, 'Inter', 150, ink, lh=1.0),
+          TX('Short tagline about your unique selling point.', 120, 900, 700, 'Inter', 26, '#4a4a4a')]
+    cols = [['Mission and vision', 'Problem statement', 'Product overview'], ['Business model', 'Market overview', 'Financial projections'], ['Team overview', 'Funding request', 'Call to action']]
+    s2 = [blob(980, 120, 1100, 1100, lil, '#d6ccff'), S('star', 1460, 120, 300, 300, ink),
+          TX('Key elements of\na pitch deck', 120, 140, 1200, 'Inter', 110, ink, lh=1.05),
+          *[TX('\n'.join('•  ' + t for t in col), 120 + i * 560, 560, 520, 'Inter', 38, ink, lh=1.7) for i, col in enumerate(cols)]]
+    s3 = [blob(-200, 600, 700, 700, '#ffb3a7', lil), TX('Thank you', 520, 400, 1300, 'Inter', 170, ink, lh=1.0), TX('hello@company.com', 530, 640, 900, 'Inter', 40, '#4a4a4a')]
+    return [('#f1ecff', s1), (pink, s2), ('#f1ecff', s3)]
+
+
+CUSTOM = dict(editorial=p_editorial, passion=p_passion, cinematic=p_cinematic, swiss=p_swiss, geo=p_geo, halftone=p_halftone)
+DECKS = dict(swiss=d_swiss, soft=d_soft, warm=d_warm, pastel=d_pastel)
 RECIPES = dict(bold=r_bold, center=r_center, photo=r_photo, promo=r_promo, quote=r_quote, list=r_list, event=r_event,
                story=r_story, card=r_card, logo=r_logo, slide=r_slide)
 SIZE = dict(sq=(1080, 1080), story=(1080, 1920), a4=(2480, 3508), card=(1050, 600), logo=(1000, 1000), slide=(1920, 1080), wide=(1200, 630))
@@ -389,6 +577,18 @@ T = [
  ('product_launch', 'Product launch', ['promo', 'social', 'photo'], 'product launch new release', 'sq', 'photo', 'sky', 'modern', dict(kicker='Introducing', title='The new Shoof bottle', sub='Keeps drinks cold for 24 hours.', price='79 SAR', mask='blob')),
  ('coming_soon', 'Coming soon', ['promo', 'story'], 'coming soon launch teaser countdown', 'story', 'story', 'black', 'loud', dict(badge='STAY TUNED', title='SOMETHING NEW IS COMING', sub='Turn on notifications so you don’t miss it.', cta='Follow us')),
  ('giveaway', 'Giveaway', ['promo', 'social'], 'giveaway contest win prize', 'sq', 'list', 'pink', 'modern', dict(kicker='Giveaway', title='Win a gift box worth 500 SAR', items=['Follow our account', 'Like this post', 'Tag two friends'], foot='Winner announced Friday')),
+ # editorial posters (6)
+ ('poster_editorial', 'Editorial fashion poster', ['poster', 'photo'], 'editorial fashion magazine model portrait diagonal', 'a4', 'custom:editorial', 'violet', 'modern', dict(bg='#ffffff')),
+ ('poster_passion', 'Diagonal quote poster', ['poster', 'quote', 'story'], 'quote passion motivation diagonal stripes', 'story', 'custom:passion', 'coral', 'modern', dict(bg='#ffc477')),
+ ('poster_cinematic', 'Cinematic movie poster', ['poster', 'photo'], 'movie film cinema dark dramatic', 'a4', 'custom:cinematic', 'black', 'classic', {}),
+ ('poster_swiss', 'Swiss type poster', ['poster', 'event'], 'swiss typography festival bold type minimal', 'a4', 'custom:swiss', 'black', 'modern', dict(bg='#f2f1ee')),
+ ('poster_geo', 'Geometric night poster', ['poster', 'event'], 'party night club music geometric triangles', 'a4', 'custom:geo', 'black', 'modern', {}),
+ ('poster_halftone', 'Halftone festival poster', ['poster', 'event'], 'festival music halftone dots yellow bold', 'a4', 'custom:halftone', 'lemon', 'loud', {}),
+ # pitch decks (4)
+ ('deck_swiss', 'Pitch deck: Swiss (6 slides)', ['deck', 'business'], 'pitch deck presentation slides investor startup minimal', 'slide', 'deck:swiss', 'black', 'modern', {}),
+ ('deck_soft', 'Pitch deck: soft gradient (6 slides)', ['deck', 'business'], 'pitch deck presentation slides investor gradient', 'slide', 'deck:soft', 'sand', 'modern', {}),
+ ('deck_warm', 'Pitch deck: warm (5 slides)', ['deck', 'business'], 'pitch deck presentation slides orange gradient', 'slide', 'deck:warm', 'coral', 'modern', {}),
+ ('deck_pastel', 'Pitch deck: pastel (3 slides)', ['deck', 'business'], 'pitch deck presentation slides pastel blob', 'slide', 'deck:pastel', 'violet', 'modern', {}),
 ]
 
 CAT_ORDER = ['promo', 'event', 'hiring', 'quote', 'tips', 'food', 'realestate', 'business', 'seasonal']
@@ -399,11 +599,16 @@ def build():
     for key, name, cats, kw, size, recipe, pal, fonts, content in T:
         assert key not in keys, key; keys.add(key)
         W, H = SIZE[size]; P = PAL[pal]
-        els = [e for e in RECIPES[recipe](W, H, P, FONTS[fonts], content)]
-        d = None if content.get('plain') else deco(recipe, W, H, P)
-        if d: els.insert(0, d)
-        bg = {'color': P['bg'], 'image': None}
-        out.append(dict(key=key, name=name, cats=cats, kw=kw, w=W, h=H, bg=P['bg'], els=els))
+        if recipe.startswith('deck:'):
+            out.append(dict(key=key, name=name, cats=cats, kw=kw, w=W, h=H, pages=[dict(bg=bg, els=els) for bg, els in DECKS[recipe[5:]]()]))
+            continue
+        if recipe.startswith('custom:'):
+            els = CUSTOM[recipe[7:]](W, H, P, FONTS[fonts], content)
+        else:
+            els = [e for e in RECIPES[recipe](W, H, P, FONTS[fonts], content)]
+            d = None if content.get('plain') else deco(recipe, W, H, P)
+            if d: els.insert(0, d)
+        out.append(dict(key=key, name=name, cats=cats, kw=kw, w=W, h=H, bg=content.get('bg', P['bg']), els=els))
     return out
 
 
@@ -415,7 +620,7 @@ def render_block(data):
 
 def main():
     data = build()
-    assert len(data) == 50, len(data)
+    assert len(data) == 60, len(data)
     src = open(INDEX, encoding='utf-8').read()
     i, j = src.index(START), src.index(END) + len(END)
     new = src[:i] + render_block(data) + src[j:]
