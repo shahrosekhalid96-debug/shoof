@@ -72,7 +72,7 @@ def route(r):
             return r.fulfill(path=APP, content_type='text/html; charset=utf-8')
         full = os.path.normpath(os.path.join(APP_DIR, rel))
         if full.startswith(APP_DIR + os.sep) and os.path.isfile(full):
-            ctype = {'.js': 'application/javascript', '.css': 'text/css', '.woff2': 'font/woff2'}.get(os.path.splitext(full)[1]) \
+            ctype = {'.js': 'application/javascript', '.mjs': 'application/javascript', '.wasm': 'application/wasm', '.css': 'text/css', '.woff2': 'font/woff2'}.get(os.path.splitext(full)[1]) \
                 or mimetypes.guess_type(full)[0] or 'application/octet-stream'
             return r.fulfill(path=full, content_type=ctype)
         return r.fulfill(status=404, body='not found')
@@ -160,7 +160,7 @@ class Ctx:
         self.ctx.close()
 
 
-ALLOWED_LATIN = {'rasm', 'shoof', 'sh', 'claude', 'png', 'jpg', 'jpeg', 'pdf', 'webp', 'powerpoint', 'pptx', 'agpl', 'gnu', 'ctrl', 'shift', 'delete',
+ALLOWED_LATIN = {'svg', 'rasm', 'shoof', 'sh', 'claude', 'png', 'jpg', 'jpeg', 'pdf', 'webp', 'powerpoint', 'pptx', 'agpl', 'gnu', 'ctrl', 'shift', 'delete',
                  'inter', 'poppins', 'playfair', 'display', 'bebas', 'neue', 'cairo', 'tajawal', 'amiri', 'ibm', 'plex', 'sans', 'arabic'}
 
 
@@ -2178,11 +2178,11 @@ def t_smart_resize(B):
 @test('fonts_text_styles_case_brand_file')
 def t_fonts_styles(B):
     c = Ctx(B); c.blank()
-    eq(c.ev('FONTS.length'), 25, 'font count'); eq(c.ev('LATIN_FONTS.slice(0,2)'), ['Inter', 'Poppins'], 'defaults first')
+    eq(c.ev('FONTS.length'), 42, 'font count'); eq(c.ev('LATIN_FONTS.slice(0,2)'), ['Inter', 'Poppins'], 'defaults first')
     miss = c.ev("fetch('fonts/fonts.css').then(r=>r.text()).then(css=>FONTS.filter(f=>!css.includes(\"font-family: '\"+f+\"'\")))")
     eq(miss, [], 'every font has a bundled @font-face')
     ok(not c.ev("document.fonts.check('400 40px \"Pacifico\"')"), 'extra fonts are not loaded at start')
-    c.tab('text'); eq(c.page.locator('#drawer [data-tstyle]').count(), 10, 'text styles listed')
+    c.tab('text'); eq(c.page.locator('#drawer [data-tstyle]').count(), 22, 'text styles listed')
     c.page.click('#drawer [data-tstyle="2"]'); c.page.wait_for_timeout(900)
     els = c.ev('doc.elements.filter(e=>e.type==="text")'); eq(len(els), 2, 'style adds its lines'); ok(els[0].get('groupId') and els[0]['groupId'] == els[1]['groupId'], 'grouped')
     eq(els[0]['fontFamily'], 'Pacifico', 'style font'); ok(c.ev("document.fonts.check('400 40px \"Pacifico\"')"), 'font loaded on first use')
@@ -2206,6 +2206,75 @@ def t_fonts_styles(B):
     eq(c.ev('[brand.colors,brand.head,brand.body]'), [['#0b5d4b'], 'Lora', 'DM Sans'], 'kit loaded')
     bad = os.path.join(WORK, 'notkit.json'); open(bad, 'w').write('{"app":"other","colors":["#ff0000"]}')
     c.page.set_input_files('#brandLoad', bad); c.page.wait_for_timeout(300); eq(c.ev('brand.colors'), ['#0b5d4b'], 'foreign file refused')
+    ok(not c.errors, c.errors); c.close()
+
+
+@test('export_svg_transparent_2x')
+def t_export_more(B):
+    c = Ctx(B)
+    c.ev("()=>{useTemplate(TEMPLATES.findIndex(t=>t.key==='workshop'))}"); c.page.wait_for_timeout(300)
+    before = c.ev('JSON.stringify(doc)')
+    def exp(kind):
+        c.page.click('#exportBtn'); return c.download(lambda: c.page.click(f'#exportMenu [data-exp="{kind}"]'))
+    name, data, path = exp('svg'); eq(name, 'shoof-design.svg', 'svg name'); svg = data.decode('utf-8')
+    ok(svg.startswith('<?xml') and 'viewBox="0 0 1080 1080"' in svg, 'svg header')
+    ok('>Design basics for</tspan>' in svg and "font-family=\"'Poppins'\"" in svg, 'text stays real text')
+    ok('data:font/woff2;base64,' in svg, 'fonts embedded'); ok('<path d="M' in svg, 'icons stay vector'); ok('<script' not in svg.lower() and 'http://' not in svg.replace('http://www.w3.org/2000/svg', ''), 'svg is self-contained')
+    ok(svg.count('<rect') >= 3 and svg.count('<image') >= 1, 'shapes are vector, the pattern is a picture')
+    shown = c.ev("""svg=>new Promise(r=>{const i=new Image();i.onload=()=>{const k=document.createElement('canvas');k.width=k.height=108;const x=k.getContext('2d');x.drawImage(i,0,0,108,108);r([...x.getImageData(10,10,1,1).data].concat([...x.getImageData(8,12,1,1).data]));};i.onerror=()=>r(null);i.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);})""", svg)
+    ok(shown and shown[3] == 255, f'svg renders {shown}')
+    name, data, _ = exp('pngclear'); eq(name, 'shoof-design-transparent.png', 'transparent name'); eq(png_size(data), (1080, 1080), 'transparent size')
+    a = c.ev("""u=>new Promise(r=>{const i=new Image();i.onload=()=>{const k=document.createElement('canvas');k.width=i.width;k.height=i.height;const x=k.getContext('2d');x.drawImage(i,0,0);r([x.getImageData(600,30,1,1).data[3],x.getImageData(150,160,1,1).data[3]]);};i.src=u;})""", 'data:image/png;base64,' + __import__('base64').b64encode(data).decode())
+    eq(a, [0, 255], 'background is see-through, items are kept')
+    name, data, _ = exp('png2x'); eq(name, 'shoof-design@2x.png', '2x name'); eq(png_size(data), (2160, 2160), '2x size')
+    eq(c.ev('JSON.stringify(doc)'), before, 'exports do not change the design'); ok(c.ev("!!nodeOf(bgBlock().id).isVisible()"), 'background shown again')
+    ok(not c.errors, c.errors); c.close()
+
+
+@test('text_effects_curve_font_previews')
+def t_text_fx(B):
+    c = Ctx(B); c.blank(); c.tab('text'); eq(c.page.locator('#drawer [data-tstyle]').count(), 22, 'text styles')
+    c.page.click('#drawer [data-text="h"]'); c.page.wait_for_timeout(200); e0 = c.sel_el()
+    for k, chk in [('fxSoft', lambda e: e.get('shadowBlur', 0) > 0 and e.get('shadowY', 0) > 0), ('fxRetro', lambda e: e.get('shadowBlur') == 0 and e.get('shadowX', 0) > 0),
+                   ('fxHollow', lambda e: e['fill'] == '' and e.get('strokeWidth', 0) > 0), ('fxNeon', lambda e: e['fill'] == e0['fill'] and e.get('shadowColor') == e0['fill'] and 'stroke' not in e),
+                   ('fxSticker', lambda e: e.get('stroke') == '#ffffff' and e['fill'] == e0['fill']), ('fxMarker', lambda e: e.get('bgColor') == '#ffeb3b' and 'shadowColor' not in e),
+                   ('fxNone', lambda e: all(q not in e for q in ['shadowColor', 'stroke', 'strokeWidth', 'bgColor']) and e['fill'] == e0['fill'])]:
+        c.page.click(f'#props [data-tfx="{k}"]'); c.page.wait_for_timeout(80); ok(chk(c.sel_el()), f'{k}: {c.sel_el()}')
+    c.page.keyboard.press('Control+z'); ok(c.sel_el().get('bgColor') == '#ffeb3b', 'each effect is one undo step')
+    c.page.keyboard.press('Control+y')
+    # curve: bends the line, survives save/open, exports, and can be switched off
+    c.ev("()=>{const s=$('#pCurve');s.value=45;s.dispatchEvent(new Event('input',{bubbles:true}));s.dispatchEvent(new Event('change',{bubbles:true}));}"); c.page.wait_for_timeout(200)
+    e = c.sel_el(); eq(e.get('curve'), 45, 'curve set'); ok(c.ev("nodeOf(selId).findOne('.tx').getClassName()") == 'TextPath', 'drawn on a path'); ok(e['height'] > e0['height'], 'box grows with the arc')
+    eq(c.ev("sanitizeDoc(JSON.parse(JSON.stringify(doc))).elements.find(x=>x.type==='text').curve"), 45, 'curve kept by the validator')
+    eq(c.ev("sanitizeEl({type:'text',text:'x',x:0,y:0,width:100,curve:9999},new Set()).curve"), 100, 'curve clamped')
+    ok(len(c.ev("renderExport('image/png')")) > 1000, 'curved text exports')
+    c.page.dblclick('#stage', position=c.ev("(()=>{const r=nodeOf(selId).getClientRect();return {x:r.x+r.width/2,y:r.y+12}})()")); c.page.wait_for_timeout(200)
+    ok(c.ev('!!editingId'), 'curved text can still be edited on the canvas'); c.page.keyboard.press('Escape'); c.page.wait_for_timeout(100)
+    c.ev("()=>{select(doc.elements.find(x=>x.type==='text').id)}"); c.ev("()=>{const s=$('#pCurve');s.value=0;s.dispatchEvent(new Event('change',{bubbles:true}));}"); c.page.wait_for_timeout(150)
+    ok(c.ev("nodeOf(selId).findOne('.tx').getClassName()") == 'Text', 'curve 0 is normal text again')
+    # font previews: hidden until asked for, then every family is one click
+    eq(c.ev('FONTS.length'), 42, 'font count'); eq(c.page.locator('#props [data-font]').count(), 0, 'previews closed at first')
+    c.page.click('#pFontBrowse'); eq(c.page.locator('#props [data-font]').count(), 42, 'all fonts previewed')
+    c.page.click('#props [data-font="Great Vibes"]'); c.page.wait_for_timeout(700); eq(c.sel_el()['fontFamily'], 'Great Vibes', 'font applied from the preview list')
+    miss = c.ev("fetch('fonts/fonts.css').then(r=>r.text()).then(css=>FONTS.filter(f=>!css.includes(\"font-family: '\"+f+\"'\")))"); eq(miss, [], 'every font is bundled')
+    ok(not c.errors, c.errors); c.close()
+
+
+@test('background_remover_on_device')
+def t_bg_remove(B):
+    c = Ctx(B); c.blank()
+    src = c.ev("""()=>{const k=document.createElement('canvas');k.width=640;k.height=480;const x=k.getContext('2d');const g=x.createLinearGradient(0,0,0,480);g.addColorStop(0,'#c8d7eb');g.addColorStop(1,'#98a9c6');x.fillStyle=g;x.fillRect(0,0,640,480);x.fillStyle='#c83c32';x.beginPath();x.roundRect(220,120,200,270,30);x.fill();x.fillStyle='#781e19';x.beginPath();x.ellipse(320,125,95,26,0,0,7);x.fill();return k.toDataURL('image/jpeg',0.9);}""")
+    c.ev("u=>addImage(u)", src); c.page.wait_for_timeout(400); eq(c.sel_el()['type'], 'image', 'photo added')
+    ok(not c.ev('!!window.ort'), 'the AI tool is not loaded until it is asked for')
+    c.page.click('#pRemoveBg')
+    for _ in range(240):
+        if c.ev("!bgBusy&&byId(selId).src.startsWith('data:image/png')"): break
+        c.page.wait_for_timeout(250)
+    out = c.sel_el()['src']; ok(out.startswith('data:image/png'), 'cut-out is a PNG with transparency')
+    px = c.ev("""u=>new Promise(r=>{const i=new Image();i.onload=()=>{const k=document.createElement('canvas');k.width=i.width;k.height=i.height;const x=k.getContext('2d');x.drawImage(i,0,0);r([i.width,i.height,x.getImageData(12,12,1,1).data[3],x.getImageData(628,468,1,1).data[3],x.getImageData(320,260,1,1).data[3]]);};i.src=u;})""", out)
+    eq(px[:2], [640, 480], 'same size as the photo'); ok(px[2] < 20 and px[3] < 20, f'backdrop removed {px}'); ok(px[4] > 235, f'subject kept {px}')
+    eq(c.ev("sanitizeDoc(JSON.parse(JSON.stringify(doc))).elements.find(e=>e.type==='image').src.slice(0,14)"), 'data:image/png', 'cut-out survives save/open')
+    c.page.keyboard.press('Control+z'); c.page.wait_for_timeout(150); eq(c.ev("doc.elements.find(e=>e.type==='image').src.slice(0,15)"), 'data:image/jpeg', 'undo brings the photo back')
     ok(not c.errors, c.errors); c.close()
 
 
