@@ -5,7 +5,7 @@ Shoof (شوف, "look!") is a free, open-source (AGPL-3.0), browser-only Canva al
 - **Live site:** https://shahrosekhalid96-debug.github.io/shoof/ (GitHub Pages, auto-deploys on every push to `main`)
 - **Repo:** https://github.com/shahrosekhalid96-debug/shoof
 - **Claude artifact copy** (only place Ask Claude works): https://claude.ai/artifact/SC37XwK2xKrF4yu41YQpoK — slug `cbfef32e-d2be-48eb-beba-49773200fd62`, capabilities `downloads` + `sample` declared. Republish with `publish_files` (index.html; vendor/ and fonts/ already uploaded).
-- **Status:** v0.2 public preview. CEO review gave GO. 82/82 tests green locally and on GitHub Actions. Sprint 3 (2026-11-08): home screen + gradients. Sprint 4 (2026-11-09): Elements panel. Sprint 5 (2026-11-09): 50 generated English templates. Sprint 6 (2026-11-09): UX review fixes + axe-core WCAG 2.1 AA gate.
+- **Status:** v0.2 public preview. CEO review gave GO. 84/84 tests green locally and on GitHub Actions. Sprint 3 (2026-11-08): home screen + gradients. Sprint 4 (2026-11-09): Elements panel. Sprint 5 (2026-11-09): 50 generated English templates. Sprint 6 (2026-11-09): UX review fixes + axe-core WCAG 2.1 AA gate.
 
 ## Working rules (from Shary)
 - **Everything must be editable** — every page of every template starts with a background block (`role:'bg'`), no baked-in pictures of text/shapes, no locked decoration. Templates must look *designed* (layered cards, badges, depth, textures), not one shape + text.
@@ -23,7 +23,7 @@ Shoof (شوف, "look!") is a free, open-source (AGPL-3.0), browser-only Canva al
 | `vendor/pptxgen.bundle.js` + `PPTXGENJS-LICENSE.txt` | PptxGenJS 4.0.1 (MIT, includes JSZip), lazy-loaded on first PowerPoint export (`loadPptx`) |
 | `vendor/jspdf.umd.min.js` | jsPDF 4.2.1 (MIT), lazy-loaded on first PDF export |
 | `fonts/` | woff2 + `fonts.css` + OFL licences: Inter, Poppins, Playfair Display, Bebas Neue, Cairo, Tajawal, Amiri, IBM Plex Sans Arabic |
-| `tests/qa_suite.py` | Playwright suite, 82 tests (`Ctx(tips=True)` shows first-visit tips) (`Ctx(home=True)` keeps the welcome screen; default hides it), desktop 1440 + phone 390, blocks all external requests |
+| `tests/qa_suite.py` | Playwright suite, 84 tests (`Ctx(tips=True)` shows first-visit tips) (`Ctx(home=True)` keeps the welcome screen; default hides it), desktop 1440 + phone 390, blocks all external requests |
 | `tools/templates/gen_templates.py` | Template generator: style spec + content table → `GEN_TEMPLATES` block in index.html (`--check` used by tests) |
 | `tests/vendor/axe.min.js` | axe-core 4.14 (MPL-2.0), test-only accessibility gate (`accessibility_axe_wcag_aa`); not deployed |
 | `tests/security/*.json` | Malicious design files used by tests |
@@ -44,6 +44,7 @@ Shoof (شوف, "look!") is a free, open-source (AGPL-3.0), browser-only Canva al
 - Export: `exportAs()` (PNG/JPG/PDF at exact design pixels), `saveFile()` (artifact `downloads` capability, else `<a download>`).
 - Pages (sprint 9): doc = `{width,height,pages:[{background,elements}],page}`; `hydrate()` adds non-enumerable `doc.elements`/`doc.background` views of the current page (so all old code works) — ALWAYS hydrate a doc built from JSON (`sanitizeDoc`, `blankDoc`, `restoreSnap` do). Old single-page files still open. Limits `LIM.pages=40`, `LIM.totalEls`. Pages bar `#pagesBar` (`renderPages/gotoPage/pageOp`, thumbs `refreshPageThumbs`), PageUp/PageDown. `setSize` scales all pages.
 - Export: PNG/JPG/WebP = current page (`-pN` suffix when multi-page), "PNG · all pages" (`pngall`), PDF = all pages, PowerPoint = all pages via `exportPptx()` (one slide per page; filled text → editable text boxes with font/size/colour/align/rotation/RTL; plain rects/ellipses → native shapes; everything else, incl. outline-only text → PNG/JPEG pictures). Logo `#brandHome` → home screen.
+- Sprint 11 (from the Canva user-feedback analysis: ship the Pro-locked features free): **Brand kit** — rail tab `brand`; `brand={colors≤12,head,body,logo}` in localStorage `shoof.brand` (`sanitizeBrand/loadBrand/saveBrand`); `applyBrand()` remaps colours by hue family (`colorUsage/brandMap`), swaps heading/body fonts, keeps text readable (`underColor/contrastOf`), one undo step; brand swatches also show in the props panel (`brandRow`) and Background tab; `brandLine()` tells Ask Claude the brand. **Smart resize** — `adaptDoc(d,w,h)` / `adaptPage` replaces plain scaling in `setSize`: each item is placed inside what it sits on (containment tree), full-width blocks stretch, left/right/centre anchoring, close neighbours move together. Download → "PNG · 4 social sizes" (`PACK`, kind `pack`) exports adapted copies without changing the design.
 - Backgrounds: generator `with_bg()` puts a bg block first on every page; app `withBgBlocks()` does the same for templates, new designs (New dialog, home tiles), new pages and the starter. Opened files and autosaves are left exactly as saved. Test `everything_editable_backgrounds`.
 - Recipes redesigned (sprint 10): `list` (colour header band + watermark icon + floating cards with badges on a connector), `quote` (floating card, quote badge, avatar slot), `center` (inset frame + icon badge), `promo` (big offer + round product photo + star sticker + band with button), `photo` (offset frame + round price sticker), `story` (headline + floating card with tilted card behind). Width model: Bebas 0.47.
 - Templates: generator also has `CUSTOM` hand-composed posters (`p_*`) and multi-page `DECKS` (`d_*`, entries with `pages`); 60 generated (6 posters, 4 decks with 20 slides) + 17 originals = 77. Category `deck` (Presentations); home tile Presentation → deck.
@@ -76,7 +77,7 @@ gh run list -R shahrosekhalid96-debug/shoof
 - Done in sprint 5: ~~50 English templates~~ via generator (Shary chose 50, not 100+). More can be added as rows in the generator's content table.
 - Waiting on Shary: Open Peeps / Open Doodles zips (he is downloading them) → add an Illustrations section to Elements.
 5. Text style presets, curved text, more fonts.
-6. Brand kit (logo, colours, fonts).
+6. ~~Brand kit~~ (sprint 11). Next from the feedback analysis: precise typography controls, SVG export, phone editing polish, save/load a brand kit file.
 7. Later: multi-page designs, resize/adapt to other formats, background removal, animation.
 - Also: one automated "gates" addition — axe-core contrast check, page-weight budget, screenshot comparison.
 - Gradient follow-ups: multi-stop editor (data model already allows 5 stops), gradient on image frames/placeholders.

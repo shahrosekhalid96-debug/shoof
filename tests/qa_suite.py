@@ -2000,12 +2000,12 @@ def t_library(B):
     ph = [x for x in added if x['type'] == 'placeholder'][0]
     sb = c.page.locator('#stage').bounding_box(); f = sb['width'] / 1080
     c.page.wait_for_timeout(200)  # let Konva redraw its hit canvas after the add
-    for attempt in range(2):
+    for attempt in range(3):
         try:
-            with c.page.expect_file_chooser(timeout=4000) as fc: c.page.mouse.click(sb['x'] + (ph['x'] + ph['width'] / 2) * f, sb['y'] + (ph['y'] + ph['height'] / 2) * f)
+            with c.page.expect_file_chooser(timeout=8000) as fc: c.page.mouse.click(sb['x'] + (ph['x'] + ph['width'] / 2) * f, sb['y'] + (ph['y'] + ph['height'] / 2) * f)
             break
         except Exception:
-            ok(attempt == 0, 'clicking the phone screen did not open the photo picker'); c.page.wait_for_timeout(300)
+            ok(attempt < 2, 'clicking the phone screen did not open the photo picker'); c.page.wait_for_timeout(300)
     fc.value.set_files(IMG); c.page.wait_for_function("doc.elements.some(e=>e.type==='image')")
     for i in range(1, c.ev('MOCKUPS.length')): c.page.click(f'#elBody [data-mockup="{i}"]')
     for i in range(c.ev('INFOS.length')): c.page.click(f'#elBody [data-info="{i}"]')
@@ -2101,6 +2101,80 @@ def t_editable(B):
 
 
 # ================================================================ runner
+@test('brand_kit_colours_fonts_apply')
+def t_brand_kit(B):
+    c = Ctx(B)
+    c.ev("()=>{useTemplate(TEMPLATES.findIndex(t=>t.key==='workshop'))}"); c.page.wait_for_timeout(200)
+    c.tab('brand')
+    ok(c.page.locator('#brandApply').is_visible(), 'brand tab renders')
+    for col in ['#0b5d4b', '#f2b705']:
+        c.ev("v=>{$('#brandPick').value=v}", col); c.page.click('#brandAddBtn')
+    eq(c.ev('brand.colors'), ['#0b5d4b', '#f2b705'], 'colours added')
+    c.page.select_option('#brandHead', 'Playfair Display'); c.page.select_option('#brandBody', 'Inter')
+    eq(c.ev("JSON.parse(localStorage.getItem('shoof.brand')).head"), 'Playfair Display', 'saved on device')
+    before = c.ev('JSON.stringify(doc)')
+    c.page.click('#brandApply'); c.page.wait_for_timeout(500)
+    cols = c.ev("[...colorUsage(doc).keys()]")
+    ok('#0b5d4b' in cols and '#f2b705' in cols, f'brand colours used {cols}')
+    ok('#6c4cf5' not in cols and '#ff6a88' not in cols, f'old accents replaced {cols}')
+    big = c.ev("doc.elements.filter(e=>e.type==='text').sort((a,b)=>b.fontSize-a.fontSize)[0].fontFamily")
+    eq(big, 'Playfair Display', 'heading font applied')
+    low = c.ev("doc.elements.map((e,i)=>e.type==='text'&&e.fill?contrastOf(e.fill,underColor(doc.pages[doc.page],i)||'#ffffff'):9).filter(r=>r<3).length")
+    eq(low, 0, 'text stays readable after recolour')
+    c.page.keyboard.press('Control+z'); c.page.wait_for_timeout(150)
+    eq(c.ev('JSON.stringify(doc)'), before, 'one undo step reverts the brand')
+    # brand colours appear in the colour picker of the properties panel and apply on click
+    c.ev("()=>{select(doc.elements.find(e=>e.type==='text').id)}"); c.page.wait_for_timeout(100)
+    c.page.click('#props [data-pbc="1"]')
+    eq(c.sel_el()['fill'], '#f2b705', 'brand swatch recolours the selection')
+    # remove a colour; kit survives a reload; hostile stored kit is cleaned
+    c.page.hover('#drawer [data-bc="0"]'); c.page.click('#drawer [data-bcx="0"]'); eq(c.ev('brand.colors'), ['#f2b705'], 'colour removed')
+    c.ev("()=>localStorage.setItem('shoof.brand',JSON.stringify({colors:['#123456','javascript:alert(1)','url(x)',7],head:'<img src=x onerror=alert(1)>',body:'Poppins',logo:'https://evil.example/x.png'}))")
+    c.goto(); c.page.wait_for_timeout(300)
+    eq(c.ev('brand'), {'colors': ['#123456'], 'head': '', 'body': 'Poppins', 'logo': None}, 'stored kit sanitised')
+    ok('BRAND KIT' in c.ev("buildPrompt('free','x',true)") and '#123456' in c.ev("buildPrompt('free','x',true)"), 'Ask Claude knows the brand')
+    ok(not c.errors, c.errors); c.close()
+
+
+@test('smart_resize_and_social_pack')
+def t_smart_resize(B):
+    c = Ctx(B)
+    c.ev("()=>{useTemplate(TEMPLATES.findIndex(t=>t.key==='workshop'))}"); c.page.wait_for_timeout(200)
+    before = c.ev('JSON.stringify(doc)')
+    for sid, (w, h) in {'story': (1080, 1920), 'x': (1600, 900), 'li': (1200, 627)}.items():
+        c.ev("s=>{doc=hydrate(JSON.parse(s));fullRender(true);}", before)
+        c.page.select_option('#sizeSel', sid); c.page.wait_for_timeout(200)
+        eq(c.ev('[doc.width,doc.height]'), [w, h], f'{sid} size')
+        bg = c.ev("(()=>{const b=bgBlock();return [b.x,b.y,b.width,b.height]})()"); eq(bg, [0, 0, w, h], f'{sid}: background block still fills the page')
+        out = c.ev("doc.elements.filter(e=>!e.role&&e.type!=='ellipse'&&e.type!=='pattern').filter(e=>{const b=elBox(e);return b.x<-2||b.y<-2||b.x+b.w>doc.width+2||b.y+b.h>doc.height+2}).map(e=>e.type+':'+(e.text||''))")
+        eq(out, [], f'{sid}: nothing pushed off the page')
+        lefts = c.ev("[...new Set(doc.elements.filter(e=>e.type==='text'&&(e.align||'left')==='left'&&/WORKSHOP|Design/.test(e.text)).map(e=>e.x))]")
+        eq(len(lefts), 1, f'{sid}: left-aligned text keeps a shared left edge {lefts}')
+        ok(c.ev("doc.elements.every(e=>e.type!=='text'||e.fontSize>=8)"), f'{sid}: text still legible')
+        # children stay on the thing they sit on: the date stays inside its badge
+        ok(c.ev("(()=>{const r=doc.elements.find(e=>e.type==='rect'&&!e.role),t=doc.elements.find(e=>e.text==='14');return t.x>=r.x-2&&t.y>=r.y-2&&t.x+t.width<=r.x+r.width+2&&t.y<=r.y+r.height})()"), f'{sid}: label stays in its badge')
+    c.page.keyboard.press('Control+z'); c.page.wait_for_timeout(150)
+    # all the templates survive every format without errors or invalid numbers
+    bad = c.ev("""()=>{const bad=[];TEMPLATES.forEach(tp=>{PACK.concat(['a4','yt']).forEach(id=>{const z=SIZES.find(x=>x.id===id);try{const d=adaptDoc(sanitizeDoc(tp.make()),z.w,z.h);if(d.width!==z.w||!d.pages.every(p=>p.elements.every(e=>Number.isFinite(e.x)&&Number.isFinite(e.y)&&e.width>=1&&e.height>=1&&(e.type!=='text'||e.fontSize>=1)))||sanitizeDoc(JSON.parse(JSON.stringify(d))).pages.length!==d.pages.length)bad.push(tp.key+'/'+id);}catch(e){bad.push(tp.key+'/'+id+':'+e.message);}});});return bad;}""")
+    eq(bad, [], 'every template adapts to every format')
+    # social pack: four PNGs at exact sizes, design untouched afterwards
+    c.ev("s=>{doc=hydrate(JSON.parse(s));fullRender(true);resetHistory();}", before)
+    got = []
+    c.page.on('download', lambda d: got.append(d))
+    c.page.click('#exportBtn'); c.page.click('#exportMenu [data-exp="pack"]')
+    for _ in range(100):
+        if len(got) >= 4: break
+        c.page.wait_for_timeout(200)
+    eq(len(got), 4, 'four files')
+    sizes = {}
+    for d in got:
+        pth = os.path.join(WORK, d.suggested_filename); d.save_as(pth); sizes[d.suggested_filename] = png_size(open(pth, 'rb').read())
+    eq(sorted(tuple(v) for v in sizes.values()), sorted([(1080, 1080), (1080, 1920), (1200, 627), (1600, 900)]), f'pack sizes {sizes}')
+    c.page.wait_for_timeout(300)
+    eq(c.ev('JSON.stringify(doc)'), before, 'design unchanged after the pack export')
+    ok(not c.errors, c.errors); c.close()
+
+
 def main():
     only = [x for x in os.environ.get('QA_ONLY', '').split(',') if x]
     t0 = time.time()

@@ -29,6 +29,8 @@ Arabic is fully supported, not added as an afterthought. The interface switches 
 - **Elements panel** (searchable): shapes (incl. blob and slanted box), device mockups with photo slots (phone, tablet, laptop, browser, polaroid), 11 subtle code-drawn patterns (halftone dots, wave lines, contour rings, stripes, pixel dither), infographic blocks (step buttons, mind map, timeline, process, stats, percentage ring), line styles (dashed, dotted, arrows), photo frames with circle/blob/arch/hexagon/heart/diamond masks, 9 stickers, bar/line/pie/donut charts with editable data, and 209 Lucide icons (recolour, line weight, fill)
 - **Multi-page designs**: a pages bar to add, duplicate, reorder and delete pages (great for decks and carousels)
 - **Export**: PNG, JPG, WebP (current page or all pages), PDF (all pages) and **PowerPoint .pptx** with editable text
+- **Brand kit (free)**: save your colours, heading and body fonts and logo on your device, then apply the brand to any design in one click (text stays readable, one undo step)
+- **Smart resize (free)**: change format and the layout adapts (full-width blocks stretch, items keep their edges, labels stay on their cards); **Download → PNG · 4 social sizes** exports Instagram, Story, LinkedIn and X versions at once
 - **Gradients**: linear and radial gradient fills for shapes, text and the page background, with 12 presets, two-colour editor, angle and swap
 - **Shapes**: rectangle, ellipse, triangle, star, line, arrow, speech bubble and hexagon, with fill, border, corners and shadow
 - **Images**: drag and drop, paste or upload (large images are downscaled to 2400 px), photo frames (placeholders), replace image, flip, crop (fill or fit), and brightness, contrast, blur and black & white filters
