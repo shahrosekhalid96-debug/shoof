@@ -735,7 +735,133 @@ def r_stat(W, H, P, F, c):
     return els
 
 
-CUSTOM = dict(editorial=p_editorial, passion=p_passion, cinematic=p_cinematic, swiss=p_swiss, geo=p_geo, halftone=p_halftone)
+# ------------------------------------------------------------------ sprint 15: designer sets that use the wider font library
+def ARC(text, cx, cy, radius, font, size, color, up=True, deg=150, **kw):
+    """one line of text on a circle of the given radius around (cx, cy); mirrors the arc maths of buildNode"""
+    th = math.radians(deg); w = radius * th; sag = radius * (1 - math.cos(min(th, math.pi) / 2))
+    y = cy - radius - 0.75 * size if up else cy - sag + radius - 0.55 * size
+    e = TX(text, cx - w / 2, y, w, font, size, color, align='center', lh=1.15, **kw)
+    e['curve'] = round(deg / 3.5 * (1 if up else -1), 2); return e
+
+
+def GLOW(col, blur): return dict(shadowColor=col, shadowBlur=round(blur), shadowX=0, shadowY=0, shadowOpacity=1)
+
+
+def p_badge(W, H, P, F, c):
+    s = W / 1080; cx, cy = W / 2, H / 2; ink, acc, paper = c['ink'], c['acc'], c['bg']
+    return [PAT('dotGrid', 0, 0, W, H, ink, 0.07, 34 * s),
+            E(cx - 430 * s, cy - 430 * s, 860 * s, 860 * s, '', stroke=ink, strokeWidth=round(8 * s)),
+            E(cx - 404 * s, cy - 404 * s, 808 * s, 808 * s, acc),
+            E(cx - 300 * s, cy - 300 * s, 600 * s, 600 * s, paper, stroke=ink, strokeWidth=round(6 * s)),
+            ARC(c['top'], cx, cy, 352 * s, 'Oswald', 46 * s, paper, True, 150, bold=True, ls=round(6 * s)),
+            ARC(c['bottom'], cx, cy, 352 * s, 'Oswald', 46 * s, paper, False, 150, bold=True, ls=round(6 * s)),
+            I('star', cx - 352 * s - 24 * s, cy - 24 * s, 48 * s, paper, sw=2, fill=paper), I('star', cx + 352 * s - 24 * s, cy - 24 * s, 48 * s, paper, sw=2, fill=paper),
+            I(c['icon'], cx - 55 * s, cy - 240 * s, 110 * s, ink, sw=1.8),
+            TX(c['main'], cx - 270 * s, cy - 112 * s, 540 * s, 'Lobster', c.get('size', 116) * s, ink, align='center', lh=1.0),
+            R(cx - 60 * s, cy + 134 * s, 120 * s, 5 * s, acc, radius=3),
+            TX(c['sub'], cx - 235 * s, cy + 156 * s, 470 * s, 'Oswald', 30 * s, acc, bold=True, align='center', ls=round(6 * s))]
+
+
+def p_neon(W, H, P, F, c):
+    s = W / 1080; c1, c2 = c['c1'], c['c2']; m = 80 * s; t = s * (1.25 if H > W * 1.3 else 1); size = c.get('size', 190) * t; n = c['title'].count('\n') + 1
+    y = H / 2 - (215 * t + n * size + 170 * t) / 2 - 20 * t
+    ic = I(c['icon'], W / 2 - 60 * t, y, 120 * t, c2, sw=1.6); ic.update(GLOW(c2, 24 * s))
+    y2 = y + 215 * t + n * size + 34 * t
+    return [R(0, 0, W, H, '#0b0714', fillGradient=GR('#2b1248', '#07040d', 0, 'radial')),
+            PAT('dotGrid', 0, 0, W, H, '#ffffff', 0.06, 40 * s),
+            R(m, m, W - 2 * m, H - 2 * m, '', stroke=c1, strokeWidth=round(7 * s), radius=round(44 * s), **GLOW(c1, 36 * s)),
+            R(m + 26 * s, m + 26 * s, W - 2 * m - 52 * s, H - 2 * m - 52 * s, '', stroke=c2, strokeWidth=round(3 * s), radius=round(28 * s), opacity=0.9, **GLOW(c2, 22 * s)),
+            ic,
+            TX(c['kicker'], m + 40 * s, y + 150 * t, W - 2 * m - 80 * s, 'Montserrat', 28 * t, c2, bold=True, align='center', ls=round(8 * t)),
+            TX(c['title'], m + 40 * s, y + 215 * t, W - 2 * m - 80 * s, 'Righteous', size, '#ffffff', align='center', lh=1.0, **GLOW(c1, 46 * s)),
+            TX(c['sub'], m + 40 * s, y2, W - 2 * m - 80 * s, 'Fredoka', 48 * t, c2, bold=True, align='center', **GLOW(c2, 22 * s)),
+            TX(c['info'], m + 40 * s, y2 + 84 * t, W - 2 * m - 80 * s, 'Open Sans', 28 * t, '#d9cfee', align='center')]
+
+
+def p_minimal(W, H, P, F, c):
+    s = W / 1080; ink, acc = c['ink'], c['acc']; tall = H > W * 1.3; t = s * (1.3 if tall else 1)
+    pw = (600 if tall else 380) * s; ph = (900 if tall else 470) * s; py = (170 if tall else 100) * s
+    ts = c['tsize'] * t; n = c['title'].count('\n') + 1
+    y = py + ph + (70 if tall else 48) * s
+    els = [R(40 * s, 40 * s, W - 80 * s, H - 80 * s, '', stroke=acc, strokeWidth=max(2, round(2 * s))),
+           E(W / 2 - pw / 2 - 34 * s, py + ph - 150 * s, 120 * s, 120 * s, acc, opacity=0.35),
+           PH(W / 2 - pw / 2, py, pw, ph, c['photo'], mask='arch'),
+           TX(c['kicker'], 90 * s, y, W - 180 * s, 'Montserrat', 22 * t, ink, bold=True, align='center', ls=round(7 * t))]
+    y += 58 * t
+    els.append(TX(c['title'], 90 * s, y, W - 180 * s, c['tfont'], ts, ink, bold=c['tfont'] != 'Great Vibes', align='center', lh=1.05)); y += n * ts * 1.05 + 30 * t
+    els.append(R(W / 2 - 50 * t, y, 100 * t, max(2, round(2 * s)), acc)); y += 30 * t
+    els.append(TX(c['line1'], 90 * s, y, W - 180 * s, 'Montserrat', 23 * t, ink, bold=True, align='center', ls=round(4 * t))); y += 46 * t
+    els.append(TX(c['line2'], 90 * s, y, W - 180 * s, 'Cormorant Garamond', 36 * t, ink, align='center'))
+    return els
+
+
+def p_bigtype(W, H, P, F, c):
+    s = W / 1080; bg, ink, pop = c['bg'], c['ink'], c['pop']; n = c['word'].count('\n') + 1; size = c['size'] * s; th = n * size
+    y0 = (H - th) / 2 - 46 * s; d = 230 * s; sx, sy = W - d - 44 * s, 118 * s
+    cta, _, _ = pill(W / 2, H - 96 * s - 69 * s - 22 * s, c['cta'], 'Inter', 30 * s, ink, bg, align='center')
+    return [RR(W * 0.5, H * 0.52, W * 1.7, 300 * s, -12, pop),
+            R(0, 0, W, 96 * s, ink), TX(c['strip'], 0, 24 * s, W, 'Anton', 38 * s, bg, align='center', ls=round(8 * s)),
+            R(0, H - 96 * s, W, 96 * s, ink), TX(c['strip'], 0, H - 72 * s, W, 'Anton', 38 * s, bg, align='center', ls=round(8 * s)),
+            TX(c['word'], 40 * s, y0, W - 80 * s, 'Anton', size, ink, align='center', lh=1.0),
+            TX(c['sub'], 100 * s, y0 + th + 22 * s, W - 200 * s, 'Space Grotesk', 36 * s, ink, bold=True, align='center'),
+            E(sx, sy, d, d, ink, **SHD(18 * s, 8 * s, 0.25)), E(sx + 12 * s, sy + 12 * s, d - 24 * s, d - 24 * s, '', stroke=bg, strokeWidth=round(3 * s)),
+            TX(c['sticker'], sx + 20 * s, sy + d / 2 - 54 * s, d - 40 * s, 'Anton', 50 * s, bg, align='center', lh=1.08)] + cta
+
+
+def p_mag(W, H, P, F, c):
+    s = W / 1080; wh = '#ffffff'; ms = c.get('msize', 250) * s; on = c['on']
+    return [PH(0, 0, W, H, c.get('photo', '#6f6a8f')),
+            R(0, 0, W, H * 0.36, '#000000', fillGradient=GR('#000000b0', '#00000000', 90)),
+            R(0, H * 0.48, W, H * 0.52, '#000000', fillGradient=GR('#00000000', '#000000d0', 90)),
+            TX(c['mast'], 0, 46 * s, W, 'Abril Fatface', ms, wh, align='center', lh=1.0, ls=round(10 * s)),
+            TX(c['issue'], 60 * s, 46 * s + ms + 16 * s, W - 120 * s, 'Montserrat', 24 * s, wh, bold=True, align='center', ls=round(8 * s)),
+            TX(c['head'], 70 * s, H - 440 * s, W * 0.66, 'Abril Fatface', 92 * s, wh, lh=1.04),
+            R(70 * s, H - 226 * s, 120 * s, 6 * s, c['acc']),
+            TX(c['deck'], 70 * s, H - 196 * s, W * 0.6, 'Montserrat', 30 * s, wh, lh=1.35),
+            E(W - 300 * s, H - 340 * s, 230 * s, 230 * s, c['acc']),
+            TX(c['num'], W - 300 * s, H - 306 * s, 230 * s, 'Abril Fatface', 100 * s, on, align='center', lh=1.0),
+            TX(c['numsub'], W - 300 * s, H - 196 * s, 230 * s, 'Montserrat', 20 * s, on, bold=True, align='center', ls=round(3 * s))]
+
+
+def p_showcase(W, H, P, F, c):
+    s = W / 1080; tall = H > W * 1.3; wh = '#ffffff'; m = 80 * s
+    els = [R(0, 0, W, H, c['g1'], fillGradient=GR(c['g1'], c['g2'], 60)),
+           S('blob', W * 0.3, H * (0.42 if tall else 0.3), W * 0.95, W * 0.95, wh, opacity=0.12),
+           PAT('dotsFade', 0, H * 0.5, W * 0.5, H * 0.5, wh, 0.22, 30 * s)]
+    y = (150 if tall else 78) * s; ts = (104 if tall else 80) * s
+    els.append(TX(c['kicker'], m, y, W - 2 * m, 'Space Grotesk', 26 * s, wh, bold=True, align='center', ls=round(6 * s), opacity=0.85)); y += 56 * s
+    els.append(TX(c['title'], m, y, W - 2 * m, 'Space Grotesk', ts, wh, bold=True, align='center', lh=1.08)); y += 2 * ts * 1.08 + 22 * s
+    els.append(TX(c['sub'], m, y, W - 2 * m, 'Open Sans', (36 if tall else 30) * s, wh, align='center', opacity=0.9)); y += (84 if tall else 62) * s
+    cta, hh, _ = pill(W / 2, y, c['cta'], 'Inter', 30 * s, wh, c['g1'], align='center'); els += cta; y += hh + (70 if tall else 44) * s
+    pw = (400 if tall else 270) * s; side = pw * 0.84
+    for sgn in (-1, 1):
+        px = W / 2 + sgn * (pw * 0.78) - side / 2; ph_, h2 = phone(px, y + 90 * s, side, c.get('scr', '#e8e4f7'))
+        els += rot(ph_, sgn * 9, px + side / 2, y + 90 * s + h2 / 2)
+    ph_, h2 = phone(W / 2 - pw / 2, y, pw, c.get('scr', '#e8e4f7')); els += ph_
+    return els
+
+
+def p_hand(W, H, P, F, c):
+    s = W / 1080; ink, acc = c['ink'], c['acc']; px, py = W * 0.71, H * 0.355
+    photo = RR(px, py - 28 * s, 340 * s, 340 * s, 6, c['photo']); photo['type'] = 'placeholder'
+    i0 = I(c['icons'][0], W * 0.47, 120 * s, 84 * s, acc, sw=1.8); i0['rotation'] = -10
+    i1 = I(c['icons'][1], W * 0.86, H * 0.63, 96 * s, ink, sw=1.6); i1['rotation'] = 12
+    i2 = I(c['icons'][2], 96 * s, H * 0.655, 76 * s, acc, sw=1.8); i2['rotation'] = -8
+    return [PAT('dotGrid', 0, 0, W, H, ink, 0.08, 44 * s),
+            RR(px, py, 400 * s, 470 * s, 6, '#ffffff', **SHD(24 * s, 10 * s, 0.18)), photo,
+            RR(px + 20 * s, py - 232 * s, 170 * s, 46 * s, -5, acc, opacity=0.7),
+            TX(c['title'], 76 * s, 104 * s, W * 0.42, 'Amatic SC', 196 * s, ink, bold=True, lh=0.94),
+            RR(76 * s + 150 * s, 500 * s, 300 * s, 9 * s, -2, acc, radius=5),
+            TX(c['note'], 76 * s, 532 * s, W * 0.42, 'Caveat', 62 * s, acc, bold=True, lh=1.05),
+            i0, i1, i2,
+            R(70 * s, H - 290 * s, W - 140 * s, 200 * s, '#ffffff', radius=round(26 * s), **SHD(20 * s, 8 * s, 0.12)),
+            R(70 * s, H - 290 * s, 14 * s, 200 * s, acc, radius=round(7 * s)),
+            TX(c['info'], 120 * s, H - 258 * s, W - 240 * s, 'Caveat', 50 * s, ink, lh=1.2)]
+
+
+
+CUSTOM = dict(editorial=p_editorial, passion=p_passion, cinematic=p_cinematic, swiss=p_swiss, geo=p_geo, halftone=p_halftone,
+              badge=p_badge, neon=p_neon, minimal=p_minimal, bigtype=p_bigtype, mag=p_mag, showcase=p_showcase, hand=p_hand)
 DECKS = dict(swiss=d_swiss, soft=d_soft, warm=d_warm, pastel=d_pastel)
 RECIPES = dict(bold=r_bold, center=r_center, photo=r_photo, promo=r_promo, quote=r_quote, list=r_list, event=r_event,
                story=r_story, card=r_card, logo=r_logo, slide=r_slide, app=r_app, web=r_web, split=r_split, grid=r_grid, price=r_price, cert=r_cert, badge=r_badge, stat=r_stat)
@@ -744,6 +870,27 @@ SIZE = dict(sq=(1080, 1080), story=(1080, 1920), a4=(2480, 3508), card=(1050, 60
 # ------------------------------------------------------------------ content table (50 original templates)
 # key, name, categories, keywords, size, recipe, palette, fonts, content
 T = [
+ # sprint 15: designer sets (retro badges, neon signs, minimal invitations, big type, magazine covers, app showcases, handmade notes)
+ ('retro_coffee', 'Retro coffee badge', ['food', 'social'], 'coffee badge retro vintage roastery logo stamp', 'sq', 'custom:badge', 'sand', 'modern', dict(bg='#f3e9d2', ink='#3b2413', acc='#c8552b', top='FRESHLY ROASTED · EVERY DAY', bottom='SMALL BATCH · BIG FLAVOUR', icon='coffee', main='Fresh\nCoffee', sub='EST. 1996 · RIYADH')),
+ ('retro_market', 'Farmers market badge', ['event', 'social'], 'farmers market badge retro fresh local vegetables', 'sq', 'custom:badge', 'mint', 'modern', dict(bg='#eef3e2', ink='#1f3b22', acc='#3f8f4a', top='LOCAL GROWERS · FRESH PICKS', bottom='EVERY SATURDAY · 8 AM TO 1 PM', icon='carrot', main='Farmers\nMarket', sub='CITY SQUARE')),
+ ('retro_barber', 'Barber shop badge', ['business', 'social'], 'barber shop badge retro haircut vintage stamp', 'sq', 'custom:badge', 'sand', 'modern', dict(bg='#f2ece4', ink='#14213d', acc='#b3261e', top='CLASSIC CUTS · HOT TOWEL SHAVES', bottom='WALK-INS WELCOME · OPEN DAILY', icon='scissors', main='Barber\nShop', sub='SINCE 2010')),
+ ('neon_open', 'Neon: open late', ['food', 'promo', 'social'], 'neon sign open late night cafe glow', 'sq', 'custom:neon', 'black', 'modern', dict(bg='#0b0714', c1='#ff3d9a', c2='#35e0ff', icon='cup-soda', kicker='COFFEE · DESSERTS · MUSIC', title='OPEN\nLATE', sub='Every night until 2 am', info='King Road, next to the park')),
+ ('neon_game', 'Neon: game night', ['event', 'social'], 'neon game night gaming tournament glow', 'sq', 'custom:neon', 'black', 'modern', dict(bg='#0b0714', c1='#8a5cff', c2='#5dff9b', icon='gamepad-2', kicker='THURSDAY · 8 PM', title='GAME\nNIGHT', sub='Bring your squad', info='Free entry · prizes for the winners')),
+ ('neon_beats', 'Neon: DJ night story', ['event', 'story'], 'neon dj music night party story glow', 'story', 'custom:neon', 'black', 'modern', dict(bg='#0b0714', c1='#ff5a3c', c2='#ffd23f', icon='headphones', kicker='LIVE DJ SET', title='FRIDAY\nBEATS', size=170, sub='Doors open 9 pm', info='Rooftop 21 · tickets at the door')),
+ ('min_wedding', 'Wedding invitation', ['event', 'story', 'photo'], 'wedding invitation invite elegant minimal arch', 'story', 'custom:minimal', 'sand', 'classic', dict(bg='#f6f1ea', ink='#3a332c', acc='#b08d57', photo='#d9cfc1', kicker='TOGETHER WITH THEIR FAMILIES', title='Sara & Omar', tfont='Great Vibes', tsize=140, line1='SATURDAY 14 MARCH 2026 · 6 PM', line2='The Garden Hall, Riyadh')),
+ ('min_spa', 'Spa opening', ['business', 'social', 'photo'], 'spa wellness salon opening minimal calm elegant', 'sq', 'custom:minimal', 'mint', 'classic', dict(bg='#eef1ec', ink='#2f3b33', acc='#7d9a84', photo='#cfd9d0', kicker='NOW OPEN', title='Calm Studio', tfont='Cormorant Garamond', tsize=104, line1='MASSAGE · FACIALS · STEAM', line2='Book your first visit, 20% off')),
+ ('min_jewel', 'Jewellery collection', ['promo', 'story', 'photo'], 'jewellery jewelry collection luxury gold minimal elegant', 'story', 'custom:minimal', 'black', 'classic', dict(bg='#1c1a17', ink='#f3ead9', acc='#c9a66b', photo='#3a352e', kicker='THE NEW COLLECTION', title='Golden\nHour', tfont='Cormorant Garamond', tsize=150, line1='HANDMADE JEWELLERY', line2='Available online from Friday')),
+ ('big_sale', 'Big type sale', ['promo', 'social'], 'sale big bold type discount loud yellow', 'sq', 'custom:bigtype', 'lemon', 'loud', dict(bg='#ffd400', ink='#111111', pop='#ff3b6b', word='SALE', size=400, strip='SALE · SALE · SALE · SALE · SALE · SALE', sub='Everything in store, this weekend only', cta='Shop the sale', sticker='UP TO\n50%')),
+ ('big_hiring', 'Big type hiring', ['hiring', 'social'], 'hiring jobs big bold type join team', 'sq', 'custom:bigtype', 'violet', 'loud', dict(bg='#e9e4ff', ink='#1d1640', pop='#a493ff', word='WE ARE\nHIRING', size=228, strip='JOIN THE TEAM · JOIN THE TEAM · JOIN THE TEAM', sub='Designers, baristas and store staff', cta='Apply today', sticker='3 NEW\nROLES')),
+ ('big_drop', 'Big type new drop', ['promo', 'social'], 'new drop launch release streetwear big bold type', 'sq', 'custom:bigtype', 'black', 'loud', dict(bg='#111111', ink='#f5efe6', pop='#ff5a1f', word='NEW\nDROP', size=300, strip='OUT NOW · OUT NOW · OUT NOW · OUT NOW', sub='Limited run. When it is gone, it is gone.', cta='Get yours', sticker='JUST\nIN')),
+ ('mag_style', 'Magazine cover: style', ['poster', 'story', 'photo'], 'magazine cover fashion style editorial issue', 'story', 'custom:mag', 'black', 'classic', dict(bg='#6f6a8f', mast='STYLE', msize=250, issue='ISSUE 12 · AUTUMN 2026', head='The colour\nissue', deck='Ten looks, one palette. How to wear the season.', num='10', numsub='NEW LOOKS', acc='#ff5a3c', on='#ffffff')),
+ ('mag_travel', 'Magazine cover: travel', ['poster', 'photo'], 'magazine cover travel trip guide editorial', 'a4', 'custom:mag', 'black', 'classic', dict(bg='#5f7a8a', photo='#5f7a8a', mast='WANDER', msize=205, issue='THE TRAVEL ISSUE · NO. 4', head='Five days\nin AlUla', deck='Canyons, old towns and the quietest night sky.', num='5', numsub='DAY ROUTE', acc='#ffd23f', on='#111111')),
+ ('mag_food', 'Magazine cover: food', ['food', 'social', 'photo'], 'magazine cover food recipes cooking editorial', 'sq', 'custom:mag', 'black', 'classic', dict(bg='#8a6f5a', photo='#8a6f5a', mast='TASTE', msize=230, issue='THE WEEKEND ISSUE', head='Slow\nSundays', deck='Six easy recipes for a lazy weekend table.', num='6', numsub='RECIPES', acc='#7bd88f', on='#111111')),
+ ('show_app', 'App showcase', ['business', 'promo', 'social'], 'app showcase three phones screens launch gradient', 'sq', 'custom:showcase', 'violet', 'modern', dict(bg='#6c4cf5', g1='#6c4cf5', g2='#ff6a88', kicker='NOW ON iOS AND ANDROID', title='Your shop in\nevery pocket', sub='Order, track and reorder in two taps.', cta='Download the app')),
+ ('show_portfolio', 'Portfolio showcase', ['business', 'story'], 'portfolio showcase designer work phones screens story', 'story', 'custom:showcase', 'navy', 'modern', dict(bg='#0f2742', g1='#0f2742', g2='#14a374', kicker='UI · UX · BRANDING', title='Selected\nwork 2026', sub='Apps and websites I designed this year.', cta='See the full portfolio')),
+ ('hand_bake', 'Handmade: bake sale', ['food', 'event', 'social'], 'bake sale handmade handwriting cakes school charity', 'sq', 'custom:hand', 'sand', 'modern', dict(bg='#fbf3e4', ink='#3a2a1e', acc='#e0653a', photo='#ecd9c3', title='BAKE\nSALE', note='cakes, cookies\n& fresh bread', info='Saturday 9 am · School yard\nAll money goes to the library fund', icons=['cake-slice', 'cookie', 'heart'])),
+ ('hand_kids', 'Handmade: kids art club', ['event', 'social'], 'kids art club handmade handwriting children class workshop', 'sq', 'custom:hand', 'sky', 'modern', dict(bg='#eaf6ff', ink='#1d3557', acc='#e08a00', photo='#cfe5f5', title='ART\nCLUB', note='paint, glue\n& big ideas', info='Every Tuesday 4 pm · Ages 6 to 10\nAll materials are included', icons=['palette', 'brush', 'smile'])),
+ ('hand_thanks', 'Handmade: thank you', ['business', 'quote', 'social'], 'thank you note handmade handwriting small shop order', 'sq', 'custom:hand', 'pink', 'modern', dict(bg='#fff0f3', ink='#4a1d2f', acc='#d63a70', photo='#f6d3dc', title='THANK\nYOU', note='for supporting\nour small shop', info='Your order was packed by hand\nwith a lot of care', icons=['heart', 'gift', 'sparkles'])),
  # promo (6)
  ('summer_sale', 'Summer sale', ['promo', 'social'], 'sale discount summer offer', 'sq', 'promo', 'coral', 'modern', dict(cta='Shop now', kicker='Summer sale', big='50% OFF', title='Everything must go', sub='This weekend only, in store and online.')),
  ('flash_sale', 'Flash sale', ['promo', 'social'], 'flash sale discount hours deal', 'sq', 'bold', 'black', 'loud', dict(badge='TODAY ONLY', title='FLASH SALE\n24 HOURS', sub='Up to 70% off selected items', cta='Shop now', shape='star')),
@@ -887,7 +1034,7 @@ def render_block(data):
 
 def main():
     data = build()
-    assert len(data) == 85, len(data)
+    assert len(data) == 105, len(data)
     src = open(INDEX, encoding='utf-8').read()
     i, j = src.index(START), src.index(END) + len(END)
     new = src[:i] + render_block(data) + src[j:]

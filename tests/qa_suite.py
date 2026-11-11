@@ -1572,9 +1572,9 @@ def t_home(B):
     eq(c.ev('doc.elements.length'), n, 'Delete on home must not touch the design')
     # template card opens the editor in one undo step
     depth = c.ev('undoStack.length')
-    c.page.click('#home [data-htpl]:has-text("Event poster A4")')
+    c.page.click('#home [data-htpl]:has-text("Magazine cover: style")')
     ok(not c.ev('homeOpen()'), 'template click opens editor')
-    eq(c.ev('[doc.width,doc.height]'), [2480, 3508], 'event template applied')
+    eq(c.ev('[doc.width,doc.height]'), [1080, 1920], 'story template applied')
     eq(c.ev('undoStack.length'), depth + 1, 'one undo step')
     ok(c.page.locator('#stage canvas').first.is_visible(), 'stage visible')
     # home button: recent design card + continue
@@ -1585,7 +1585,7 @@ def t_home(B):
     # size tile -> blank design of that size, templates filtered
     c.page.click('#homeBtn'); c.page.click('#home [data-tile="story"]')
     eq(c.ev('[doc.width,doc.height,doc.elements.filter(e=>e.role!=="bg").length,homeOpen(),tplCat,curTab,$("#sizeSel").value]'), [1080, 1920, 0, False, 'story', 'templates', 'story'], 'story tile')
-    c.page.keyboard.press('Control+z'); eq(c.ev('[doc.width,doc.height]'), [2480, 3508], 'undo tile')
+    c.page.keyboard.press('Control+z'); eq(c.ev('[doc.width,doc.height]'), [1080, 1920], 'undo tile')
     for tile, wh in [('flyer', [1748, 2480]), ('logo', [1000, 1000]), ('card', [1050, 600]), ('pres', [1920, 1080])]:
         c.page.click('#homeBtn'); c.page.click(f'#home [data-tile="{tile}"]'); eq(c.ev('[doc.width,doc.height]'), wh, f'{tile} tile')
     _export_check(c, 'png', 1920, 1080)
@@ -1822,7 +1822,7 @@ def t_el_sec(B):
 TPL_LAYOUT_CHECK = """()=>{const out=[];GEN_TEMPLATES.forEach(g=>{const i=TEMPLATES.findIndex(t=>t.key===g.key);const dd=sanitizeDoc(TEMPLATES[i].make());(g.pages||[{els:g.els}]).forEach((gp,pi)=>{const key=g.key+(g.pages?'#'+(pi+1):'');dd.page=pi;const d={width:dd.width,height:dd.height,elements:dd.elements};
  if(d.elements.length!==gp.els.length)out.push([key,'dropped '+(gp.els.length-d.elements.length)]);
  const st=new Konva.Stage({container:document.createElement('div'),width:d.width,height:d.height});const l=new Konva.Layer();st.add(l);
- const boxes=d.elements.map(e=>{const n=buildNode(e);l.add(n);const tx=n.findOne('Text');if(e.type!=='text')return null;
+ const boxes=d.elements.map(e=>{const n=buildNode(e);l.add(n);const tx=n.findOne('.tx');if(e.type!=='text')return null;if(e.curve){const r=n.getClientRect({relativeTo:l});return {x:r.x,y:r.y,w:r.width,h:r.height,t:e.text.slice(0,20),over:false,rot:true};}
    // real text extent: widest line
    const w=Math.max(...tx.textArr.map(a=>a.width));const al=tx.align();const x0=e.x+(al==='center'?(e.width-w)/2:al==='right'?e.width-w:0);
    if(e.rotation){const r=n.getClientRect({relativeTo:l});return {x:r.x,y:r.y,w:r.width,h:r.height,t:e.text.slice(0,20),over:false,rot:true};}return {x:x0,y:e.y,w,h:tx.height(),t:e.text.slice(0,20),over:tx.textArr.some(a=>a.width>e.width+1)};});
@@ -1838,8 +1838,9 @@ def t_gen_tpl(B):
     r = subprocess.run([sys.executable, os.path.join(ROOT, 'tools', 'templates', 'gen_templates.py'), '--check'], capture_output=True, text=True)
     ok(r.returncode == 0, f'generated block is stale: {r.stdout}{r.stderr}')
     c = Ctx(B)
-    eq(c.ev('GEN_TEMPLATES.length'), 85, '85 generated templates'); eq(c.ev('TEMPLATES.length'), 102, 'total templates')
-    eq(c.ev('new Set(TEMPLATES.map(t=>t.key)).size'), 102, 'unique keys')
+    eq(c.ev('GEN_TEMPLATES.length'), 105, '105 generated templates'); eq(c.ev('TEMPLATES.length'), 122, 'total templates')
+    eq(c.ev('new Set(TEMPLATES.map(t=>t.key)).size'), 122, 'unique keys')
+    c.ev("Promise.all([...new Set(TEMPLATES.flatMap(t=>t.fonts||[]))].map(loadFont))")  # measure text in the real typefaces
     eq(c.ev("TPL_CATS.filter(k=>k!=='all'&&!TEMPLATES.some(t=>t.cats.includes(k)))"), [], 'every category has templates')
     eq(c.ev("GEN_TEMPLATES.filter(g=>!I18N.en['tpl_'+g.key]||/[\\u0600-\\u06ff]/.test(JSON.stringify(g)))").__len__(), 0, 'names set, English only')
     eq(c.ev(TPL_LAYOUT_CHECK), [], 'layout: no dropped elements, text off page or overlapping text')
@@ -1995,7 +1996,7 @@ def t_library(B):
     ok(t0 < 2500, f'A4 dot grid render+export {t0:.0f} ms'); METRICS['a4_pattern_ms'] = round(t0)
     # mockups: grouped, screen is a photo slot that opens the picker on click
     c.blank(); c.tab('shapes'); c.page.click('#elBody [data-mockup="0"]')
-    added = c.ev('doc.elements'); ok(len(added) >= 3 and len({x.get('groupId') for x in added}) == 1, 'phone mockup is one group'); eq(c.ev('MOCKUPS.length'), 19, 'mockup count')
+    added = c.ev('doc.elements'); ok(len(added) >= 3 and len({x.get('groupId') for x in added}) == 1, 'phone mockup is one group'); eq(c.ev('MOCKUPS.length'), 35, 'mockup count')
     ok(any(x['type'] == 'placeholder' for x in added), 'phone has a photo slot')
     ph = [x for x in added if x['type'] == 'placeholder'][0]
     for attempt in range(3):
