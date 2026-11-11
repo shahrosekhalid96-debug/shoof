@@ -553,11 +553,193 @@ def d_pastel():
     return [('#f1ecff', s1), (pink, s2), ('#f1ecff', s3)]
 
 
+# ------------------------------------------------------------------ sprint 15: device mockups + eight more recipes
+def SHD(blur, y, op): return dict(shadowColor='#000000', shadowBlur=round(blur), shadowY=round(y), shadowOpacity=op)
+
+
+def rot(els, deg, cx, cy):
+    """turn a set of elements together about (cx, cy); Shoof rotates each element about its own top-left corner"""
+    a = math.radians(deg); ca, sa = math.cos(a), math.sin(a)
+    for e in els:
+        dx, dy = e['x'] - cx, e['y'] - cy
+        e['x'] = round(cx + dx * ca - dy * sa); e['y'] = round(cy + dx * sa + dy * ca); e['rotation'] = e.get('rotation', 0) + deg
+    return els
+
+
+def phone(x, y, w, scr):
+    h = w * 2.05; r = w * 0.2; b = w * 0.045
+    return [R(x - w * 0.012, y + h * 0.2, w * 0.03, h * 0.07, '#3a4152', radius=2), R(x - w * 0.012, y + h * 0.3, w * 0.03, h * 0.11, '#3a4152', radius=2),
+            R(x + w - w * 0.018, y + h * 0.27, w * 0.03, h * 0.14, '#3a4152', radius=2),
+            R(x, y, w, h, '#2b3140', radius=round(r), fillGradient=GR('#4a5266', '#151925', 60), **SHD(w * 0.16, w * 0.07, 0.28)),
+            R(x + b * 0.45, y + b * 0.45, w - b * 0.9, h - b * 0.9, '#0b0d12', radius=round(r - b * 0.4)),
+            PH(x + b, y + b, w - 2 * b, h - 2 * b, scr, radius=round(r - b)),
+            R(x + w * 0.36, y + b + h * 0.018, w * 0.28, w * 0.075, '#0b0d12', radius=round(w * 0.04)),
+            R(x + w * 0.33, y + h - b - h * 0.022, w * 0.34, w * 0.022, '#ffffff', radius=round(w * 0.011), opacity=0.7)], h
+
+
+def browser(x, y, w, h, scr):
+    bar = max(h * 0.1, w * 0.06); r = round(w * 0.028); d = bar * 0.26
+    els = [R(x, y, w, h, '#ffffff', radius=r, **SHD(w * 0.08, w * 0.03, 0.2)), R(x, y, w, bar, '#eef0f5', radius=r), R(x, y + bar * 0.5, w, bar * 0.5, '#eef0f5')]
+    for i, col in enumerate(['#ff5f57', '#febc2e', '#28c840']): els.append(E(x + bar * 0.45 + i * d * 1.7, y + bar / 2 - d / 2, d, d, col))
+    els += [R(x + w * 0.22, y + bar * 0.24, w * 0.56, bar * 0.52, '#ffffff', radius=round(bar * 0.26)), PH(x, y + bar, w, h - bar, scr)]
+    return els
+
+
+def r_app(W, H, P, F, c):
+    s = W / 1080; m = 90 * s; D, B = F; tall = H > W * 1.3; scr = c.get('scr', '#dfe3ee')
+    if tall:
+        pw = 620 * s; px = W / 2 - pw / 2; py = H * 0.44
+        els = [E(W / 2 - W * 0.55, H * 0.56, W * 1.1, W * 1.1, P['accent2'])]
+        f = Flow(m, m * 1.5, W - 2 * m, 'center')
+    else:
+        pw = 330 * s; px = W - m - pw - 20 * s; py = H / 2 - pw * 2.05 / 2
+        els = [E(W * 0.47, H / 2 - W * 0.36, W * 0.72, W * 0.72, P['accent2'])]
+        f = Flow(m, m * 1.3, W * 0.47 - m + 10 * s)
+    if c.get('kicker'): f.text(c['kicker'].upper(), B, 28 * s, P['accent'], bold=True, max_lines=1, gap=22 * s, ls=round(3 * s))
+    f.text(c['title'], D, (150 if D == 'Bebas Neue' else (96 if tall else 84)) * s, P['ink'], bold=D != 'Bebas Neue', lh=1.05, max_lines=3, gap=28 * s)
+    if c.get('sub'): f.text(c['sub'], B, (36 if tall else 30) * s, P['muted'], lh=1.4, max_lines=4, gap=36 * s)
+    els += f.els
+    if c.get('rating') and not tall:
+        for i in range(5): els.append(I('star', m + i * 44 * s, f.y, 36 * s, P['accent'], sw=2, fill=P['accent']))
+        els.append(TX(c['rating'], m, f.y + 50 * s, f.w, B, 26 * s, P['muted']))
+    if c.get('cta'):
+        p, h, _ = pill(W / 2 if tall else m, f.y if tall else H - m - 100 * s, c['cta'], B, 32 * s, P['accent'], P['on'], align='center' if tall else 'left'); els += p
+    if tall: py = max(py, f.y + 170 * s)
+    ph, hh = phone(px, py, pw, scr)
+    els += rot(ph, 0 if tall else 6, px + pw / 2, py + hh / 2)
+    return els
+
+
+def r_web(W, H, P, F, c):
+    s = min(W, H) / 1080 if W > H * 1.3 else W / 1080; m = 90 * s; D, B = F; scr = c.get('scr', '#dfe3ee'); wide = W > H * 1.3
+    if wide:
+        bw = W * 0.5; bh = H - 2 * m * 1.1; bx = W - m * 0.7 - bw; by = (H - bh) / 2
+        els = [E(W * 0.62, -H * 0.3, H * 1.1, H * 1.1, P['accent2'])]; f = Flow(m * 0.8, m * 1.1, bx - m * 1.5)
+    else:
+        bw = W - 2 * m; bh = bw * 0.6; bx = m; by = H - m - bh
+        els = [R(0, H * 0.62, W, H * 0.38, P['accent2'])]; f = Flow(m, m, W - 2 * m, 'center')
+    if c.get('kicker'): f.text(c['kicker'].upper(), B, 28 * s, P['accent'], bold=True, max_lines=1, gap=20 * s, ls=round(3 * s))
+    f.text(c['title'], D, (130 if D == 'Bebas Neue' else 80) * s, P['ink'], bold=D != 'Bebas Neue', lh=1.05, max_lines=3 if wide else 2, gap=22 * s)
+    if c.get('sub'): f.text(c['sub'], B, 30 * s, P['muted'], lh=1.4, max_lines=3 if wide else 2, gap=30 * s)
+    els += f.els
+    if c.get('cta') and wide:
+        p, h, _ = pill(m * 0.8, min(f.y, H - m - 80 * s), c['cta'], B, 28 * s, P['accent'], P['on']); els += p
+    els += browser(bx, by, bw, bh, scr)
+    if c.get('badge'):
+        d = 170 * s; cx = bx + bw - d * 0.55; cy = by - d * 0.4
+        els += [E(cx, cy, d, d, P['accent'], **SHD(20 * s, 8 * s, 0.2)), TX(c['badge'], cx, cy + d / 2 - 26 * s, d, B, 38 * s, P['on'], bold=True, align='center', lh=1.2)]
+    return els
+
+
+def r_split(W, H, P, F, c):
+    s = W / 1080; m = 80 * s; D, B = F; tall = H > W * 1.3; scr = c.get('scr', P['accent2'])
+    if tall:
+        ph = H * 0.54; els = [PH(0, 0, W, ph, scr), R(0, ph, W, 14 * s, P['accent'])]; f = Flow(m, ph + m * 1.1, W - 2 * m); bx, by = W - m - 230 * s, ph - 115 * s
+    else:
+        pw = W * 0.5; els = [PH(W - pw, 0, pw, H, scr), R(W - pw - 14 * s, 0, 14 * s, H, P['accent'])]; f = Flow(m, m * 1.4, W - pw - m * 1.8); bx, by = W - pw - 122 * s, H - m - 250 * s
+    k = 1.35 if tall else 1
+    if c.get('kicker'): f.text(c['kicker'].upper(), B, 26 * s * k, P['accent'], bold=True, max_lines=1, gap=22 * s * k, ls=round(3 * s))
+    f.text(c['title'], D, (140 if D == 'Bebas Neue' else 78) * s * k, P['ink'], bold=D != 'Bebas Neue', lh=1.06, max_lines=4, gap=26 * s * k)
+    if c.get('sub'): f.text(c['sub'], B, 30 * s * k, P['muted'], lh=1.45, max_lines=4, gap=30 * s)
+    els += f.els
+    if c.get('cta'):
+        p, h, _ = pill(m, H - m - 90 * s * k, c['cta'], B, 28 * s * k, P['ink'], P['bg']); els += p
+    if c.get('badge'):
+        d = 230 * s; top, bot = c['badge']
+        els += [E(bx, by, d, d, P['accent'], **SHD(22 * s, 8 * s, 0.22)), E(bx + 12 * s, by + 12 * s, d - 24 * s, d - 24 * s, '', stroke=P['on'], strokeWidth=round(2 * s), opacity=0.6),
+                TX(top, bx, by + 58 * s, d, B, 24 * s, P['on'], bold=True, align='center', ls=round(2 * s)), TX(bot, bx, by + 96 * s, d, 'Bebas Neue', 76 * s, P['on'], align='center', lh=1.0)]
+    return els
+
+
+def r_grid(W, H, P, F, c):
+    s = W / 1080; m = 80 * s; D, B = F; scr = c.get('scr', P['accent2']); g = 18 * s
+    f = Flow(m, m, W - 2 * m)
+    if c.get('kicker'): f.text(c['kicker'].upper(), B, 26 * s, P['accent'], bold=True, max_lines=1, gap=16 * s, ls=round(3 * s))
+    f.text(c['title'], D, (130 if D == 'Bebas Neue' else 76) * s, P['ink'], bold=D != 'Bebas Neue', lh=1.05, max_lines=2, gap=36 * s)
+    gy = f.y; gh = H - gy - m - 70 * s; gw = W - 2 * m; bw = gw * 0.6 - g / 2; sw = gw - bw - g; r = round(26 * s)
+    els = f.els + [PH(m, gy, bw, gh, scr, radius=r), PH(m + bw + g, gy, sw, gh / 2 - g / 2, scr, radius=r), PH(m + bw + g, gy + gh / 2 + g / 2, sw, gh / 2 - g / 2, scr, radius=r)]
+    if c.get('label'):
+        p, h, _ = pill(m + 28 * s, gy + gh - 28 * s - 26 * s * 2.3, c['label'], B, 26 * s, P['accent'], P['on']); els += p
+    if c.get('foot'): els.append(TX(c['foot'], m, H - m - 30 * s, W - 2 * m, B, 26 * s, P['muted']))
+    return els
+
+
+def r_price(W, H, P, F, c):
+    s = W / 1080; m = 90 * s; D, B = F; rows = c['rows']; hb = (330 if H > W else 300) * s
+    tall = H > W * 1.3
+    f = Flow(m, m * 0.9, W - 2 * m - 220 * s)
+    if c.get('kicker'): f.text(c['kicker'].upper(), B, 26 * s, P['on'], bold=True, max_lines=1, gap=14 * s, ls=round(3 * s))
+    f.text(c['title'], D, (130 if D == 'Bebas Neue' else 80) * s, P['on'], bold=D != 'Bebas Neue', lh=1.05, max_lines=2)
+    hb = max(hb, f.y + 60 * s)  # the band always holds the whole title
+    els = [R(0, 0, W, hb, P['accent']), I(c.get('icon', 'star'), W - m - 190 * s, hb / 2 - 95 * s, 190 * s, P['on'], sw=1.5)]
+    els[-1]['opacity'] = 0.25
+    els += f.els
+    top = hb + 60 * s; avail = H - top - m - (70 * s if c.get('foot') else 0); rh = min(avail / len(rows), (300 if tall else 190) * s); ns = min((58 if tall else 44) * s, rh * 0.3)
+    for i, row in enumerate(rows):
+        name, desc, price = row; y = top + i * rh
+        pc = max(240 * s, ns * 6.4)  # price column wide enough for "5,900 SAR" on one line
+        els.append(TX(name, m, y, W - 2 * m - pc - 20 * s, D if D != 'Bebas Neue' else B, ns, P['ink'], bold=True, lh=1.2))
+        if desc: els.append(TX(desc, m, y + ns * 1.35, W - 2 * m - pc - 20 * s, B, ns * 0.62, P['muted'], lh=1.3))
+        els.append(TX(price, W - m - pc, y, pc, B, ns, P['accent'], bold=True, align='right', lh=1.2))
+        if i < len(rows) - 1: els.append(R(m, y + rh - 22 * s, W - 2 * m, max(2, round(2 * s)), P['muted'], opacity=0.25))
+    if c.get('foot'): els.append(TX(c['foot'], m, H - m - 34 * s, W - 2 * m, B, 26 * s, P['muted'], align='center'))
+    return els
+
+
+def r_cert(W, H, P, F, c):
+    u = H / 1080; D, B = F; cx = W / 2
+    els = [R(44 * u, 44 * u, W - 88 * u, H - 88 * u, '', stroke=P['accent'], strokeWidth=round(6 * u)), R(64 * u, 64 * u, W - 128 * u, H - 128 * u, '', stroke=P['accent'], strokeWidth=round(1.5 * u), opacity=0.7)]
+    for x, y in [(44, 44), (W / u - 44, 44), (44, 1080 - 44), (W / u - 44, 1080 - 44)]: els.append(E(x * u - 13 * u, y * u - 13 * u, 26 * u, 26 * u, P['accent']))
+    els += [E(cx - 62 * u, 100 * u, 124 * u, 124 * u, P['accent']), I(c.get('icon', 'award'), cx - 38 * u, 124 * u, 76 * u, P['on'], sw=1.75)]
+    w = W - 520 * u; x = cx - w / 2
+    els += [TX(c['title'].upper(), x, 252 * u, w, D, 84 * u, P['ink'], bold=True, align='center', ls=round(8 * u), lh=1.1),
+            TX(c['kicker'].upper(), x, 356 * u, w, B, 26 * u, P['accent'], bold=True, align='center', ls=round(6 * u)),
+            TX(c.get('lead', 'This certificate is proudly presented to'), x, 432 * u, w, B, 28 * u, P['muted'], align='center'),
+            TX(c.get('name', 'Recipient Name'), x, 490 * u, w, D, 104 * u, P['ink'], bold=True, align='center', lh=1.1),
+            R(cx - 330 * u, 622 * u, 660 * u, max(2, round(2 * u)), P['accent']),
+            TX(c['sub'], cx - 520 * u, 652 * u, 1040 * u, B, 28 * u, P['muted'], align='center', lh=1.5)]
+    for sx, lab in [(cx - 620 * u, c.get('left', 'Date')), (cx + 300 * u, c.get('right', 'Signature'))]:
+        els += [R(sx, 900 * u, 320 * u, max(2, round(2 * u)), P['ink'], opacity=0.6), TX(lab.upper(), sx, 916 * u, 320 * u, B, 22 * u, P['muted'], bold=True, align='center', ls=round(3 * u))]
+    els += [S('star', cx - 92 * u, 800 * u, 184 * u, 184 * u, P['accent'], opacity=0.35), E(cx - 62 * u, 830 * u, 124 * u, 124 * u, P['accent'], **SHD(14 * u, 5 * u, 0.2)),
+            E(cx - 50 * u, 842 * u, 100 * u, 100 * u, '', stroke=P['on'], strokeWidth=round(2 * u), opacity=0.7), I('check', cx - 30 * u, 862 * u, 60 * u, P['on'], sw=2.5)]
+    return els
+
+
+def r_badge(W, H, P, F, c):
+    s = W / 900; m = 70 * s; D, B = F; hb = 430 * s; d = 330 * s
+    els = [R(0, 0, W, hb, P['accent'], fillGradient=GR(P['accent'], P['accent2'], 60)), R(W / 2 - 80 * s, 46 * s, 160 * s, 30 * s, P['bg'], radius=round(15 * s)),
+           TX(c['kicker'].upper(), m, 120 * s, W - 2 * m, B, 30 * s, P['on'], bold=True, align='center', ls=round(4 * s)),
+           E(W / 2 - d / 2 - 12 * s, hb - d / 2 - 12 * s, d + 24 * s, d + 24 * s, P['bg']), PH(W / 2 - d / 2, hb - d / 2, d, d, c.get('scr', '#dfe3ee'), mask='circle')]
+    f = Flow(m, hb + d / 2 + 50 * s, W - 2 * m, 'center')
+    f.text(c['title'], D, (120 if D == 'Bebas Neue' else 78) * s, P['ink'], bold=D != 'Bebas Neue', lh=1.05, max_lines=2, gap=16 * s)
+    f.text(c['sub'], B, 34 * s, P['muted'], max_lines=2, gap=40 * s)
+    els += f.els
+    p, h, _ = pill(W / 2, f.y, c['cta'].upper(), B, 30 * s, P['ink'], P['bg'], align='center'); els += p
+    els += [R(m, H - m - 70 * s, W - 2 * m, max(2, round(2 * s)), P['muted'], opacity=0.3), TX(c['foot'], m, H - m - 46 * s, W - 2 * m, B, 24 * s, P['muted'], align='center')]
+    return els
+
+
+def r_stat(W, H, P, F, c):
+    s = W / 1080; m = 90 * s; D, B = F
+    els = [E(W * 0.55, -W * 0.25, W * 0.8, W * 0.8, P['accent2']), R(m, m, 90 * s, 12 * s, P['accent'], radius=round(6 * s))]
+    f = Flow(m, m + 50 * s, W - 2 * m)
+    f.text(c['kicker'].upper(), B, 28 * s, P['accent'], bold=True, max_lines=1, gap=6 * s, ls=round(3 * s))
+    f.text(c['big'], 'Bebas Neue', 360 * s, P['ink'], lh=0.95, max_lines=1, gap=10 * s)
+    f.text(c['title'], D if D != 'Bebas Neue' else B, 56 * s, P['ink'], bold=True, lh=1.15, max_lines=2, gap=16 * s)
+    if c.get('sub'): f.text(c['sub'], B, 30 * s, P['muted'], lh=1.4, max_lines=2)
+    els += f.els
+    ch = H - f.y - m - 30 * s
+    if c.get('values') and ch > 150 * s:
+        els += [R(m, f.y + 30 * s, W - 2 * m, ch, P['surface'], radius=round(28 * s), **SHD(26 * s, 8 * s, 0.08)),
+                dict(type='chart', chartType=c.get('chart', 'bar'), x=round(m + 40 * s), y=round(f.y + 60 * s), width=round(W - 2 * m - 80 * s), height=round(ch - 60 * s), values=c['values'], labels=c['labels'], fill=P['accent'], textColor=P['muted'], showLabels=True)]
+    return els
+
+
 CUSTOM = dict(editorial=p_editorial, passion=p_passion, cinematic=p_cinematic, swiss=p_swiss, geo=p_geo, halftone=p_halftone)
 DECKS = dict(swiss=d_swiss, soft=d_soft, warm=d_warm, pastel=d_pastel)
 RECIPES = dict(bold=r_bold, center=r_center, photo=r_photo, promo=r_promo, quote=r_quote, list=r_list, event=r_event,
-               story=r_story, card=r_card, logo=r_logo, slide=r_slide)
-SIZE = dict(sq=(1080, 1080), story=(1080, 1920), a4=(2480, 3508), card=(1050, 600), logo=(1000, 1000), slide=(1920, 1080), wide=(1200, 630))
+               story=r_story, card=r_card, logo=r_logo, slide=r_slide, app=r_app, web=r_web, split=r_split, grid=r_grid, price=r_price, cert=r_cert, badge=r_badge, stat=r_stat)
+SIZE = dict(sq=(1080, 1080), story=(1080, 1920), a4=(2480, 3508), card=(1050, 600), logo=(1000, 1000), slide=(1920, 1080), wide=(1200, 630), a4l=(3508, 2480), badge=(900, 1300))
 
 # ------------------------------------------------------------------ content table (50 original templates)
 # key, name, categories, keywords, size, recipe, palette, fonts, content
@@ -634,6 +816,37 @@ T = [
  ('deck_soft', 'Pitch deck: soft gradient (6 slides)', ['deck', 'business'], 'pitch deck presentation slides investor gradient', 'slide', 'deck:soft', 'sand', 'modern', {}),
  ('deck_warm', 'Pitch deck: warm (5 slides)', ['deck', 'business'], 'pitch deck presentation slides orange gradient', 'slide', 'deck:warm', 'coral', 'modern', {}),
  ('deck_pastel', 'Pitch deck: pastel (3 slides)', ['deck', 'business'], 'pitch deck presentation slides pastel blob', 'slide', 'deck:pastel', 'violet', 'modern', {}),
+ # sprint 15: apps and websites (6)
+ ('app_launch', 'App launch', ['promo', 'social', 'business', 'photo'], 'app launch mobile phone download mockup', 'sq', 'app', 'violet', 'modern', dict(kicker='New app', title='Order in two taps', sub='Track your delivery live and reorder your favourites in seconds.', cta='Download now', rating='4.9 · 2,000+ reviews')),
+ ('app_story', 'App launch (story)', ['promo', 'story', 'photo'], 'app launch story mobile phone mockup', 'story', 'app', 'navy', 'modern', dict(kicker='Now on your phone', title='Your shop in your pocket', sub='Browse, order and pay in under a minute.', cta='Get the app')),
+ ('app_update', 'App update', ['business', 'social', 'photo'], 'app update new feature release phone mockup', 'sq', 'app', 'mint', 'modern', dict(kicker='Version 2.0', title='A faster, calmer app', sub='New home screen, dark mode and one-tap checkout.', cta='Update today', rating='Loved by 12,000 users')),
+ ('website_launch', 'Website launch', ['business', 'social', 'photo'], 'website launch new site browser mockup', 'sq', 'web', 'sky', 'modern', dict(kicker='We have a new home', title='Our new website is live', sub='Faster, clearer and easier to order from.', badge='NEW')),
+ ('web_banner', 'Website banner', ['business', 'promo', 'photo'], 'website banner link preview browser mockup', 'wide', 'web', 'night', 'modern', dict(kicker='Now online', title='Book your visit in seconds', sub='Pick a time, pay online, done.', cta='Visit the site')),
+ ('online_store', 'Online store open', ['promo', 'social', 'photo'], 'online store shop ecommerce open browser mockup', 'sq', 'web', 'coral', 'modern', dict(kicker='Shop from home', title='The online store is open', sub='Free delivery on your first order.', badge='OPEN')),
+ # split photo layouts (4)
+ ('split_fashion', 'Collection spotlight', ['promo', 'social', 'photo'], 'fashion collection split photo spotlight', 'sq', 'split', 'sand', 'classic', dict(kicker='New season', title='Quiet colours, soft layers', sub='The winter edit is here. Limited pieces in every size.', cta='Shop the edit', badge=('FROM', '149'))),
+ ('split_property', 'Property spotlight', ['realestate', 'social', 'photo'], 'real estate property villa spotlight split photo', 'sq', 'split', 'navy', 'modern', dict(kicker='Featured home', title='Four bedrooms by the park', sub='Private garden, two living rooms and covered parking.', cta='Book a viewing', badge=('ONLY', '3 LEFT'))),
+ ('split_spa', 'Spa offer (story)', ['promo', 'story', 'photo'], 'spa wellness beauty offer story photo', 'story', 'split', 'pink', 'classic', dict(kicker='Weekend ritual', title='One hour that is just for you', sub='Massage, steam and tea. Book for two and save.', cta='Reserve', badge=('SAVE', '25%'))),
+ ('split_course', 'Course enrolment', ['event', 'social', 'photo'], 'course class enrol training split photo', 'sq', 'split', 'violet', 'modern', dict(kicker='Starts 1 March', title='Learn photo editing in 4 weeks', sub='Evening classes, small groups and real projects.', cta='Enrol now', badge=('SEATS', '12'))),
+ # photo grids (3)
+ ('grid_lookbook', 'Lookbook grid', ['promo', 'social', 'photo'], 'lookbook collage photo grid fashion', 'sq', 'grid', 'pink', 'classic', dict(kicker='Lookbook', title='Three ways to wear it', label='Spring 2027', foot='@yourbrand · yourbrand.com')),
+ ('grid_travel', 'Travel moments', ['social', 'photo'], 'travel trip photos collage grid memories', 'sq', 'grid', 'sky', 'modern', dict(kicker='Trip diary', title='Five days in AlUla', label='Day one', foot='Swipe for more')),
+ ('grid_portfolio', 'Portfolio highlights', ['poster', 'business', 'photo'], 'portfolio work projects collage grid poster', 'a4', 'grid', 'black', 'modern', dict(kicker='Selected work', title='Projects we are proud of', label='2026', foot='studio@yourname.com · +966 50 000 0000')),
+ # price lists (4)
+ ('price_cafe', 'Café menu', ['food', 'poster'], 'cafe menu price list drinks coffee', 'a4', 'price', 'sand', 'classic', dict(icon='coffee', kicker='Fresh every day', title='Coffee menu', rows=[('Espresso', 'Single or double shot', '12 SAR'), ('Flat white', 'Silky milk, two shots', '18 SAR'), ('Spanish latte', 'Sweet and creamy', '21 SAR'), ('Iced americano', 'Over lots of ice', '15 SAR'), ('Matcha latte', 'Ceremonial grade', '24 SAR'), ('Hot chocolate', 'Dark and rich', '19 SAR')], foot='Oat, almond or coconut milk +3 SAR')),
+ ('price_salon', 'Salon price list', ['business', 'social'], 'salon beauty price list services hair', 'sq', 'price', 'pink', 'classic', dict(icon='scissors', kicker='Our services', title='Price list', rows=[('Cut and style', '', '120 SAR'), ('Colour', '', '280 SAR'), ('Blow-dry', '', '80 SAR'), ('Hair treatment', '', '150 SAR')], foot='Book online or call us')),
+ ('price_services', 'Service packages', ['business', 'story'], 'packages plans pricing services story', 'story', 'price', 'navy', 'modern', dict(icon='sparkles', kicker='Choose your plan', title='Simple packages', rows=[('Starter', 'One page, ready in 3 days', '900 SAR'), ('Growth', 'Five pages and a booking form', '2,400 SAR'), ('Complete', 'Online shop with payments', '5,900 SAR'), ('Care plan', 'Monthly updates and support', '300 SAR')], foot='Prices include one round of changes')),
+ ('price_gym', 'Gym membership', ['promo', 'social'], 'gym fitness membership prices plans', 'sq', 'price', 'black', 'loud', dict(icon='dumbbell', kicker='Join today', title='MEMBERSHIP PLANS', rows=[('1 month', '', '299 SAR'), ('3 months', '', '749 SAR'), ('12 months', '', '2,199 SAR')], foot='Free trial class for new members')),
+ # certificates and badges (5) - made for Bulk create: put {Name} in the name line
+ ('cert_appreciation', 'Certificate of appreciation', ['business', 'cert'], 'certificate appreciation award thanks diploma', 'a4l', 'cert', 'sand', 'classic', dict(title='Certificate', kicker='of appreciation', sub='In recognition of outstanding dedication and teamwork\nthroughout the year 2026.', plain=True)),
+ ('cert_completion', 'Certificate of completion', ['business', 'cert'], 'certificate completion course training diploma', 'a4l', 'cert', 'night', 'classic', dict(title='Certificate', kicker='of completion', lead='This is to certify that', sub='has successfully completed the 12-hour course\nFoundations of Graphic Design.', right='Instructor', icon='graduation-cap', plain=True)),
+ ('cert_award', 'Employee of the month', ['business', 'cert'], 'employee of the month award certificate staff', 'a4l', 'cert', 'mint', 'modern', dict(title='Employee award', kicker='of the month', lead='Awarded with thanks to', sub='For going the extra mile for our customers,\nevery single day.', left='Month', right='Manager', icon='trophy', plain=True)),
+ ('badge_event', 'Event name badge', ['event', 'cert', 'photo'], 'name badge event pass lanyard attendee conference', 'badge', 'badge', 'violet', 'modern', dict(kicker='Future of Work Summit', title='Attendee Name', sub='Company or job title', cta='Attendee', foot='20–21 May · Riyadh', plain=True)),
+ ('badge_staff', 'Staff ID card', ['business', 'cert', 'photo'], 'staff id card employee badge pass', 'badge', 'badge', 'navy', 'modern', dict(kicker='Your Company', title='Employee Name', sub='Department · Job title', cta='Staff', foot='ID 000123 · yourcompany.com', plain=True)),
+ # numbers (3)
+ ('stat_growth', 'Big number', ['business', 'social'], 'statistic number growth result data chart', 'sq', 'stat', 'mint', 'modern', dict(kicker='This quarter', big='+48%', title='More orders than last year', sub='Thank you for choosing us again and again.', values=[18, 24, 31, 46], labels=['Q1', 'Q2', 'Q3', 'Q4'])),
+ ('stat_milestone', 'Milestone', ['business', 'social'], 'milestone customers followers number celebrate', 'sq', 'stat', 'violet', 'loud', dict(kicker='Milestone', big='10,000', title='HAPPY CUSTOMERS', sub='And we are only getting started.', values=[2, 4, 7, 10], labels=['2023', '2024', '2025', '2026'], chart='line')),
+ ('stat_survey', 'Survey result', ['tips', 'social'], 'survey result percent poll statistic', 'sq', 'stat', 'coral', 'modern', dict(kicker='We asked 500 customers', big='9 in 10', title='would recommend us to a friend', values=[90, 10], labels=['Yes', 'Not yet'], chart='donut')),
 ]
 
 CAT_ORDER = ['promo', 'event', 'hiring', 'quote', 'tips', 'food', 'realestate', 'business', 'seasonal']
@@ -674,7 +887,7 @@ def render_block(data):
 
 def main():
     data = build()
-    assert len(data) == 60, len(data)
+    assert len(data) == 85, len(data)
     src = open(INDEX, encoding='utf-8').read()
     i, j = src.index(START), src.index(END) + len(END)
     new = src[:i] + render_block(data) + src[j:]

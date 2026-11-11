@@ -1838,8 +1838,8 @@ def t_gen_tpl(B):
     r = subprocess.run([sys.executable, os.path.join(ROOT, 'tools', 'templates', 'gen_templates.py'), '--check'], capture_output=True, text=True)
     ok(r.returncode == 0, f'generated block is stale: {r.stdout}{r.stderr}')
     c = Ctx(B)
-    eq(c.ev('GEN_TEMPLATES.length'), 60, '60 generated templates'); eq(c.ev('TEMPLATES.length'), 77, 'total templates')
-    eq(c.ev('new Set(TEMPLATES.map(t=>t.key)).size'), 77, 'unique keys')
+    eq(c.ev('GEN_TEMPLATES.length'), 85, '85 generated templates'); eq(c.ev('TEMPLATES.length'), 102, 'total templates')
+    eq(c.ev('new Set(TEMPLATES.map(t=>t.key)).size'), 102, 'unique keys')
     eq(c.ev("TPL_CATS.filter(k=>k!=='all'&&!TEMPLATES.some(t=>t.cats.includes(k)))"), [], 'every category has templates')
     eq(c.ev("GEN_TEMPLATES.filter(g=>!I18N.en['tpl_'+g.key]||/[\\u0600-\\u06ff]/.test(JSON.stringify(g)))").__len__(), 0, 'names set, English only')
     eq(c.ev(TPL_LAYOUT_CHECK), [], 'layout: no dropped elements, text off page or overlapping text')
@@ -1849,7 +1849,7 @@ def t_gen_tpl(B):
     names = c.ev("[...document.querySelectorAll('#tplGrid .tpl span')].map(x=>x.textContent)")
     ok({'Ramadan Kareem', 'Ramadan hours'} <= set(names), f'search ramadan {names}')
     c.page.fill('#tplSearch', ''); c.page.click('#tplCats [data-cat="realestate"]')
-    eq(c.page.locator('#tplGrid .tpl').count(), 4, 'real estate category')
+    eq(c.page.locator('#tplGrid .tpl').count(), 5, 'real estate category')
     c.page.click('#tplGrid .tpl >> nth=0'); ok(c.ev('doc.elements.length') > 3, 'apply generated template')
     for key, wh in [('card_modern', [1050, 600]), ('slide_pitch', [1920, 1080]), ('ramadan_hours', [1080, 1920]), ('opening_offer', [2480, 3508])]:
         c.ev(f"useTemplate(TEMPLATES.findIndex(t=>t.key==='{key}'))"); eq(c.ev('[doc.width,doc.height]'), wh, key)
@@ -1995,7 +1995,7 @@ def t_library(B):
     ok(t0 < 2500, f'A4 dot grid render+export {t0:.0f} ms'); METRICS['a4_pattern_ms'] = round(t0)
     # mockups: grouped, screen is a photo slot that opens the picker on click
     c.blank(); c.tab('shapes'); c.page.click('#elBody [data-mockup="0"]')
-    added = c.ev('doc.elements'); ok(len(added) == 3 and len({x.get('groupId') for x in added}) == 1, 'phone mockup is one group')
+    added = c.ev('doc.elements'); ok(len(added) >= 3 and len({x.get('groupId') for x in added}) == 1, 'phone mockup is one group'); eq(c.ev('MOCKUPS.length'), 19, 'mockup count')
     ok(any(x['type'] == 'placeholder' for x in added), 'phone has a photo slot')
     ph = [x for x in added if x['type'] == 'placeholder'][0]
     for attempt in range(3):
