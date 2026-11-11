@@ -1998,9 +1998,9 @@ def t_library(B):
     added = c.ev('doc.elements'); ok(len(added) == 3 and len({x.get('groupId') for x in added}) == 1, 'phone mockup is one group')
     ok(any(x['type'] == 'placeholder' for x in added), 'phone has a photo slot')
     ph = [x for x in added if x['type'] == 'placeholder'][0]
-    sb = c.page.locator('#stage').bounding_box(); f = sb['width'] / 1080
-    c.page.wait_for_timeout(200)  # let Konva redraw its hit canvas after the add
     for attempt in range(3):
+        c.page.wait_for_timeout(300)  # let the stage settle (resize + hit canvas) after the A4 test above; measure it fresh each try
+        sb = c.page.locator('#stage').bounding_box(); f = sb['width'] / c.ev('doc.width')
         try:
             with c.page.expect_file_chooser(timeout=8000) as fc: c.page.mouse.click(sb['x'] + (ph['x'] + ph['width'] / 2) * f, sb['y'] + (ph['y'] + ph['height'] / 2) * f)
             break
@@ -2275,6 +2275,52 @@ def t_bg_remove(B):
     eq(px[:2], [640, 480], 'same size as the photo'); ok(px[2] < 20 and px[3] < 20, f'backdrop removed {px}'); ok(px[4] > 235, f'subject kept {px}')
     eq(c.ev("sanitizeDoc(JSON.parse(JSON.stringify(doc))).elements.find(e=>e.type==='image').src.slice(0,14)"), 'data:image/png', 'cut-out survives save/open')
     c.page.keyboard.press('Control+z'); c.page.wait_for_timeout(150); eq(c.ev("doc.elements.find(e=>e.type==='image').src.slice(0,15)"), 'data:image/jpeg', 'undo brings the photo back')
+    ok(not c.errors, c.errors); c.close()
+
+
+@test('bulk_create_pages_and_zip')
+def t_bulk(B):
+    import zipfile, io as _io
+    c = Ctx(B)
+    c.ev("()=>{useTemplate(TEMPLATES.findIndex(t=>t.key==='testimonial'))}"); c.page.wait_for_timeout(300)
+    c.tab('bulk'); ok(c.page.locator('#bulkIn').is_visible(), 'bulk tab')
+    # parser: tabs (Excel/Sheets), commas with quotes, semicolons, junk
+    eq(c.ev("parseTable('Name\\tPrice\\r\\nLatte\\t18\\r\\n\\r\\nMocha\\t21')"), {'heads': ['Name', 'Price'], 'rows': [['Latte', '18'], ['Mocha', '21']]}, 'tab table')
+    eq(c.ev("parseTable('Name,Note\\n\"Ali, Jr\",\"said \"\"hi\"\"\\nnow\"')"), {'heads': ['Name', 'Note'], 'rows': [['Ali, Jr', 'said "hi"\nnow']]}, 'quoted csv')
+    eq(c.ev("parseTable('a;b\\n1;2').rows"), [['1', '2']], 'semicolon csv'); eq(c.ev("parseTable('just one line').heads"), [], 'no table')
+    eq(c.ev("parseTable('{x},,x\\n1,2,3').heads"), ['x', 'Column 2', 'x 3'], 'headers cleaned and made unique')
+    eq(c.ev("parseTable('h\\n'+Array(500).fill('v').join('\\n')).rows.length"), 200, 'row cap')
+    c.page.click('#bulkSample'); c.page.wait_for_timeout(100); eq(c.page.locator('#bulkOut [data-bcol]').count(), 3, 'columns listed')
+    c.page.click('#bulkPagesBtn'); c.page.wait_for_timeout(150); eq(c.ev('doc.pages.length'), 1, 'nothing happens until a column is placed')
+    c.ev("()=>{select(doc.elements.find(e=>/Customer name/.test(e.text)).id)}"); c.page.click('#bulkOut [data-bcol="0"]'); c.page.wait_for_timeout(100)
+    c.ev("()=>{select(doc.elements.find(e=>/Company or city/.test(e.text)).id)}"); c.page.click('#bulkOut [data-bcol="1"]'); c.page.wait_for_timeout(100)
+    eq(sorted(c.ev("doc.elements.filter(e=>e.type==='text'&&/[{]/.test(e.text)).map(e=>e.text)")), ['{Name}', '{Role}'], 'tags placed in the selected texts')
+    eq(c.ev("[...document.querySelectorAll('#bulkOut [data-bcol]')].map(b=>b.getAttribute('aria-pressed'))"), ['true', 'true', 'false'], 'used columns marked')
+    c.page.click('#bulkPagesBtn'); c.page.wait_for_timeout(400)
+    eq(c.ev('doc.pages.length'), 4, 'one page per row'); eq(c.ev('doc.page'), 1, 'shows the first new page')
+    got = c.ev("doc.pages.slice(1).map(p=>p.elements.filter(e=>e.type==='text').map(e=>e.text).filter(x=>/Sara|Omar|Lina|manager|barista|chef/.test(x)))")
+    eq(got, [['Sara Ahmed', 'Store manager'], ['Omar Khalid', 'Head barista'], ['Lina Yusuf', 'Pastry chef']], 'values filled in')
+    ok('{Name}' in c.ev("doc.pages[0].elements.map(e=>e.text||'').join('|')"), 'template page keeps its tags')
+    ids = c.ev("doc.pages.flatMap(p=>p.elements.map(e=>e.id))"); eq(len(ids), len(set(ids)), 'ids stay unique')
+    ok(c.ev("doc.pages.every(p=>p.elements[0].role==='bg')"), 'every new page keeps an editable background')
+    c.page.keyboard.press('Control+z'); c.page.wait_for_timeout(200); eq(c.ev('doc.pages.length'), 1, 'one undo removes all the new pages')
+    # long values shrink to keep their space; hostile cells stay plain text
+    c.ev("""()=>{bulkSet('Name\\tRole\\nA very very long customer name that would never fit on one line of the card\\t<img src=x onerror=alert(1)>');}""")
+    c.page.click('#bulkPagesBtn'); c.page.wait_for_timeout(300)
+    f0 = c.ev("doc.pages[0].elements.find(e=>e.text==='{Name}').fontSize"); e1 = c.ev("doc.pages[1].elements.find(e=>/very very long/.test(e.text))")
+    ok(e1['fontSize'] < f0 and e1['fontSize'] >= f0 * 0.5, f'long value shrinks {f0}->{e1["fontSize"]}')
+    ok(c.ev("doc.pages[1].elements.some(e=>e.text==='<img src=x onerror=alert(1)>')") and not c.ev("!!document.querySelector('img[src=x]')"), 'cell content is never treated as HTML')
+    eq(c.ev("JSON.stringify(sanitizeDoc(JSON.parse(JSON.stringify(doc))).pages.length)"), '2', 'result is a valid design')
+    c.page.keyboard.press('Control+z'); c.page.wait_for_timeout(150)
+    # zip: one PNG per row, design untouched
+    c.page.click('#bulkSample'); c.page.wait_for_timeout(100); before = c.ev('JSON.stringify(doc)')
+    name, data, _ = c.download(lambda: c.page.click('#bulkZipBtn')); eq(name, 'shoof-bulk.zip', 'zip name')
+    z = zipfile.ZipFile(_io.BytesIO(data)); eq(sorted(z.namelist()), ['001-Sara-Ahmed.png', '002-Omar-Khalid.png', '003-Lina-Yusuf.png'], 'files named after the first placed column')
+    eq(png_size(z.read('002-Omar-Khalid.png')), (1080, 1080), 'full-size pictures'); ok(len(set(z.read(n) for n in z.namelist())) == 3, 'each picture differs')
+    c.page.wait_for_timeout(300); eq(c.ev('JSON.stringify(doc)'), before, 'design unchanged by the zip export')
+    # page limit
+    c.ev("()=>{bulkSet('Name\\n'+Array.from({length:60},(_,i)=>'Person '+i).join('\\n'));}"); c.page.click('#bulkPagesBtn'); c.page.wait_for_timeout(600)
+    eq(c.ev('doc.pages.length'), 40, 'stops at the page limit')
     ok(not c.errors, c.errors); c.close()
 
 

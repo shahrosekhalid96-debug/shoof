@@ -29,6 +29,7 @@ Arabic is fully supported, not added as an afterthought. The interface switches 
 - **Elements panel** (searchable): shapes (incl. blob and slanted box), device mockups with photo slots (phone, tablet, laptop, browser, polaroid), 11 subtle code-drawn patterns (halftone dots, wave lines, contour rings, stripes, pixel dither), infographic blocks (step buttons, mind map, timeline, process, stats, percentage ring), line styles (dashed, dotted, arrows), photo frames with circle/blob/arch/hexagon/heart/diamond masks, 9 stickers, bar/line/pie/donut charts with editable data, and 209 Lucide icons (recolour, line weight, fill)
 - **Multi-page designs**: a pages bar to add, duplicate, reorder and delete pages (great for decks and carousels)
 - **Export**: PNG (also with no background, or double size), JPG, WebP, PDF (all pages), **SVG** (shapes, icons and text stay editable vectors) and **PowerPoint .pptx** with editable text
+- **Bulk create (free)**: paste rows from Excel or Google Sheets, drop `{Column}` tags into a design, and get one page per row or a zip of PNGs (name cards, price tags, certificates, one post per product)
 - **Background remover (free, private)**: a small AI model runs in your browser, so photos never leave your device
 - **Text effects and curved text**: one-click soft shadow, retro, hollow, neon, sticker and marker looks; bend any line into an arc
 - **Brand kit (free)**: save your colours, heading and body fonts and logo on your device, then apply the brand to any design in one click (text stays readable, one undo step)
