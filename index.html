@@ -84,6 +84,8 @@ details.gdet>summary::before{content:'▸ '}details.gdet[open]>summary::before{c
 .swatches{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin:8px 0 14px}
 .swatches button{aspect-ratio:1/1;border-radius:50%;padding:0;border:1px solid rgba(0,0,0,.12)}
 .bsw{position:relative;display:block}.bsw>button:first-child{width:100%}.bsw .bx{position:absolute;top:-5px;inset-inline-end:-5px;width:18px;height:18px;min-height:0;aspect-ratio:auto;border-radius:50%;border:1px solid var(--line);background:#fff;color:#1d2330;font-size:12px;line-height:1;display:none;align-items:center;justify-content:center}.bsw:hover .bx,.bsw:focus-within .bx{display:flex}@media(hover:none){.bsw .bx{display:flex}}
+.tstyles{display:grid;gap:8px;margin-bottom:12px}.tstyles button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:76px;padding:10px 8px;line-height:1.15;overflow:hidden}.tstyles button span{max-width:100%;white-space:nowrap}
+.kitrow{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}.btnlike{display:flex;align-items:center;justify-content:center;border:1px solid var(--line);border-radius:var(--r);background:#fff;cursor:pointer;min-height:36px;font-size:14px}.btnlike:hover{border-color:var(--accent)}.vh{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}.vh:focus-visible+*,.kitrow:focus-within .btnlike{outline:2px solid var(--accent);outline-offset:2px}
 .brand-row{display:flex;flex-wrap:wrap;gap:6px;margin:-2px 0 10px}.brand-row button{width:22px;height:22px;min-height:0;padding:0;border-radius:50%;border:1px solid rgba(0,0,0,.18)}
 .brand-logo{display:block;width:100%;padding:10px;margin-bottom:8px;background:repeating-conic-gradient(#f1f1f4 0 25%,#fff 0 50%) 0 0/16px 16px;border:1px solid var(--line);border-radius:var(--r)}.brand-logo img{display:block;max-width:100%;max-height:110px;margin:0 auto}
 .swatches button[aria-pressed=true]{box-shadow:0 0 0 2px #fff,0 0 0 4px var(--accent)}
@@ -335,6 +337,7 @@ if(!window.Konva)throw new Error('Shoof: Konva failed to load');
 const I18N={
  en:{docTitle:'Shoof — free open-source design editor',brand:'Shoof',tag:'Free design for everyone',new:'New',open:'Open',save:'Save',export:'Download',langTitle:'Language',sizeTitle:'Canvas size',undoTitle:'Undo (Ctrl+Z)',redoTitle:'Redo (Ctrl+Y)',propsTitle:'Properties',edit:'Edit',more:'More',
   expPng:'best for social',expJpg:'smaller file',expPdf:'for print',
+  fgSans:'Sans serif',fgSerif:'Serif',fgDisplay:'Display',fgScript:'Handwriting',fgMono:'Monospace',textStyles:'Text styles',changeCase:'Change case: UPPER, lower, Title',brandFile:'Kit file',brandSave:'Save kit',brandLoad:'Load kit',brandLoaded:'Brand kit loaded.',brandBadFile:'That is not a Shoof brand kit file.',
   brand:'Brand',brandKit:'Brand kit',brandHint:'Your colours, fonts and logo. Free, and saved only on this device.',brandColors:'Brand colours',brandNoColors:'No colours yet. Add one below.',brandAdd:'Add colour',brandUse:'Use colour',brandRemove:'Remove colour',brandFrom:'Take colours from this design',brandFonts:'Brand fonts',brandHead:'Headings',brandBody:'Body text',brandNone:'Not set',brandLogo:'Logo',brandLogoUp:'Upload your logo',brandLogoAdd:'Add logo to the page',brandLogoDel:'Remove logo',brandLogoBig:'That logo is too large. Try a smaller image.',brandApply:'Apply brand to this design',brandApplyNote:'Recolours every page and swaps the fonts. Undo brings it back.',brandApplied:'Brand applied. Undo to go back.',brandPickHint:'Select something on the page first, then pick a brand colour.',brandEmpty:'Add a brand colour or font first.',brandFull:'A brand kit holds up to 12 colours.',brandSaveFail:'Could not save the brand kit on this device.',expPack:'4 social sizes',
   templates:'Templates',text:'Text',shapes:'Shapes',uploads:'Uploads',background:'Background',layers:'Layers',about:'About',askClaude:'Ask Claude',
   fit:'Fit',zoomIn:'Zoom in',zoomOut:'Zoom out',close:'Close',closePanel:'Close panel',
@@ -601,9 +604,15 @@ const migrate=sanitizeDoc;
 
 /* ============ document model ============ */
 const SIZES=[{id:'ig',w:1080,h:1080},{id:'story',w:1080,h:1920},{id:'li',w:1200,h:627},{id:'fb',w:1200,h:630},{id:'x',w:1600,h:900},{id:'a4',w:2480,h:3508},{id:'a3',w:3508,h:4961},{id:'yt',w:1280,h:720},{id:'flyer',w:1748,h:2480},{id:'logo',w:1000,h:1000},{id:'card',w:1050,h:600},{id:'pres',w:1920,h:1080}];
-const LATIN_FONTS=['Inter','Poppins','Playfair Display','Bebas Neue'];
+const FONT_GROUPS={fgSans:['Inter','Poppins','Montserrat','Raleway','Nunito','DM Sans','Space Grotesk'],fgSerif:['Playfair Display','Lora','Merriweather','DM Serif Display','Cormorant Garamond'],fgDisplay:['Bebas Neue','Oswald','Anton','Archivo Black','Lobster'],fgScript:['Pacifico','Dancing Script','Caveat'],fgMono:['Space Mono']};
+const LATIN_FONTS=Object.values(FONT_GROUPS).flat();
 const AR_FONTS=['Cairo','Tajawal','Amiri','IBM Plex Sans Arabic'];
 const FONTS=[...LATIN_FONTS,...AR_FONTS];
+/* the original 8 families load at start; the rest load the first time a design uses them */
+const CORE_FONTS=['Inter','Poppins','Playfair Display','Bebas Neue',...AR_FONTS],fontSeen=new Set(CORE_FONTS);
+function loadFont(f){return Promise.all([document.fonts.load(`400 40px "${f}"`),document.fonts.load(`700 40px "${f}"`)].map(q=>q.catch(()=>{})));}
+function ensureFonts(){const need=new Set();doc.pages.forEach(pg=>pg.elements.forEach(e=>{if(e.type==='text'&&!fontSeen.has(e.fontFamily)&&FONTS.includes(e.fontFamily))need.add(e.fontFamily);}));if(!need.size)return;need.forEach(f=>fontSeen.add(f));Promise.all([...need].map(loadFont)).then(()=>{fullRender(true);if(typeof refreshPageThumbs==='function')refreshPageThumbs(true);});}
+function fontOptions(v){return Object.entries(FONT_GROUPS).map(([g,fs])=>`<optgroup label="${esc(t(g))}">${fs.map(f=>`<option value="${esc(f)}" ${f===v?'selected':''}>${esc(f)}</option>`).join('')}</optgroup>`).join('')+`<optgroup label="${esc(t('fontsArabic'))}">${AR_FONTS.map(f=>`<option value="${esc(f)}" ${f===v?'selected':''}>${esc(f)}</option>`).join('')}</optgroup>`;}
 const SWATCH=['#ffffff','#000000','#1d2330','#6c4cf5','#ff6a88','#ffb020','#22c55e','#0ea5e9','#f43f5e','#f5efe6','#0f766e','#7c2d12'];
 
 /* gradient presets: [angle, colour stops…] (original pairs) */
@@ -740,7 +749,7 @@ function buildNode(e){
  if(e.fillGradient&&SHAPES.includes(e.type)&&!(e.type==='line'&&(e.dash||e.ends))){const sh=g.getChildren()[0];if(sh){const ell=e.type==='ellipse';if(e.type==='blob')sh.setAttrs(gradAttrs(e.fillGradient,0,0,100,100));else sh.setAttrs(gradAttrs(e.fillGradient,ell?-W/2:0,ell?-H/2:0,W,e.type==='line'?Math.max(H,2):H));}}
  return g;
 }
-function fullRender(skipProps){
+function fullRender(skipProps){ensureFonts();
  clearTimeout(_rs);
  bgRect.size({width:doc.width,height:doc.height});bgRect.fill(safeColor(doc.background.color,'#ffffff'));
  if(doc.background.gradient)bgRect.setAttrs(gradAttrs(doc.background.gradient,0,0,doc.width,doc.height));else bgRect.fillPriority('color');
@@ -865,15 +874,29 @@ const INFOS=[
  {key:'process',kw:'process arrows steps flow workflow',els:[0,1,2].flatMap(i=>[{type:'arrow',x:4+i*132,y:150,width:128,height:100,fill:['#6c4cf5','#8f72ff','#b3a1ff'][i]},{type:'text',text:'0'+(i+1),x:4+i*132,y:182,width:96,fontFamily:'Poppins',fontSize:28,bold:true,fill:'#ffffff',align:'center',lineHeight:1.2}])},
  {key:'stats',kw:'stats numbers kpi cards figures data',els:[0,1,2].flatMap(i=>[{type:'rect',x:i*136,y:120,width:124,height:160,radius:20,fill:['#f1edff','#ffe9f0','#e9f8f2'][i]},{type:'text',text:['85%','2.4K','12'][i],x:i*136,y:156,width:124,fontFamily:'Poppins',fontSize:40,bold:true,fill:['#6c4cf5','#e0457b','#14a374'][i],align:'center',lineHeight:1.2},{type:'text',text:['Happy','Followers','Awards'][i],x:i*136,y:218,width:124,fontFamily:'Inter',fontSize:18,fill:'#5b6170',align:'center',lineHeight:1.2}])},
  {key:'percent',kw:'percentage ring donut progress stat',els:[{type:'chart',chartType:'donut',values:[72,28],labels:['',''],showLabels:false,x:60,y:40,width:280,height:280,fill:'#6c4cf5',textColor:'#ffffff'},{type:'text',text:'72%',x:60,y:150,width:280,fontFamily:'Poppins',fontSize:56,bold:true,fill:'#1d2330',align:'center',lineHeight:1.2},{type:'text',text:'of customers',x:60,y:332,width:280,fontFamily:'Inter',fontSize:22,fill:'#5b6170',align:'center',lineHeight:1.2}]}];
-const SETS={sticker:STICKERS,mockup:MOCKUPS,info:INFOS};
-function setEls(kind,i,sc){const st=(SETS[kind]||[])[i];if(!st)return [];return st.els.map(e=>{const o=Object.assign({},e);['x','y','width','height','fontSize','radius','strokeWidth','shadowBlur','shadowY'].forEach(p=>{if(fnum(o[p])&&!(o.type==='icon'&&p==='strokeWidth'))o[p]=o[p]*sc;});return el(o.type,o);});}
+const TS=(text,y,fontFamily,fontSize,o)=>Object.assign({type:'text',text,x:0,y,width:400,fontFamily,fontSize,align:'center',lineHeight:1.15,fill:'#1d2330'},o);
+const TEXT_STYLES=[
+ {key:'promo',els:[TS('BIG SALE',110,'Anton',92),TS('Up to 50% off everything',226,'DM Sans',24,{bold:true,fill:'#6c4cf5'})]},
+ {key:'elegant',els:[TS('Grand Opening',130,'Cormorant Garamond',62,{bold:true}),TS('SATURDAY · 7 PM',212,'Montserrat',15,{bold:true,letterSpacing:5})]},
+ {key:'script',els:[TS('Thank you',120,'Pacifico',66,{fill:'#6c4cf5'}),TS('for your order',220,'Nunito',24,{bold:true})]},
+ {key:'modern',els:[TS('New Collection',140,'Space Grotesk',48,{bold:true}),TS('2026 — VOL. 01',206,'Space Mono',17)]},
+ {key:'editorial',els:[TS('The Weekly Edit',140,'DM Serif Display',48),TS('stories worth sharing',206,'Lora',22,{italic:true})]},
+ {key:'poster',els:[TS('OPEN HOUSE',110,'Oswald',80,{bold:true,letterSpacing:2}),TS('Join us this weekend',216,'Raleway',24,{bold:true,fill:'#6c4cf5'})]},
+ {key:'hand',els:[TS('made with love',150,'Caveat',64,{bold:true})]},
+ {key:'retro',els:[TS('Fresh & Tasty',130,'Lobster',60,{fill:'#6c4cf5'}),TS('SINCE 1996',212,'Archivo Black',17,{letterSpacing:4})]},
+ {key:'clean',els:[TS('Simple. Clean. Yours.',150,'Montserrat',30,{bold:true}),TS('A short supporting line goes here',196,'Merriweather',17)]},
+ {key:'invite',els:[TS('SAVE THE DATE',130,'Raleway',15,{bold:true,letterSpacing:5}),TS("You're invited",160,'Dancing Script',62,{bold:true,fill:'#6c4cf5'})]}];
+function textStylesHTML(){return `<h3>${esc(t('textStyles'))}</h3><div class="tstyles">`+TEXT_STYLES.map((st,i)=>{const big=Math.max(...st.els.map(e=>e.fontSize));return `<button data-tstyle="${i}" aria-label="${esc(t('textStyles'))}: ${esc(st.els.map(e=>e.text).join(', '))}">`+st.els.map(e=>`<span style="font-family:'${e.fontFamily}';font-weight:${e.bold?700:400};font-style:${e.italic?'italic':'normal'};font-size:${Math.max(10,Math.round(e.fontSize/big*26))}px;letter-spacing:${(e.letterSpacing||0)/3}px;color:${e.fill==='#1d2330'?'inherit':e.fill}">${esc(e.text)}</span>`).join('')+'</button>';}).join('')+'</div>';}
+const SETS={sticker:STICKERS,mockup:MOCKUPS,info:INFOS,textstyle:TEXT_STYLES};
+function setEls(kind,i,sc){const st=(SETS[kind]||[])[i];if(!st)return [];return st.els.map(e=>{const o=Object.assign({},e);if(kind==='textstyle'&&o.fill==='#1d2330')o.fill=ink();['x','y','width','height','fontSize','radius','strokeWidth','shadowBlur','shadowY','letterSpacing'].forEach(p=>{if(fnum(o[p])&&!(o.type==='icon'&&p==='strokeWidth'))o[p]=o[p]*sc;});return el(o.type,o);});}
 function addSet(kind,i){const sc=0.9*k();const ids=new Set(doc.elements.map(x=>x.id));const list=setEls(kind,i,sc).map(e=>sanitizeEl(e,ids)).filter(Boolean);if(!list.length||doc.elements.length+list.length>LIM.els)return;
- const ox=Math.round(doc.width/2-200*sc),oy=Math.round(doc.height/2-200*sc),gid=uid();list.forEach(e=>{e.x+=ox;e.y+=oy;if(list.length>1)e.groupId=gid;});
+ const ox=Math.round(doc.width/2-200*sc),oy=Math.round(doc.height/2-200*sc),gid=uid();let dx=0;const first=list[0];while(dx<400*sc&&doc.elements.some(q=>q.x===Math.round(first.x+ox+dx)&&q.y===Math.round(first.y+oy+dx)))dx+=Math.round(48*sc);/* a second copy lands beside the first, not on top of it */
+ list.forEach(e=>{e.x=Math.round(e.x+ox+dx);e.y=Math.round(e.y+oy+dx);if(list.length>1)e.groupId=gid;});
  doc.elements.push(...list);setSel(list.map(e=>e.id),list[0].id);fullRender();commit();if(isMob())openSheet();}
 function stickerEls(i,sc){return setEls('sticker',i,sc);}
 function addSticker(i){addSet('sticker',i);}
 let setThumbs={sticker:[],mockup:[],info:[]},stickerThumbs=setThumbs.sticker,patThumbs={};
-function makeStickerThumbs(){Object.keys(SETS).forEach(kind=>{setThumbs[kind]=SETS[kind].map((_,i)=>{try{const sc=0.4,div=document.createElement('div');const st=new Konva.Stage({container:div,width:160,height:160});const l=new Konva.Layer();st.add(l);
+function makeStickerThumbs(){Object.keys(SETS).filter(kd=>kd!=='textstyle').forEach(kind=>{setThumbs[kind]=SETS[kind].map((_,i)=>{try{const sc=0.4,div=document.createElement('div');const st=new Konva.Stage({container:div,width:160,height:160});const l=new Konva.Layer();st.add(l);
  setEls(kind,i,1).map(e=>sanitizeEl(e)).filter(Boolean).forEach(e=>{const n=buildNode(e);n.x(n.x()*sc);n.y(n.y()*sc);n.scale({x:sc,y:sc});l.add(n);});l.draw();const u=st.toDataURL({pixelRatio:2});st.destroy();return u;}catch(e){return null;}});});stickerThumbs=setThumbs.sticker;
  PATTERNS.forEach(p=>{try{const cv=document.createElement('canvas');cv.width=cv.height=120;const c=cv.getContext('2d');drawPattern(c,{pattern:p,fill:'#6c4cf5',fill2:'#ff6a88',spacing:9},120,120);patThumbs[p]=cv.toDataURL();}catch(e){}});
  if(curTab==='shapes'){const b=$('#elBody');if(b)b.innerHTML=elementsHTML();}}
@@ -990,13 +1013,13 @@ function brandFromDesign(){const all=[...colorUsage(doc)].map(([c,w])=>Object.as
  out.forEach(x=>{if(brand.colors.length<12&&!brand.colors.includes(x.c))brand.colors.push(x.c);});saveBrand();renderDrawer();}
 function brandRow(){return brand.colors.length?`<div class="brand-row" role="group" aria-label="${esc(t('brandColors'))}">`+brand.colors.map((c,i)=>`<button data-pbc="${i}" style="background:${c}" aria-label="${esc(t('brandUse'))} ${c}" title="${c}"></button>`).join('')+'</div>':'';}
 function brandLine(){const b=[];if(brand.colors.length)b.push('colours '+brand.colors.join(', '));if(brand.head)b.push('heading font '+brand.head);if(brand.body)b.push('body font '+brand.body);return b.length?`BRAND KIT: this is the user's brand. Prefer it whenever you choose colours or fonts: ${b.join('; ')}.`:'';}
-function brandHTML(){const fo=v=>`<option value="">${esc(t('brandNone'))}</option>`+FONTS.map(f=>`<option value="${esc(f)}" ${f===v?'selected':''}>${esc(f)}</option>`).join('');
+function brandHTML(){const fo=v=>`<option value="">${esc(t('brandNone'))}</option>`+fontOptions(v);
  return dhead('brandKit')+`<p class="hint">${esc(t('brandHint'))}</p><h3>${esc(t('brandColors'))}</h3>`+(brand.colors.length?`<div class="swatches brand-sw">`+brand.colors.map((c,i)=>`<span class="bsw"><button data-bc="${i}" style="background:${c}" aria-label="${esc(t('brandUse'))} ${c}" title="${c}"></button><button class="bx" data-bcx="${i}" aria-label="${esc(t('brandRemove'))} ${c}">×</button></span>`).join('')+'</div>':`<p class="empty">${esc(t('brandNoColors'))}</p>`)+
  `<div class="row"><label for="brandPick">${esc(t('brandAdd'))}</label><input type="color" id="brandPick" value="#6c4cf5"><button id="brandAddBtn" class="icon" aria-label="${esc(t('brandAdd'))}" title="${esc(t('brandAdd'))}">${ICON.plus||'+'}</button></div>
  <button class="wide" id="brandFrom">${esc(t('brandFrom'))}</button>
  <h3>${esc(t('brandFonts'))}</h3><div class="row"><label for="brandHead">${esc(t('brandHead'))}</label><select id="brandHead">${fo(brand.head)}</select></div><div class="row"><label for="brandBody">${esc(t('brandBody'))}</label><select id="brandBody">${fo(brand.body)}</select></div>
  <h3>${esc(t('brandLogo'))}</h3>`+(brand.logo?`<button class="brand-logo" id="brandLogoAdd" aria-label="${esc(t('brandLogoAdd'))}" title="${esc(t('brandLogoAdd'))}"><img alt="" src="${esc(brand.logo)}"></button><button class="wide" id="brandLogoDel">${esc(t('brandLogoDel'))}</button>`:`<label class="drop">${ICON.upload}${esc(t('brandLogoUp'))}<input type="file" id="brandLogoFile" accept="image/*" hidden></label>`)+
- `<button class="wide primary" id="brandApply">${esc(t('brandApply'))}</button><p class="empty">${esc(t('brandApplyNote'))}</p>`;}
+ `<button class="wide primary" id="brandApply">${esc(t('brandApply'))}</button><p class="empty">${esc(t('brandApplyNote'))}</p><h3>${esc(t('brandFile'))}</h3><div class="kitrow"><button id="brandSave">${esc(t('brandSave'))}</button><label class="btnlike" for="brandLoad">${esc(t('brandLoad'))}</label><input type="file" id="brandLoad" accept=".json,application/json" class="vh"></div>`;}
 function bindBrand(){const on=(id,ev,fn)=>{const n=$('#'+id);if(n)n.addEventListener(ev,fn);};
  document.querySelectorAll('#drawer [data-bc]').forEach(b=>b.onclick=()=>brandColorTo(brand.colors[+b.dataset.bc]));
  document.querySelectorAll('#drawer [data-bcx]').forEach(b=>b.onclick=()=>{brand.colors.splice(+b.dataset.bcx,1);saveBrand();renderDrawer();renderProps();});
@@ -1005,7 +1028,9 @@ function bindBrand(){const on=(id,ev,fn)=>{const n=$('#'+id);if(n)n.addEventList
  on('brandHead','change',ev=>{brand.head=ev.target.value;saveBrand();});on('brandBody','change',ev=>{brand.body=ev.target.value;saveBrand();});
  on('brandLogoFile','change',ev=>{const fl=ev.target.files[0];ev.target.value='';if(!fl)return;prepImage(fl).then(u=>{if(u.length>1.5e6){toast(t('brandLogoBig'),4000);return;}brand.logo=u;saveBrand();renderDrawer();}).catch(()=>toast(t('imgFail')));});
  on('brandLogoAdd','click',()=>{if(brand.logo)addImage(brand.logo);});on('brandLogoDel','click',()=>{brand.logo=null;saveBrand();renderDrawer();});
- on('brandApply','click',()=>{applyBrand();});}
+ on('brandApply','click',()=>{applyBrand();});
+ on('brandSave','click',()=>{saveFile('shoof-brand.json',new Blob([JSON.stringify(Object.assign({app:'shoof-brand',version:1},brand))],{type:'application/json'}));});
+ on('brandLoad','change',ev=>{const fl=ev.target.files[0];ev.target.value='';if(!fl)return;if(fl.size>3e6){toast(t('brandBadFile'),4000);return;}fl.text().then(x=>{const r=JSON.parse(x);if(!r||r.app!=='shoof-brand')throw 0;brand=sanitizeBrand(r);saveBrand();renderDrawer();renderProps();toast(t('brandLoaded'));}).catch(()=>toast(t('brandBadFile'),4000));});}
 function applyDoc(d){const prev=doc,prevSel=selId;try{doc=d;selId=null;fullRender();}catch(err){doc=prev;selId=prevSel;try{fullRender();}catch(_){}throw err;}syncSize();fitZoom();pageThumbs.length=0;renderPages();refreshPageThumbs(true);}
 
 /* images: import with downscale (long side ≤ 2400 px), replace, placeholders */
@@ -1352,7 +1377,7 @@ let curTab='templates';const uploads=[];
 function dhead(key,label){return `<div class="dhead"><h3>${esc(label||t(key))}</h3><button class="icon mob-only" data-close-drawer ${ic('closePanel')}>${ICON.x}</button></div>`;}
 function renderDrawer(){const d=$('#drawer');let h='';
  if(curTab==='templates'){h=dhead('templates')+`<input type="search" id="tplSearch" class="search" dir="auto" value="${esc(tplQ)}" placeholder="${esc(t('searchTpl'))}" aria-label="${esc(t('searchTpl'))}"><div class="chips" id="tplCats">${TPL_CATS.map(c=>`<button data-cat="${c}" class="${tplCat===c?'on':''}" aria-pressed="${tplCat===c}">${esc(t('cat_'+c))}</button>`).join('')}</div><div class="tpl-grid" id="tplGrid">${tplGridHTML()}</div>`;}
- else if(curTab==='text'){h=dhead('text')+`<div class="add-text"><button data-text="h" style="font:800 22px Poppins,Cairo">${esc(t('addHeading'))}</button><button data-text="s" style="font:600 17px Inter,Tajawal">${esc(t('addSub'))}</button><button data-text="b" style="font:400 14px Inter,Tajawal">${esc(t('addBody'))}</button><button data-text="ar" style="font:700 18px Cairo,Poppins" dir="auto">${esc(t('addAr'))}</button></div>`;}
+ else if(curTab==='text'){h=dhead('text')+`<div class="add-text"><button data-text="h" style="font:800 22px Poppins,Cairo">${esc(t('addHeading'))}</button><button data-text="s" style="font:600 17px Inter,Tajawal">${esc(t('addSub'))}</button><button data-text="b" style="font:400 14px Inter,Tajawal">${esc(t('addBody'))}</button><button data-text="ar" style="font:700 18px Cairo,Poppins" dir="auto">${esc(t('addAr'))}</button></div>${textStylesHTML()}`;}
  else if(curTab==='shapes'){h=dhead('elements')+`<input type="search" id="elSearch" class="search" dir="auto" maxlength="60" value="${esc(elQ)}" placeholder="${esc(t('searchEl'))}" aria-label="${esc(t('searchEl'))}"><div id="elBody">${elementsHTML()}</div>`;}
  else if(curTab==='uploads'){h=dhead('uploads')+`<label class="drop" id="drop">${ICON.upload}${esc(t('dropHere'))}<small>${esc(t('uploadNote'))}</small><input type="file" id="upFile" accept="image/*" multiple hidden></label><button class="wide" data-shape="placeholder">${ICON.image}${esc(t('addPlaceholder'))}</button><div class="uploads">`+uploads.map((u,i)=>`<button data-up="${i}" ${ic('addImg')}><img alt="" src="${esc(u)}"></button>`).join('')+'</div>';}
  else if(curTab==='background'){const cur=bgColorNow().toLowerCase();h=dhead('bgColor')+`<div class="swatches">`+[...new Set([...SWATCH,...brand.colors])].map(c=>`<button data-bg="${c}" style="background:${c}" aria-pressed="${c===cur&&!bgGradNow()}" aria-label="${c}"></button>`).join('')+`</div><div class="row"><label for="bgPick">${esc(t('bgColor'))}</label><input type="color" id="bgPick" value="${esc(hex6(cur))}"></div><p class="hint">${esc(t('bgHint'))}</p>${gradUI('b',bgGradNow(),true)}<h3>${esc(t('bgImage'))}</h3><label class="drop">${ICON.upload}${esc(t('dropHere'))}<small>${esc(t('uploadNote'))}</small><input type="file" id="bgFile" accept="image/*" hidden></label>${doc.background.image?`<button id="bgClear" class="wide">${esc(t('removeBg'))}</button>`:''}`;}
@@ -1361,7 +1386,7 @@ function renderDrawer(){const d=$('#drawer');let h='';
  else if(curTab==='claude'){h=renderClaudeHTML();}
  else if(curTab==='about'){h=dhead('aboutTitle')+`<p class="empty">${esc(t('aboutBody'))}</p><p class="empty">${esc(t('privacy'))}</p><p class="empty" dir="auto">${esc(t('shortcuts'))}</p>
   <h3>${esc(t('licenceH'))}</h3><p class="empty">${esc(t('licenceLine'))}</p><p class="empty">${esc(t('copyright'))} · <a href="https://github.com/shahrosekhalid96-debug/shoof" target="_blank" rel="noopener noreferrer">${esc(t('sourceCode'))}</a></p>
-  <h3>${esc(t('thirdParty'))}</h3><ul class="credits" data-names lang="en" dir="ltr"><li>Konva 10.9.1 — MIT License, © Anton Lavrenov and contributors</li><li>PptxGenJS 4.0.1 — MIT License, © Brent Ely (PowerPoint export, includes JSZip, MIT)</li><li>Lucide icons 1.70 (209-icon subset) — ISC License, © Lucide Icons and contributors (vendor/LUCIDE-LICENSE.txt)</li><li>jsPDF 4.2.1 — MIT License, © James Hall, yWorks GmbH and contributors (includes fflate, pako, omggif: MIT / zlib)</li><li>Fonts — SIL Open Font License 1.1 (OFL-1.1), self-hosted from Fontsource: Inter © The Inter Project Authors; Poppins © The Poppins Project Authors; Playfair Display © The Playfair Display Project Authors; Bebas Neue © The Bebas Neue Project Authors; Cairo © The Cairo Project Authors; Tajawal © Boutros Fonts / Google; Amiri © The Amiri Project Authors; IBM Plex Sans Arabic © IBM Corp.</li></ul>
+  <h3>${esc(t('thirdParty'))}</h3><ul class="credits" data-names lang="en" dir="ltr"><li>Konva 10.9.1 — MIT License, © Anton Lavrenov and contributors</li><li>PptxGenJS 4.0.1 — MIT License, © Brent Ely (PowerPoint export, includes JSZip, MIT)</li><li>Lucide icons 1.70 (209-icon subset) — ISC License, © Lucide Icons and contributors (vendor/LUCIDE-LICENSE.txt)</li><li>jsPDF 4.2.1 — MIT License, © James Hall, yWorks GmbH and contributors (includes fflate, pako, omggif: MIT / zlib)</li><li>Fonts — SIL Open Font License 1.1 (OFL-1.1), self-hosted from Fontsource: Inter © The Inter Project Authors; Poppins © The Poppins Project Authors; Playfair Display © The Playfair Display Project Authors; Bebas Neue © The Bebas Neue Project Authors; Cairo © The Cairo Project Authors; Tajawal © Boutros Fonts / Google; Amiri © The Amiri Project Authors; IBM Plex Sans Arabic © IBM Corp.; Montserrat, Raleway, Nunito, DM Sans, Space Grotesk, Oswald, Anton, Archivo Black, Lora, Merriweather, Cormorant Garamond, Pacifico, Dancing Script, Caveat, Lobster and Space Mono © their respective Project Authors; DM Serif Display © Adobe Systems Incorporated and Google LLC (licence texts in fonts/)</li></ul>
   <footer class="credit">${esc(t('versionLine'))} · ${esc(t('copyright'))}</footer>`;}
  d.innerHTML=h;
  if(curTab==='uploads'){const dz=$('#drop');['dragover','dragenter'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.add('over');}));['dragleave','drop'].forEach(ev=>dz.addEventListener(ev,()=>dz.classList.remove('over')));dz.addEventListener('drop',e=>{e.preventDefault();e.stopPropagation();readFiles(e.dataTransfer.files,true);});$('#upFile').addEventListener('change',e=>{readFiles(e.target.files,true);e.target.value='';});}
@@ -1375,9 +1400,9 @@ function renderDrawer(){const d=$('#drawer');let h='';
   document.querySelectorAll('#tplCats [data-cat]').forEach(b=>b.onclick=()=>{tplCat=b.dataset.cat;renderDrawer();});}
  if(curTab==='shapes'){const q=$('#elSearch');q.addEventListener('input',()=>{elQ=q.value.slice(0,60);$('#elBody').innerHTML=elementsHTML();});}
 }
-$('#drawer').addEventListener('click',ev=>{const b=ev.target.closest('[data-mockup],[data-info],[data-pattern],[data-add-image],[data-icon],[data-line],[data-frame],[data-sticker],[data-chart],[data-more-icons],[data-tpl],[data-text],[data-shape],[data-up],[data-bg],[data-vis],[data-lock],[data-layer],[data-close-drawer]');if(!b)return;const ds=b.dataset;
+$('#drawer').addEventListener('click',ev=>{const b=ev.target.closest('[data-tstyle],[data-mockup],[data-info],[data-pattern],[data-add-image],[data-icon],[data-line],[data-frame],[data-sticker],[data-chart],[data-more-icons],[data-tpl],[data-text],[data-shape],[data-up],[data-bg],[data-vis],[data-lock],[data-layer],[data-close-drawer]');if(!b)return;const ds=b.dataset;
  if(ds.closeDrawer!==undefined){setDrawer(false);return;}
- if(ds.icon){addIcon(ds.icon);return;}if(ds.mockup!==undefined){addSet('mockup',+ds.mockup);return;}if(ds.info!==undefined){addSet('info',+ds.info);return;}if(ds.pattern){addPattern(ds.pattern);return;}if(ds.line){addLine(ds.line);return;}if(ds.frame){addFrame(ds.frame);return;}if(ds.sticker!==undefined){addSticker(+ds.sticker);return;}if(ds.chart){addChart(ds.chart);return;}
+ if(ds.tstyle!==undefined){addSet('textstyle',+ds.tstyle);if(isMob())setDrawer(false);return;}if(ds.icon){addIcon(ds.icon);return;}if(ds.mockup!==undefined){addSet('mockup',+ds.mockup);return;}if(ds.info!==undefined){addSet('info',+ds.info);return;}if(ds.pattern){addPattern(ds.pattern);return;}if(ds.line){addLine(ds.line);return;}if(ds.frame){addFrame(ds.frame);return;}if(ds.sticker!==undefined){addSticker(+ds.sticker);return;}if(ds.chart){addChart(ds.chart);return;}
  if(ds.addImage!==undefined){$('#imgPick').click();return;}
  if(ds.moreIcons!==undefined){elAllIcons=true;$('#elBody').innerHTML=elementsHTML();return;}
  if(ds.tpl!==undefined)useTemplate(+ds.tpl);else if(ds.text)addText(ds.text);else if(ds.shape==='placeholder')addPlaceholder();else if(ds.shape)addShape(ds.shape);
@@ -1403,11 +1428,11 @@ function renderProps(){const p=$('#props');{const key=sel().join(',');if(key!==_
  if(e.type==='text'){const ar=hasArabic(e.text);
   h+=`<p class="hint">${esc(t('textHint'))}</p><button id="pEditCanvas" class="wide">${esc(t('editOnCanvas'))}</button>
   <h3>${esc(t('content'))}</h3><textarea id="pText" dir="auto" maxlength="${LIM.text}" placeholder="${esc(t('defBody'))}">${esc(e.text)}</textarea>
-  <div class="row"><label for="pFont">${esc(t('font'))}</label><select id="pFont" style="width:150px"><optgroup label="${esc(t('fontsLatin'))}">${LATIN_FONTS.map(f=>`<option value="${esc(f)}" ${f===e.fontFamily?'selected':''}>${esc(f)}</option>`).join('')}</optgroup><optgroup label="${esc(t('fontsArabic'))}">${AR_FONTS.map(f=>`<option value="${esc(f)}" ${f===e.fontFamily?'selected':''}>${esc(f)}</option>`).join('')}</optgroup></select></div>
+  <div class="row"><label for="pFont">${esc(t('font'))}</label><select id="pFont" style="width:150px">${fontOptions(e.fontFamily)}</select></div>
   ${nIn('pSize',t('size'),e.fontSize,6,2000)}
   <div class="row"><label for="pFill">${esc(t('color'))}</label><input type="color" id="pFill" value="${esc(hex6(e.fill||'#000000'))}"></div>${brandRow()}
   ${gradUI('p',e.fillGradient)}
-  <div class="row"><div class="seg"><button id="pBold" class="${e.bold?'on':''}" aria-pressed="${!!e.bold}" ${ic('bold')}><b>B</b></button><button id="pItal" class="${e.italic?'on':''}" aria-pressed="${!!e.italic}" ${ar?`disabled title="${esc(t('italicNA'))}" aria-label="${esc(t('italicNA'))}"`:ic('italic')}><i>I</i></button></div>
+  <div class="row"><div class="seg"><button id="pBold" class="${e.bold?'on':''}" aria-pressed="${!!e.bold}" ${ic('bold')}><b>B</b></button><button id="pItal" class="${e.italic?'on':''}" aria-pressed="${!!e.italic}" ${ar?`disabled title="${esc(t('italicNA'))}" aria-label="${esc(t('italicNA'))}"`:ic('italic')}><i>I</i></button><button id="pCase" ${ic('changeCase')}><span lang="en" data-names>Aa</span></button></div>
   <div class="seg" dir="ltr">${[['left','alLeft','alL'],['center','alCenter','alC'],['right','alRight','alR'],['justify','alJustify','alJ']].map(a=>`<button data-al="${a[0]}" class="${effAlign(e)===a[0]?'on':''}" aria-pressed="${effAlign(e)===a[0]}" ${ic(a[1])}>${ICON[a[2]]}</button>`).join('')}</div></div>
   <div class="row"><label>${esc(t('direction'))}</label><div class="seg">${[['auto','dirAuto'],['ltr','dirLtr'],['rtl','dirRtl']].map(a=>`<button data-dir="${a[0]}" class="${(e.dir||'auto')===a[0]?'on':''}" aria-pressed="${(e.dir||'auto')===a[0]}">${esc(t(a[1]))}</button>`).join('')}</div></div>
   ${nIn('pLh',t('lineH'),e.lineHeight||1.2,0.5,5,0.05)}${nIn('pLs',t('spacing'),ar?0:(e.letterSpacing||0),-50,200,1,ar?`disabled title="${esc(t('lsArabic'))}" aria-describedby="lsNote"`:'')}${ar?`<p class="note" id="lsNote">${esc(t('lsArabic'))}</p>`:''}`;}
@@ -1457,6 +1482,7 @@ function renderProps(){const p=$('#props');{const key=sel().join(',');if(key!==_
  bindGrad($('#pGrad'),()=>{const e2=byId(selId);return e2&&e2.fillGradient||null;},(g,live)=>{const e2=byId(selId);if(!e2||e2.locked)return;g=g&&safeGrad(g);if(g)e2.fillGradient=g;else delete e2.fillGradient;bump(e2);fullRender(true);if(!live){commit();renderProps();}});
  on('pStroke','input',col(c=>setProp('stroke',c,true)));on('pStroke','change',()=>{const e2=byId(selId);if(e2&&!e2.strokeWidth)e2.strokeWidth=Math.round(6*k());fullRender();commit();});
  on('pSw','change',ev=>setNum('strokeWidth',ev.target.value,0,1000));on('pRad','change',ev=>setNum('radius',ev.target.value,0,100000));
+ on('pCase','click',()=>{const x=String(e.text),up=x.toUpperCase(),lo=x.toLowerCase();setProp('text',x===up&&x!==lo?lo:x===lo&&x!==up?lo.replace(/(^|[\s\-\u2013\u2014("'])(\p{L})/gu,(m,a,b)=>a+b.toUpperCase()):up);renderProps();});
  on('pBold','click',()=>setProp('bold',!e.bold));on('pItal','click',()=>setProp('italic',!e.italic));
  on('pLh','change',ev=>setNum('lineHeight',ev.target.value,0.5,5));on('pLs','change',ev=>{const e2=byId(selId);if(e2&&hasArabic(e2.text)){renderProps();return;}setNum('letterSpacing',ev.target.value,-50,200);});
  on('pOp','input',ev=>{const v=parseFloat(ev.target.value);if(Number.isFinite(v))setProp('opacity',clamp(v,0,1),true);});on('pOp','change',()=>commit());
@@ -1818,7 +1844,7 @@ async function runClaude(action){
  syncSize();fitZoom();
  renderPages();refreshPageThumbs(true);homeWork=restored;showHome();
  if(bad)toast(t('autosaveBad'),4000);else if(restored)toast(t('restored'));
- const fams=FONTS.flatMap(f=>[`400 40px "${f}"`,`700 40px "${f}"`]);
+ const fams=CORE_FONTS.flatMap(f=>[`400 40px "${f}"`,`700 40px "${f}"`]);
  const fontsReady=Promise.all(fams.map(f=>document.fonts.load(f).catch(()=>{})));
  Promise.race([fontsReady,new Promise(r=>setTimeout(r,2500))]).then(()=>{fullRender();makeThumbs();});
  initClaude();

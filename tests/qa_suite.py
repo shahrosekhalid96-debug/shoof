@@ -166,7 +166,7 @@ ALLOWED_LATIN = {'rasm', 'shoof', 'sh', 'claude', 'png', 'jpg', 'jpeg', 'pdf', '
 
 def en_only_strip(c, s):
     """Remove English-only UI strings (keys with no Arabic entry; Arabic falls back to English by design)."""
-    parts = getattr(c, '_en_only', None) or c.ev("Object.keys(I18N.en).filter(k=>!(k in I18N.ar)).flatMap(k=>I18N.en[k].split(/\\{[a-z]+\\}/)).concat(typeof ICON_NAMES!=='undefined'?ICON_NAMES.map(n=>n.replace(/-/g,' ')):[]).map(x=>x.trim()).filter(x=>x.length>2).sort((a,b)=>b.length-a.length)")
+    parts = getattr(c, '_en_only', None) or c.ev("Object.keys(I18N.en).filter(k=>!(k in I18N.ar)).flatMap(k=>I18N.en[k].split(/\\{[a-z]+\\}/)).concat(typeof ICON_NAMES!=='undefined'?ICON_NAMES.map(n=>n.replace(/-/g,' ')):[]).concat(typeof TEXT_STYLES!=='undefined'?TEXT_STYLES.flatMap(st=>st.els.map(e=>e.text)):[]).map(x=>x.trim()).filter(x=>x.length>2).sort((a,b)=>b.length-a.length)")
     c._en_only = parts
     for x in parts:
         s = s.replace(x, ' ')
@@ -2172,6 +2172,40 @@ def t_smart_resize(B):
     eq(sorted(tuple(v) for v in sizes.values()), sorted([(1080, 1080), (1080, 1920), (1200, 627), (1600, 900)]), f'pack sizes {sizes}')
     c.page.wait_for_timeout(300)
     eq(c.ev('JSON.stringify(doc)'), before, 'design unchanged after the pack export')
+    ok(not c.errors, c.errors); c.close()
+
+
+@test('fonts_text_styles_case_brand_file')
+def t_fonts_styles(B):
+    c = Ctx(B); c.blank()
+    eq(c.ev('FONTS.length'), 25, 'font count'); eq(c.ev('LATIN_FONTS.slice(0,2)'), ['Inter', 'Poppins'], 'defaults first')
+    miss = c.ev("fetch('fonts/fonts.css').then(r=>r.text()).then(css=>FONTS.filter(f=>!css.includes(\"font-family: '\"+f+\"'\")))")
+    eq(miss, [], 'every font has a bundled @font-face')
+    ok(not c.ev("document.fonts.check('400 40px \"Pacifico\"')"), 'extra fonts are not loaded at start')
+    c.tab('text'); eq(c.page.locator('#drawer [data-tstyle]').count(), 10, 'text styles listed')
+    c.page.click('#drawer [data-tstyle="2"]'); c.page.wait_for_timeout(900)
+    els = c.ev('doc.elements.filter(e=>e.type==="text")'); eq(len(els), 2, 'style adds its lines'); ok(els[0].get('groupId') and els[0]['groupId'] == els[1]['groupId'], 'grouped')
+    eq(els[0]['fontFamily'], 'Pacifico', 'style font'); ok(c.ev("document.fonts.check('400 40px \"Pacifico\"')"), 'font loaded on first use')
+    ok(all(c.ev("f=>new Promise(r=>{const x=new XMLHttpRequest();x.open('HEAD','fonts/'+f);x.onload=()=>r(x.status===200);x.onerror=()=>r(false);x.send();})", f) for f in ['anton-latin-400-normal.woff2', 'space-mono-latin-700-normal.woff2', 'caveat-OFL.txt']), 'font files and licences present')
+    c.page.click('#drawer [data-tstyle="2"]'); c.page.wait_for_timeout(200)
+    xs = c.ev('doc.elements.filter(e=>e.text==="Thank you").map(e=>e.x)'); ok(len(xs) == 2 and xs[0] != xs[1], f'second copy is offset {xs}')
+    # font picker is grouped; choosing a new family applies it and survives save/open
+    c.ev("()=>{select(doc.elements.find(e=>e.text==='for your order').id,false,true)}"); c.page.wait_for_timeout(150)
+    eq(c.page.locator('#pFont optgroup').count(), 6, 'font groups'); c.page.select_option('#pFont', 'Space Mono'); c.page.wait_for_timeout(600)
+    eq(c.sel_el()['fontFamily'], 'Space Mono', 'font applied')
+    eq(c.ev("sanitizeDoc(JSON.parse(JSON.stringify(doc))).elements.find(e=>e.text==='for your order').fontFamily"), 'Space Mono', 'font kept by the validator')
+    # change case cycles Title -> UPPER -> lower, one undo step each
+    for want in ['For Your Order', 'FOR YOUR ORDER', 'for your order']:
+        c.page.click('#pCase'); eq(c.sel_el()['text'], want, 'case')
+    c.page.keyboard.press('Control+z'); eq(c.sel_el()['text'], 'FOR YOUR ORDER', 'case undo')
+    # brand kit file: save, wipe, load; a foreign file is refused
+    c.ev("()=>{brand=sanitizeBrand({colors:['#0b5d4b'],head:'Lora',body:'DM Sans'});saveBrand();}"); c.tab('brand')
+    name, data, path = c.download(lambda: c.page.click('#brandSave')); eq(name, 'shoof-brand.json', 'kit file name'); eq(json.loads(data)['head'], 'Lora', 'kit saved')
+    c.ev("()=>{brand=sanitizeBrand(null);saveBrand();renderDrawer();}")
+    c.page.set_input_files('#brandLoad', path); c.page.wait_for_timeout(300)
+    eq(c.ev('[brand.colors,brand.head,brand.body]'), [['#0b5d4b'], 'Lora', 'DM Sans'], 'kit loaded')
+    bad = os.path.join(WORK, 'notkit.json'); open(bad, 'w').write('{"app":"other","colors":["#ff0000"]}')
+    c.page.set_input_files('#brandLoad', bad); c.page.wait_for_timeout(300); eq(c.ev('brand.colors'), ['#0b5d4b'], 'foreign file refused')
     ok(not c.errors, c.errors); c.close()
 
 
