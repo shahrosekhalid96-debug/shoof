@@ -29,6 +29,7 @@ Shoof (شوف, "look!") is a free, open-source (AGPL-3.0), browser-only Canva al
 | `tests/security/*.json` | Malicious design files used by tests |
 | `.github/workflows/pages.yml` | Deploys site (copies index.html, LICENSE, vendor, fonts) |
 | `.github/workflows/test.yml` | Runs the QA suite on push |
+| `tools/build-site.sh` | Assembles the public site into `_site/` for Cloudflare Pages (build command `bash tools/build-site.sh`, output folder `_site`). Keep it in step with `pages.yml` when a new top-level file or folder must be served. |
 | `welcome.html` + `welcome/*.webp` | Landing page (17 KB, one file, CSS-only motion that respects reduced motion, no libraries or outside requests) with ten real template pictures (~120 KB; regenerate by exporting templates at 440 px WebP). Link to share: `…/shoof/welcome.html`. Its buttons open `./` (the editor). Not the front door yet — the editor is still `index.html`. Keep the template count in its copy in step with the app. Test `landing_page`. |
 | `README.md`, `CONTRIBUTING.md`, `templates/README.md`, `CODE_OF_CONDUCT.md`, `LICENSE` | Repo docs |
 
