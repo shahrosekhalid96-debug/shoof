@@ -30,6 +30,7 @@ Arabic is fully supported, not added as an afterthought. The interface switches 
 - **Multi-page designs**: a pages bar to add, duplicate, reorder and delete pages (great for decks and carousels)
 - **Export**: PNG (also with no background, or double size), JPG, WebP, PDF (all pages), **SVG** (shapes, icons and text stay editable vectors) and **PowerPoint .pptx** with editable text
 - **122 original templates and 35 mockups** (three-phone fan, laptop with phone, TV, story frame, video thumbnail, chat bubbles, review card, tote bag, mug, shopping bag, ID card, shop sign, magazine cover, gallery wall and more): phones, laptop, monitor, browser, watch, billboard, framed poster, business cards and photo grids, all built from editable shapes with photo slots; new template families for app and website launches, price lists, certificates, name badges, photo grids and big-number posts
+- **Logo maker (free)**: type a name, tagline and what you do, pick a style, and choose from 24 logo ideas at a time; each one opens as a normal editable design, or saves straight into your brand kit
 - **Bulk create (free)**: paste rows from Excel or Google Sheets, drop `{Column}` tags into a design, and get one page per row or a zip of PNGs (name cards, price tags, certificates, one post per product)
 - **Background remover (free, private)**: a small AI model runs in your browser, so photos never leave your device
 - **Text effects and curved text**: one-click soft shadow, retro, hollow, neon, sticker and marker looks; bend any line into an arc

@@ -1586,7 +1586,7 @@ def t_home(B):
     c.page.click('#homeBtn'); c.page.click('#home [data-tile="story"]')
     eq(c.ev('[doc.width,doc.height,doc.elements.filter(e=>e.role!=="bg").length,homeOpen(),tplCat,curTab,$("#sizeSel").value]'), [1080, 1920, 0, False, 'story', 'templates', 'story'], 'story tile')
     c.page.keyboard.press('Control+z'); eq(c.ev('[doc.width,doc.height]'), [1080, 1920], 'undo tile')
-    for tile, wh in [('flyer', [1748, 2480]), ('logo', [1000, 1000]), ('card', [1050, 600]), ('pres', [1920, 1080])]:
+    for tile, wh in [('flyer', [1748, 2480]), ('card', [1050, 600]), ('pres', [1920, 1080])]:  # the logo tile opens the logo maker (test logo_maker)
         c.page.click('#homeBtn'); c.page.click(f'#home [data-tile="{tile}"]'); eq(c.ev('[doc.width,doc.height]'), wh, f'{tile} tile')
     _export_check(c, 'png', 1920, 1080)
     # blank design -> New dialog -> editor
@@ -2322,6 +2322,44 @@ def t_bulk(B):
     # page limit
     c.ev("()=>{bulkSet('Name\\n'+Array.from({length:60},(_,i)=>'Person '+i).join('\\n'));}"); c.page.click('#bulkPagesBtn'); c.page.wait_for_timeout(600)
     eq(c.ev('doc.pages.length'), 40, 'stops at the page limit')
+    ok(not c.errors, c.errors); c.close()
+
+
+@test('logo_maker')
+def t_logo_maker(B):
+    c = Ctx(B, home=True)
+    c.page.click('#home [data-tile="logo"]'); c.page.wait_for_selector('#lgGrid')
+    c.page.wait_for_function("document.querySelectorAll('#lgGrid [data-lg] img').length===24", timeout=30000)
+    ok(c.page.locator('#lgEdit').is_disabled(), 'actions wait for a pick')
+    c.page.fill('#lgName', 'Sunrise Bakery'); c.page.fill('#lgTag', 'Fresh every morning'); c.page.fill('#lgKw', 'coffee')
+    c.page.wait_for_function("logo.list.length===24&&logo.list.every(d=>d.pages[0].elements.some(e=>e.type==='text'&&/sunrise/i.test(e.text)))", timeout=30000)
+    info = c.ev("logo.list.map(d=>({n:d.pages[0].elements.length,w:d.width,icons:d.pages[0].elements.filter(e=>e.type==='icon'&&e.icon!=='star').map(e=>e.icon),tag:d.pages[0].elements.some(e=>/FRESH EVERY MORNING/.test(e.text||'')),off:d.pages[0].elements.filter(e=>e.type==='text'&&!e.curve&&(e.x<0||e.x+e.width>1000||e.y<0||e.y+e.fontSize>1000)).length}))")
+    ok(all(x['w'] == 1000 and x['n'] >= 2 for x in info), 'every idea is a 1000px design'); ok(all(x['tag'] for x in info), 'tagline is on every idea')
+    ok(all(i == 'coffee' or 'coffee' in c.ev("n=>(n+' '+(ICON_TAGS[n]||''))", i) for x in info for i in x['icons']), 'icons follow the keyword'); eq(sum(x['off'] for x in info), 0, 'nothing off the canvas')
+    ok(len({json.dumps(c.ev(f"logo.list[{i}].pages[0].elements.map(e=>[e.type,e.fontFamily||e.icon||''])")) for i in range(24)}) >= 12, 'ideas are varied')
+    first = c.ev("JSON.stringify(logo.list.map(d=>d.pages[0].elements.map(e=>[e.type,e.fontFamily||'',e.fill||''])))")
+    c.page.click('#lgMore'); c.page.wait_for_function("f=>logo.list.length===24&&JSON.stringify(logo.list.map(d=>d.pages[0].elements.map(e=>[e.type,e.fontFamily||'',e.fill||''])))!==f", arg=first, timeout=20000)
+    c.page.click('#modalBox [data-lgs="lsBold"]'); c.page.wait_for_function("logo.style==='lsBold'&&logo.list.length===24&&document.querySelectorAll('#lgGrid img').length===24", timeout=20000)
+    fonts = set(c.ev("[...new Set(logo.list.flatMap(d=>d.pages[0].elements.filter(e=>e.type==='text'&&/sunrise/i.test(e.text)&&!e.curve).map(e=>e.fontFamily)))]"))
+    ok(fonts <= set(c.ev("LOGO_STYLES.lsBold")), f'style limits the typefaces {fonts}')
+    # save as brand logo, then edit: opens as an ordinary design, one undo step
+    c.page.click('#lgGrid [data-lg="0"]'); ok(not c.page.locator('#lgEdit').is_disabled(), 'pick enables the actions')
+    c.page.click('#lgBrand'); ok(c.ev("(brand.logo||'').startsWith('data:image/png')"), 'saved to the brand kit')
+    depth = c.ev('undoStack.length'); c.page.click('#lgEdit'); c.page.wait_for_timeout(300)
+    ok(not c.ev('homeOpen()') and not c.ev("$('#modal').classList.contains('open')"), 'editor opens'); eq(c.ev('[doc.width,doc.height]'), [1000, 1000], 'logo canvas')
+    ok(c.ev("doc.elements[0].role==='bg'&&doc.elements.some(e=>e.type==='text'&&/sunrise/i.test(e.text))"), 'editable background and text'); eq(c.ev('undoStack.length'), depth + 1, 'one undo step')
+    c.ev("()=>select(doc.elements.find(e=>e.type==='text').id)"); ok(c.page.locator('#pFont').is_visible(), 'logo text is normal editable text')
+    # add to a page as one group
+    c.blank(); n0 = c.ev('doc.elements.length'); c.ev("()=>{logo.style='lsAll';openLogoMaker();}")
+    c.page.wait_for_function("document.querySelectorAll('#lgGrid [data-lg] img').length===24", timeout=20000)
+    c.page.click('#lgGrid [data-lg="5"]'); c.page.click('#lgAdd'); c.page.wait_for_timeout(200)
+    added = c.ev("doc.elements.slice(%d)" % n0); ok(len(added) >= 2 and len({e.get('groupId') for e in added}) == 1 and added[0].get('groupId'), 'added as one group')
+    ok(all(0 <= e['x'] <= 1080 and 0 <= e['y'] <= 1080 for e in added), 'placed on the page'); c.page.keyboard.press('Control+z'); eq(c.ev('doc.elements.length'), n0, 'one undo removes it')
+    # hostile and Arabic names
+    c.ev("()=>{logo.name='<img src=x onerror=alert(1)>';logo.tag='';openLogoMaker();}"); c.page.wait_for_function("document.querySelectorAll('#lgGrid [data-lg] img').length===24", timeout=20000)
+    ok(not c.ev("!!document.querySelector('img[src=x]')"), 'name is never treated as HTML')
+    c.ev("()=>{logo.name='مخبز الشروق';openLogoMaker();}"); c.page.wait_for_function("logo.list.length===24&&logo.list.every(d=>d.pages[0].elements.some(e=>e.type==='text'&&hasArabic(e.text)))", timeout=20000)
+    ok(c.ev("logo.list.every(d=>d.pages[0].elements.filter(e=>e.type==='text'&&hasArabic(e.text)).every(e=>AR_FONTS.includes(e.fontFamily)&&!e.curve&&!e.letterSpacing))"), 'Arabic names use Arabic typefaces, no curve or spacing')
     ok(not c.errors, c.errors); c.close()
 
 
