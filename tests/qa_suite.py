@@ -72,7 +72,7 @@ def route(r):
             return r.fulfill(path=APP, content_type='text/html; charset=utf-8')
         full = os.path.normpath(os.path.join(APP_DIR, rel))
         if full.startswith(APP_DIR + os.sep) and os.path.isfile(full):
-            ctype = {'.js': 'application/javascript', '.mjs': 'application/javascript', '.wasm': 'application/wasm', '.css': 'text/css', '.woff2': 'font/woff2'}.get(os.path.splitext(full)[1]) \
+            ctype = {'.js': 'application/javascript', '.mjs': 'application/javascript', '.wasm': 'application/wasm', '.css': 'text/css', '.woff2': 'font/woff2', '.webp': 'image/webp', '.html': 'text/html; charset=utf-8'}.get(os.path.splitext(full)[1]) \
                 or mimetypes.guess_type(full)[0] or 'application/octet-stream'
             return r.fulfill(path=full, content_type=ctype)
         return r.fulfill(status=404, body='not found')
@@ -2360,6 +2360,27 @@ def t_logo_maker(B):
     ok(not c.ev("!!document.querySelector('img[src=x]')"), 'name is never treated as HTML')
     c.ev("()=>{logo.name='مخبز الشروق';openLogoMaker();}"); c.page.wait_for_function("logo.list.length===24&&logo.list.every(d=>d.pages[0].elements.some(e=>e.type==='text'&&hasArabic(e.text)))", timeout=20000)
     ok(c.ev("logo.list.every(d=>d.pages[0].elements.filter(e=>e.type==='text'&&hasArabic(e.text)).every(e=>AR_FONTS.includes(e.fontFamily)&&!e.curve&&!e.letterSpacing))"), 'Arabic names use Arabic typefaces, no curve or spacing')
+    ok(not c.errors, c.errors); c.close()
+
+
+@test('landing_page')
+def t_landing(B):
+    c = Ctx(B); base = c.page.url.rsplit('/', 1)[0]
+    for w, h in [(1440, 900), (390, 800)]:
+        pg = c.page.context.new_page(); pg.set_viewport_size({'width': w, 'height': h}); errs = []; pg.on('pageerror', lambda e: errs.append(str(e)))
+        pg.goto(base + '/welcome.html'); pg.wait_for_timeout(900)
+        eq(pg.title(), 'Shoof — free design for everyone', 'title'); ok(pg.locator('h1').is_visible(), 'headline')
+        eq(pg.evaluate("[...document.querySelectorAll('a.btn')].map(a=>a.getAttribute('href')).filter(x=>x!=='#examples')"), ['./', './', './'], 'buttons open the editor')
+        pg.evaluate("window.scrollTo(0,document.body.scrollHeight)"); pg.wait_for_timeout(900)
+        eq(pg.evaluate("Promise.all([...document.images].map(i=>fetch(i.src).then(r=>r.ok&&/image/.test(r.headers.get('content-type')))) ).then(a=>a.filter(x=>!x).length)"), 0, 'every picture exists'); ok(pg.evaluate("[...document.images].filter(i=>i.complete&&i.naturalWidth).length>=3"), 'pictures show'); eq(pg.evaluate("document.documentElement.scrollWidth"), w, f'no sideways scroll at {w}')
+        ok(pg.evaluate("[...document.querySelectorAll('.reveal')].filter(n=>n.getBoundingClientRect().top<innerHeight).every(n=>getComputedStyle(n).opacity==='1')"), 'sections on screen are revealed')
+        pg.add_script_tag(path=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'vendor', 'axe.min.js'))
+        bad = pg.evaluate("axe.run(document,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21a','wcag21aa']}}).then(r=>r.violations.map(v=>v.id+': '+v.nodes.length))")
+        eq(bad, [], f'accessibility at {w}'); ok(not errs, errs); pg.close()
+    ok(os.path.getsize(os.path.join(APP_DIR, 'welcome.html')) < 30000, 'page stays light')
+    ok(sum(os.path.getsize(os.path.join(APP_DIR, 'welcome', f)) for f in os.listdir(os.path.join(APP_DIR, 'welcome'))) < 200000, 'pictures stay light')
+    pg = c.page.context.new_page(); pg.emulate_media(reduced_motion='reduce'); pg.goto(base + '/welcome.html'); pg.wait_for_timeout(300)
+    ok(pg.evaluate("getComputedStyle(document.querySelector('.track')).animationName==='none'&&!document.documentElement.classList.contains('js')"), 'motion is off when the visitor asks for less motion'); pg.close()
     ok(not c.errors, c.errors); c.close()
 
 

@@ -26,6 +26,7 @@ jobs:
         run: |
           mkdir -p _site
           cp index.html LICENSE _site/
+          cp welcome.html _site/ && cp -r welcome _site/   # landing page and its example pictures
           cp -r vendor fonts _site/              # required: the app loads Konva, jsPDF and fonts locally
           [ -d templates ] && cp -r templates _site/
           [ -f manifest.webmanifest ] && cp manifest.webmanifest _site/

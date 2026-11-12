@@ -5,7 +5,7 @@ Shoof (شوف, "look!") is a free, open-source (AGPL-3.0), browser-only Canva al
 - **Live site:** https://shahrosekhalid96-debug.github.io/shoof/ (GitHub Pages, auto-deploys on every push to `main`)
 - **Repo:** https://github.com/shahrosekhalid96-debug/shoof
 - **Claude artifact copy** (only place Ask Claude works): https://claude.ai/artifact/SC37XwK2xKrF4yu41YQpoK — slug `cbfef32e-d2be-48eb-beba-49773200fd62`, capabilities `downloads` + `sample` declared. Republish with `publish_files` (index.html; vendor/ and fonts/ already uploaded).
-- **Status:** v0.2 public preview. CEO review gave GO. 90/90 tests green locally and on GitHub Actions. Sprint 3 (2026-11-08): home screen + gradients. Sprint 4 (2026-11-09): Elements panel. Sprint 5 (2026-11-09): 50 generated English templates. Sprint 6 (2026-11-09): UX review fixes + axe-core WCAG 2.1 AA gate.
+- **Status:** v0.2 public preview. CEO review gave GO. 91/91 tests green locally and on GitHub Actions. Sprint 3 (2026-11-08): home screen + gradients. Sprint 4 (2026-11-09): Elements panel. Sprint 5 (2026-11-09): 50 generated English templates. Sprint 6 (2026-11-09): UX review fixes + axe-core WCAG 2.1 AA gate.
 
 ## Working rules (from Shary)
 - **Everything must be editable** — every page of every template starts with a background block (`role:'bg'`), no baked-in pictures of text/shapes, no locked decoration. Templates must look *designed* (layered cards, badges, depth, textures), not one shape + text.
@@ -23,12 +23,13 @@ Shoof (شوف, "look!") is a free, open-source (AGPL-3.0), browser-only Canva al
 | `vendor/pptxgen.bundle.js` + `PPTXGENJS-LICENSE.txt` | PptxGenJS 4.0.1 (MIT, includes JSZip), lazy-loaded on first PowerPoint export (`loadPptx`) |
 | `vendor/jspdf.umd.min.js` | jsPDF 4.2.1 (MIT), lazy-loaded on first PDF export |
 | `fonts/` | woff2 + `fonts.css` + OFL licences: Inter, Poppins, Playfair Display, Bebas Neue, Cairo, Tajawal, Amiri, IBM Plex Sans Arabic |
-| `tests/qa_suite.py` | Playwright suite, 90 tests (`Ctx(tips=True)` shows first-visit tips) (`Ctx(home=True)` keeps the welcome screen; default hides it), desktop 1440 + phone 390, blocks all external requests |
+| `tests/qa_suite.py` | Playwright suite, 91 tests (`Ctx(tips=True)` shows first-visit tips) (`Ctx(home=True)` keeps the welcome screen; default hides it), desktop 1440 + phone 390, blocks all external requests |
 | `tools/templates/gen_templates.py` | Template generator: style spec + content table → `GEN_TEMPLATES` block in index.html (`--check` used by tests) |
 | `tests/vendor/axe.min.js` | axe-core 4.14 (MPL-2.0), test-only accessibility gate (`accessibility_axe_wcag_aa`); not deployed |
 | `tests/security/*.json` | Malicious design files used by tests |
 | `.github/workflows/pages.yml` | Deploys site (copies index.html, LICENSE, vendor, fonts) |
 | `.github/workflows/test.yml` | Runs the QA suite on push |
+| `welcome.html` + `welcome/*.webp` | Landing page (17 KB, one file, CSS-only motion that respects reduced motion, no libraries or outside requests) with ten real template pictures (~120 KB; regenerate by exporting templates at 440 px WebP). Link to share: `…/shoof/welcome.html`. Its buttons open `./` (the editor). Not the front door yet — the editor is still `index.html`. Keep the template count in its copy in step with the app. Test `landing_page`. |
 | `README.md`, `CONTRIBUTING.md`, `templates/README.md`, `CODE_OF_CONDUCT.md`, `LICENSE` | Repo docs |
 
 ## Code map (index.html)

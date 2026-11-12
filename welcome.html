@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Shoof — free design for everyone</title>
+<meta name="description" content="Shoof is a free, open-source design editor that runs in your browser. Posts, posters, logos and presentations, with no account and nothing uploaded.">
+<meta name="theme-color" content="#6c4cf5">
+<style>
+/* Shoof landing page: one file, no libraries, no outside requests. Motion is CSS only and switches off for people who ask for reduced motion. */
+@font-face{font-family:'Poppins';font-weight:700;font-display:swap;src:url(fonts/poppins-latin-700-normal.woff2) format('woff2')}
+@font-face{font-family:'Inter';font-weight:400;font-display:swap;src:url(fonts/inter-latin-400-normal.woff2) format('woff2')}
+@font-face{font-family:'Inter';font-weight:700;font-display:swap;src:url(fonts/inter-latin-700-normal.woff2) format('woff2')}
+:root{--bg:#fcfcfe;--ink:#1d2330;--muted:#5b6474;--line:#e6e8ef;--accent:#6c4cf5;--accent-dark:#5438d6;--soft:#efebff;--spark:#e8590c}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.6 Inter,system-ui,-apple-system,Segoe UI,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+h1,h2,h3{font-family:Poppins,Inter,system-ui,sans-serif;font-weight:700;line-height:1.12;margin:0;letter-spacing:-.01em}
+a{color:inherit}
+.wrap{width:min(1120px,100% - 40px);margin-inline:auto}
+:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px}
+
+/* top bar */
+.top{display:flex;align-items:center;gap:16px;padding:18px 0}
+.logo{height:30px;width:auto;color:var(--ink);display:block}
+.logo .pupil{animation:look 7s ease-in-out infinite}
+@keyframes look{0%,38%,100%{transform:translate(0,0)}44%,60%{transform:translate(-5px,-2px)}66%,82%{transform:translate(1px,-3px)}88%{transform:translate(0,0)}}
+.top .sp{flex:1}
+.top a.link{font-size:15px;color:var(--muted);text-decoration:none;padding:8px 10px;border-radius:8px}
+.top a.link:hover{color:var(--ink);background:#f1f1f6}
+.btn{display:inline-flex;align-items:center;gap:8px;font:700 16px Inter,system-ui,sans-serif;text-decoration:none;border-radius:12px;padding:13px 22px;border:1.5px solid var(--line);background:#fff;color:var(--ink);transition:transform .18s ease,box-shadow .18s ease,background .18s ease}
+.btn:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(29,35,48,.10)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.primary:hover{background:var(--accent-dark);box-shadow:0 10px 26px rgba(108,76,245,.32)}
+.btn.small{padding:9px 16px;font-size:15px}
+.btn svg{width:18px;height:18px}
+
+/* hero */
+.hero{display:grid;grid-template-columns:1.05fr .95fr;gap:40px;align-items:center;padding:34px 0 64px}
+.eyebrow{display:inline-flex;gap:10px;align-items:center;font:700 13px Inter,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--accent-dark);background:var(--soft);padding:7px 14px;border-radius:999px}
+.eyebrow i{width:6px;height:6px;border-radius:50%;background:var(--spark);display:block}
+h1{font-size:clamp(38px,5.4vw,66px);margin:20px 0 18px}
+h1 em{font-style:normal;color:var(--accent);position:relative;white-space:nowrap}
+h1 em::after{content:"";position:absolute;inset-inline:0;bottom:.04em;height:.14em;background:var(--spark);border-radius:99px;opacity:.9;transform-origin:left;animation:draw 1s .5s cubic-bezier(.2,.8,.2,1) both}
+@keyframes draw{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.lede{font-size:19px;color:var(--muted);max-width:33em;margin:0 0 28px}
+.cta{display:flex;flex-wrap:wrap;gap:12px}
+.note{font-size:14px;color:var(--muted);margin:16px 0 0}
+.rise{animation:rise .7s cubic-bezier(.2,.8,.2,1) both}
+.rise:nth-child(2){animation-delay:.08s}.rise:nth-child(3){animation-delay:.16s}.rise:nth-child(4){animation-delay:.24s}.rise:nth-child(5){animation-delay:.32s}
+@keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+
+/* fanned designs */
+.fan{position:relative;height:min(520px,78vw);animation:rise .9s .2s cubic-bezier(.2,.8,.2,1) both}
+.fan::before{content:"";position:absolute;inset:8% 4% 6% 8%;background:radial-gradient(closest-side,#e4dcff,transparent 72%);z-index:0}
+.fan figure{position:absolute;margin:0;border-radius:18px;overflow:hidden;background:#fff;box-shadow:0 22px 50px rgba(29,35,48,.20),0 2px 6px rgba(29,35,48,.10);animation:float 7s ease-in-out infinite}
+.fan img{display:block;width:100%;height:auto}
+.fan .a{width:52%;left:4%;top:16%;--r:-8deg;z-index:1}
+.fan .b{width:38%;right:4%;top:2%;--r:7deg;z-index:2;animation-delay:-2.3s}
+.fan .c{width:50%;right:10%;bottom:0;--r:3deg;z-index:3;animation-delay:-4.6s}
+@keyframes float{0%,100%{transform:rotate(var(--r)) translateY(0)}50%{transform:rotate(calc(var(--r) + 1.2deg)) translateY(-12px)}}
+
+/* moving strip */
+.strip{overflow:hidden;padding:8px 0 26px;-webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+.track{display:flex;gap:18px;width:max-content;animation:slide 46s linear infinite}
+.strip:hover .track{animation-play-state:paused}
+.track img{height:210px;width:auto;border-radius:14px;box-shadow:0 8px 22px rgba(29,35,48,.13);display:block;background:#eee}
+@keyframes slide{to{transform:translateX(calc(-50% - 9px))}}
+
+/* sections */
+section{padding:64px 0}
+.kicker{font:700 13px Inter,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-dark);margin:0 0 10px}
+h2{font-size:clamp(28px,3.6vw,42px);margin-bottom:12px}
+.sub{color:var(--muted);max-width:40em;margin:0 0 34px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:24px;transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease}
+.card:hover{transform:translateY(-4px);box-shadow:0 14px 34px rgba(29,35,48,.09);border-color:#d6cffb}
+.card .ic{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;background:var(--soft);color:var(--accent-dark);margin-bottom:16px}
+.card .ic svg{width:24px;height:24px}
+.card h3{font-size:19px;margin-bottom:6px}
+.card p{margin:0;color:var(--muted);font-size:15.5px;line-height:1.55}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;counter-reset:s}
+.steps li{list-style:none;counter-increment:s;padding-top:58px;position:relative}
+.steps li::before{content:counter(s);position:absolute;top:0;left:0;width:42px;height:42px;border-radius:50%;background:var(--ink);color:#fff;display:grid;place-items:center;font:700 18px Poppins,sans-serif}
+.steps h3{font-size:20px;margin-bottom:6px}
+.steps p{margin:0;color:var(--muted);font-size:15.5px}
+ol.steps{padding:0;margin:0}
+.band{background:var(--ink);color:#fff;border-radius:28px;padding:54px 40px;text-align:center;position:relative;overflow:hidden}
+.band::before,.band::after{content:"";position:absolute;border-radius:50%;filter:blur(2px);opacity:.5;animation:drift 14s ease-in-out infinite}
+.band::before{width:300px;height:300px;background:#6c4cf5;left:-90px;top:-120px}
+.band::after{width:240px;height:240px;background:#e8590c;right:-70px;bottom:-110px;animation-delay:-7s}
+@keyframes drift{0%,100%{transform:translate(0,0)}50%{transform:translate(26px,18px)}}
+.band>*{position:relative}
+.band h2{margin-bottom:10px}
+.band p{color:#c9cede;margin:0 auto 26px;max-width:34em}
+.band .btn{border-color:transparent}
+footer{padding:34px 0 46px;color:var(--muted);font-size:14.5px;display:flex;flex-wrap:wrap;gap:8px 22px;align-items:center}
+footer a{color:var(--muted)}
+footer a:hover{color:var(--ink)}
+footer .sp{flex:1}
+
+/* reveal on scroll (added by the small script; without script everything is simply visible) */
+.js .reveal{opacity:0;transform:translateY(22px);transition:opacity .6s ease,transform .6s cubic-bezier(.2,.8,.2,1)}
+.js .reveal.in{opacity:1;transform:none}
+.js .grid .reveal:nth-child(3n+2),.js .steps .reveal:nth-child(2){transition-delay:.08s}
+.js .grid .reveal:nth-child(3n),.js .steps .reveal:nth-child(3){transition-delay:.16s}
+
+@media(max-width:860px){
+ .hero{grid-template-columns:1fr;padding-top:14px;gap:26px}
+ .fan{order:-1;height:min(400px,88vw)}
+ .grid,.steps{grid-template-columns:1fr}
+ .top a.link{display:none}
+ .track img{height:150px}
+ section{padding:46px 0}
+ .band{padding:40px 22px}
+}
+@media(prefers-reduced-motion:reduce){
+ html{scroll-behavior:auto}
+ *,*::before,*::after{animation:none!important;transition:none!important}
+ .js .reveal{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+ <header class="top">
+  <a href="./" title="Open the editor">
+   <svg class="logo" viewBox="0 0 104 40" role="img" aria-label="Shoof"><title>Shoof</title><text x="0" y="30" font-family="Poppins,Inter,system-ui,sans-serif" font-weight="700" font-size="30" fill="currentColor">sh</text><circle cx="54" cy="20" r="9.5" fill="none" stroke="currentColor" stroke-width="4"/><circle cx="78" cy="20" r="9.5" fill="none" stroke="currentColor" stroke-width="4"/><circle class="pupil" cx="57" cy="21" r="4" fill="#e8590c"/><circle class="pupil" cx="81" cy="21" r="4" fill="#e8590c"/><text x="92" y="30" font-family="Poppins,Inter,system-ui,sans-serif" font-weight="700" font-size="30" fill="currentColor">f</text></svg>
+  </a>
+  <span class="sp"></span>
+  <a class="link" href="#inside">What's inside</a>
+  <a class="link" href="https://github.com/shahrosekhalid96-debug/shoof" rel="noopener">Source code</a>
+  <a class="btn primary small" href="./">Open Shoof</a>
+ </header>
+
+ <main>
+ <div class="hero">
+  <div>
+   <span class="eyebrow rise">Free <i></i> No account <i></i> Open source</span>
+   <h1 class="rise">Designs that look <em>designed</em>, made in minutes.</h1>
+   <p class="lede rise">Shoof is a design editor that runs in your browser. Make posts, posters, logos and presentations from 122 templates, then download them in the format you need.</p>
+   <div class="cta rise">
+    <a class="btn primary" href="./">Start designing <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+    <a class="btn" href="#examples">See examples</a>
+   </div>
+   <p class="note rise">Nothing to install. Your designs stay on your device.</p>
+  </div>
+  <div class="fan" aria-hidden="true">
+   <figure class="a"><img src="welcome/retro_coffee.webp" width="440" height="440" alt=""></figure>
+   <figure class="b"><img src="welcome/mag_style.webp" width="360" height="640" alt=""></figure>
+   <figure class="c"><img src="welcome/big_sale.webp" width="440" height="440" alt=""></figure>
+  </div>
+ </div>
+ </main>
+</div>
+
+<div class="strip" id="examples" aria-label="Example designs made with Shoof templates">
+ <div class="track">
+  <img src="welcome/neon_open.webp" width="440" height="440" alt="Neon sign post: Open late" loading="lazy">
+  <img src="welcome/min_wedding.webp" width="360" height="640" alt="Wedding invitation with an arch photo" loading="lazy">
+  <img src="welcome/show_app.webp" width="440" height="440" alt="App launch post with three phones" loading="lazy">
+  <img src="welcome/poster_editorial.webp" width="440" height="622" alt="Editorial poster" loading="lazy">
+  <img src="welcome/hand_bake.webp" width="440" height="440" alt="Handwritten bake sale post" loading="lazy">
+  <img src="welcome/big_hiring.webp" width="440" height="440" alt="Big type hiring post" loading="lazy">
+  <img src="welcome/app_launch.webp" width="440" height="440" alt="App launch post with a phone mockup" loading="lazy">
+  <img src="welcome/neon_open.webp" width="440" height="440" alt="" aria-hidden="true" loading="lazy">
+  <img src="welcome/min_wedding.webp" width="360" height="640" alt="" aria-hidden="true" loading="lazy">
+  <img src="welcome/show_app.webp" width="440" height="440" alt="" aria-hidden="true" loading="lazy">
+  <img src="welcome/poster_editorial.webp" width="440" height="622" alt="" aria-hidden="true" loading="lazy">
+  <img src="welcome/hand_bake.webp" width="440" height="440" alt="" aria-hidden="true" loading="lazy">
+  <img src="welcome/big_hiring.webp" width="440" height="440" alt="" aria-hidden="true" loading="lazy">
+  <img src="welcome/app_launch.webp" width="440" height="440" alt="" aria-hidden="true" loading="lazy">
+ </div>
+</div>
+
+<div class="wrap">
+ <section id="inside">
+  <p class="kicker reveal">What's inside</p>
+  <h2 class="reveal">The tools other apps charge for, free.</h2>
+  <p class="sub reveal">Everything below is included. There is no paid plan and no locked button.</p>
+  <div class="grid">
+   <article class="card reveal"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg></div><h3>122 templates</h3><p>Posts, stories, posters, menus, certificates and pitch decks. Every part of every template can be changed.</p></article>
+   <article class="card reveal"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.5l1.4 2.9 3.2.4-2.3 2.2.6 3.1-2.9-1.5-2.9 1.5.6-3.1-2.3-2.2 3.2-.4z"/></svg></div><h3>Logo maker</h3><p>Type your name and choose from 24 logo ideas at a time. Edit the one you like or save it to your brand.</p></article>
+   <article class="card reveal"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18c1.2 0 2-.9 2-2 0-.6-.2-1-.5-1.4-.3-.4-.5-.8-.5-1.3 0-1.1.9-2 2-2h2.2A3.8 3.8 0 0 0 21 10.6C21 6.4 17 3 12 3z"/><circle cx="7.5" cy="11" r="1"/><circle cx="10.5" cy="7.5" r="1"/><circle cx="15" cy="7.8" r="1"/></svg></div><h3>Brand kit</h3><p>Save your colours, fonts and logo once. Apply them to any design in one click.</p></article>
+   <article class="card reveal"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="13" height="13" rx="2"/><path d="M8 20h11a2 2 0 0 0 2-2V8M6.5 8h6M6.5 11.5h4"/></svg></div><h3>Bulk create</h3><p>Paste a table from Excel and get one design per row: name cards, price tags, certificates.</p></article>
+   <article class="card reveal"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2"/><circle cx="12" cy="10" r="3"/><path d="M7 18c.8-2.3 2.7-3.5 5-3.5s4.2 1.2 5 3.5"/></svg></div><h3>Background remover</h3><p>Cut the background out of a photo. It runs on your own device, so the photo is never uploaded.</p></article>
+   <article class="card reveal"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M4 20h16"/></svg></div><h3>Download any way</h3><p>PNG, JPG, PDF, SVG and editable PowerPoint. Resize one design for four social sizes at once.</p></article>
+  </div>
+ </section>
+
+ <section>
+  <p class="kicker reveal">How it works</p>
+  <h2 class="reveal">Three steps, no sign-up.</h2>
+  <p class="sub reveal">Open the editor and you are already working.</p>
+  <ol class="steps">
+   <li class="reveal"><h3>Pick a starting point</h3><p>Choose a template or a blank page in the size you need.</p></li>
+   <li class="reveal"><h3>Make it yours</h3><p>Change the words, colours, photos and fonts. Add icons, mockups and charts.</p></li>
+   <li class="reveal"><h3>Download it</h3><p>Save the picture or file, or keep the design to edit again later.</p></li>
+  </ol>
+ </section>
+
+ <section>
+  <div class="band reveal">
+   <h2>Ready when you are.</h2>
+   <p>It opens in a second and costs nothing. Arabic and English are both supported.</p>
+   <a class="btn" href="./">Open Shoof <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+  </div>
+ </section>
+
+ <footer>
+  <span>Shoof is free software under the AGPL-3.0 licence.</span>
+  <span class="sp"></span>
+  <a href="https://github.com/shahrosekhalid96-debug/shoof" rel="noopener">Source code on GitHub</a>
+  <a href="./">Open the editor</a>
+ </footer>
+</div>
+<script>
+/* fade sections in as they scroll into view; skipped entirely for reduced motion or old browsers */
+(function(){if(!('IntersectionObserver' in window)||matchMedia('(prefers-reduced-motion: reduce)').matches)return;document.documentElement.classList.add('js');
+var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{rootMargin:'0px 0px -8% 0px',threshold:0.08});
+document.querySelectorAll('.reveal').forEach(function(n){io.observe(n);});})();
+</script>
+</body>
+</html>
