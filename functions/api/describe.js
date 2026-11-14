@@ -2,7 +2,8 @@
    The app sends a short description plus a few candidate templates (picked on the user's device);
    the model picks one and writes a headline, a supporting line and a button label.
    Nothing is stored. Needs a Workers AI binding named AI on the Pages project (Settings > Bindings). */
-const MODEL = '@cf/meta/llama-3.1-8b-instruct';
+/* Cloudflare retires models from time to time; the first one that answers is used. Check https://developers.cloudflare.com/workers-ai/models/ */
+const MODELS = ['@cf/google/gemma-4-26b-a4b-it', '@cf/qwen/qwen3.8-27b', '@cf/meta/llama-3.3-70b-instruct-fp8-fast'];
 const PER_DAY = 25; // per visitor (IP), counted roughly per data centre; the account's free daily allowance is the hard cap
 const json = (body, status = 200) => new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', 'x-content-type-options': 'nosniff' } });
 const clean = (v, max) => String(v == null ? '' : v).replace(/[\u0000-\u001f\u007f<>{}]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, max);
@@ -32,16 +33,16 @@ export async function onRequestPost({ request, env }) {
   const messages = [
     { role: 'system', content: 'You help small businesses make social media posts and posters. Choose the template that best fits the request and write the words for it. Headline: at most 6 words, punchy. Subline: one short sentence with the key detail (date, offer, place) from the request. CTA: 1 to 3 words for a button. Use only facts from the request; never invent prices, dates or names. Answer in the language of the request. Reply with JSON only.' },
     { role: 'user', content: `Request: ${text}\n\nTemplates:\n${cands.map(c => `- ${c.k}: ${c.n}`).join('\n')}` }];
-  // first ask in JSON mode; if the model cannot meet it, ask in plain text and pull the JSON out
+  // newer models answer in OpenAI style (choices[0].message.content), older ones in .response
+  const textOf = o => o && (o.response !== undefined ? o.response : (o.choices && o.choices[0] && o.choices[0].message && o.choices[0].message.content));
+  const parse = v => { if (v && typeof v === 'object') return v; if (typeof v !== 'string') return null; const m = v.replace(/<think>[\s\S]*?<\/think>/g, '').match(/\{[\s\S]*\}/); if (!m) return null; try { return JSON.parse(m[0]); } catch { return null; } };
+  const plain = messages.concat([{ role: 'user', content: 'Answer with one JSON object only, no other text, exactly like {"template":"key","headline":"...","subline":"...","cta":"..."}' }]);
   let r = null, why = '';
-  const parse = v => { if (v && typeof v === 'object') return v; if (typeof v !== 'string') return null; const m = v.match(/\{[\s\S]*\}/); if (!m) return null; try { return JSON.parse(m[0]); } catch { return null; } };
-  try { r = parse((await env.AI.run(MODEL, { messages, max_tokens: 260, temperature: 0.4, response_format: { type: 'json_schema', json_schema: schema } })).response); }
-  catch (e) { why = String(e && e.message || e).slice(0, 160); }
-  if (!r) {
-    try {
-      const plain = messages.concat([{ role: 'user', content: 'Answer with one JSON object only, exactly like {"template":"key","headline":"...","subline":"...","cta":"..."}' }]);
-      r = parse((await env.AI.run(MODEL, { messages: plain, max_tokens: 260, temperature: 0.3 })).response);
-    } catch (e) { why = (why ? why + ' | ' : '') + String(e && e.message || e).slice(0, 160); }
+  for (const model of MODELS) {
+    try { r = parse(textOf(await env.AI.run(model, { messages: plain, max_tokens: 300, temperature: 0.4 }))); }
+    catch (e) { why = String(e && e.message || e).slice(0, 110); }
+    if (r && typeof r === 'object' && r.headline) break;
+    r = null;
   }
   if (!r || typeof r !== 'object') return json({ error: 'ai_failed', detail: clean(why || 'no JSON in reply', 330) }, 502);
   return json({ template: keys.includes(r.template) ? r.template : keys[0], headline: clean(r.headline, 60), subline: clean(r.subline, 140), cta: clean(r.cta, 28) });
