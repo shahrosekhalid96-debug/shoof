@@ -1041,8 +1041,8 @@ def t_no_english(B):
     bad = set()
     for w, h in [(1440, 900), (390, 844)]:
         c = Ctx(B, w, h, lang='ar')
-        c.ev("()=>{addShape('rect');addPlaceholder();const t=doc.elements.find(e=>e.type==='text');['shadow','outline','highlight'].forEach(n=>applyEffect(t,n,true));fullRender();commit();}")
-        c.ev(f"addImage({TINY_PNG!r})"); c.page.wait_for_timeout(150)
+        c.ev("()=>{addShape('rect');const t=doc.elements.find(e=>e.type==='text');['shadow','outline','highlight'].forEach(n=>applyEffect(t,n,true));fullRender();commit();}")
+        c.ev(f"addImage({TINY_PNG!r})"); c.page.wait_for_timeout(150); c.ev("addPlaceholder()")
         texts = []
         for tab in ['templates', 'text', 'shapes', 'uploads', 'background', 'layers', 'about']:
             c.page.locator(f'#rail button[data-tab="{tab}"]').dispatch_event('click'); c.page.wait_for_timeout(30)
@@ -2458,6 +2458,31 @@ def t_shoofy(B):
     eq(c.ev("localStorage.getItem('shoof.buddy')"), 'off', 'remembered')
     c.ev("bdSetOn(true)"); ok(c.page.locator('#buddy').is_visible(), 'comes back')
     ok(not c.errors, c.errors); c.close()
+
+@test('panel_review_fixes')
+def t_panel_fixes(B):
+    c = Ctx(B, w=390, h=844, home=True, init="localStorage.setItem('shoof.buddy','on')")
+    ok(not c.page.locator('#buddy').is_visible(), 'phone: Shoofy steps aside on the home screen')
+    c.page.click('#home [data-tile="ig"]'); c.page.wait_for_timeout(400)
+    ok(c.page.locator('#drawer').is_visible() and c.ev("curTab") == 'templates', 'size tile opens templates on a phone')
+    ok('blank page' in c.page.inner_text('#drawer'), 'blank-page hint shown')
+    ok(not c.page.locator('#buddy').is_visible(), 'Shoofy hidden behind an open sheet')
+    c.ev("setDrawer(false)"); ok(c.page.locator('#buddy').is_visible(), 'back when the sheet closes')
+    # photo avoids text when there is no frame; fills the frame when there is one
+    c.ev("(()=>{const e=el('text',{text:'Headline here',x:140,y:390,fontSize:90,width:800});e.height=110;doc.elements.push(e);fullRender();commit();})()")
+    c.ev(f"addImage({TINY_PNG!r})"); c.page.wait_for_timeout(300)
+    ok(c.ev("(()=>{const im=doc.elements.find(e=>e.type==='image'),a=elBox(im),b=elBox(doc.elements.find(e=>e.text==='Headline here'));return Math.max(0,Math.min(a.x+a.w,b.x+b.w)-Math.max(a.x,b.x))*Math.max(0,Math.min(a.y+a.h,b.y+b.h)-Math.max(a.y,b.y))===0;})()"), 'new photo does not cover the headline')
+    c.ev("addPlaceholder()"); n = c.ev("doc.elements.length"); c.ev(f"addImage({TINY_PNG!r})"); c.page.wait_for_timeout(300)
+    ok(c.ev("doc.elements.length") == n and c.ev("!doc.elements.some(e=>e.type==='placeholder')"), 'photo goes into the empty frame')
+    # touch tips only on phones
+    ok(all(k not in c.ev("BD_TOUCH.join()") for k in ['bdTip1', 'bdTip7']), 'no keyboard tips on touch')
+    # panel tip never on the home screen
+    c.ev("BD.seen.delete('brand');BD.quiet=false;showHome();bdOnce('brand')"); ok(c.ev("$('#buddyBub').hidden"), 'no panel tip on home')
+    c.close()
+    a = Ctx(B, lang='ar', home=True)
+    h = a.ev("$('#home h1').textContent")
+    ok(h.startswith('⁨') or not re.search('[A-Za-z]', h), 'English fallback is direction-isolated in the Arabic UI')
+    ok(not a.errors, a.errors); a.close()
 
 
 @test('bulk_create_pages_and_zip')
