@@ -2564,6 +2564,14 @@ def t_shoofy_chat(B):
     c.page.route('**/api/shoofy', lambda r: r.fulfill(status=200, content_type='application/json', body=json.dumps({'reply': 'I made it red.', 'actions': [{'do': 'set', 'target': 'el:9999', 'props': {'fill': '#ff0000'}}]})))
     say('zzz qqq'); last = "document.querySelector('#shMsgs .shm.bot:last-child')"
     ok(c.ev(f"{last}.innerText.includes(t('shNoChange'))") and not c.ev(f"!!{last}.querySelector('[data-shb=undo],button[data-act=undo]')") and 'Undo' not in c.ev(f"{last}.innerText"), 'honest reply when nothing changed')
+    # edit to an item hidden behind other shapes: flagged to the AI, said honestly, one tap brings it forward
+    c.page.unroute('**/api/shoofy')
+    c.ev("(()=>{const i=TEMPLATES.findIndex(x=>x.key==='retro_market');useTemplate(i);addShape('blob');const e=byId(selId);Object.assign(e,{x:400,y:400,width:200,height:200});doc.elements.splice(doc.elements.indexOf(e),1);doc.elements.splice(3,0,e);fullRender();commit();setSel([]);})()")
+    hid = c.ev("shDesign().elements.filter(x=>x.hidden).map(x=>x.n)"); eq(hid, [3], 'covered item flagged hidden for the AI')
+    c.page.route('**/api/shoofy', lambda r: r.fulfill(status=200, content_type='application/json', body=json.dumps({'reply': 'I changed the blob to orange.', 'actions': [{'do': 'set', 'target': 'el:3', 'props': {'fill': '#ffb070'}}]})))
+    say('change the colour of it'); ok(c.ev(f"{last}.innerText.includes(t('shHiddenChange'))"), 'says the change is hidden')
+    c.page.click("#shMsgs .shm.bot:last-child button:has-text('Bring it to the front')")
+    ok(c.ev("doc.elements[doc.elements.length-1].fill==='#ffb070'"), 'brought to the front')
     c.page.unroute('**/api/shoofy')
     c.page.keyboard.press('Escape'); ok(not c.page.locator('#shChat').is_visible(), 'Esc closes the chat')
     c.errors = [e for e in c.errors if '502' not in e]  # the faked AI failure above
