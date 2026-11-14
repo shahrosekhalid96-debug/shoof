@@ -740,12 +740,15 @@ def t_mobile(B):
         c.page.click('#rail button[data-tab="text"]'); c.page.click('#drawer [data-close-drawer]')
         ok(not c.page.locator('#drawer').is_visible(), f'{lang}: drawer close button failed')
         c.page.click('#rail button[data-tab="text"]'); ok(c.page.locator('#scrim').is_visible(), f'{lang}: no backdrop')
-        c.page.mouse.click(380 if lang == "en" else 8, 700)
+        c.page.mouse.click(380 if lang == "en" else 8, 120)
         ok(not c.page.locator('#drawer').is_visible(), f'{lang}: tapping the backdrop did not close the drawer')
         # adding an element closes the drawer and opens the properties bottom sheet
         c.page.click('#rail button[data-tab="shapes"]'); c.page.click('#drawer [data-shape="rect"]')
         ok(not c.page.locator('#drawer').is_visible(), f'{lang}: drawer not auto-closed after add')
-        ok(c.page.locator('#props').is_visible(), f'{lang}: properties sheet did not open on selection')
+        ok(not c.page.locator('#props').is_visible() and c.page.locator('#selBar').is_visible(), f'{lang}: phone shows the quick bar, not the sheet, on selection')
+        sb = c.page.locator('#selBar').bounding_box(); ok(sb['x'] >= 0 and sb['x'] + sb['width'] <= 390, f'{lang}: quick bar off-screen {sb}')
+        c.page.click('#selBar [data-sb="props"]')
+        ok(c.page.locator('#props').is_visible() and not c.page.locator('#selBar').is_visible(), f'{lang}: Style opens the sheet')
         pb = c.page.locator('#props').bounding_box()
         ok(pb['x'] >= 0 and pb['x'] + pb['width'] <= 390 and pb['y'] + pb['height'] <= 845, f'{lang}: props off-screen {pb}')
         ok(pb['y'] > 844 * 0.45, f'{lang}: props sheet is not a bottom sheet {pb}')
@@ -2400,6 +2403,25 @@ def t_bulk_pics(B):
     # by order when no column names the files
     c.ev("undo()"); c.page.fill('#bulkIn', 'Name\nOne\nTwo')
     c.page.wait_for_selector('#bulkPicStat'); ok('used in row order for 2 of 2 rows' in c.page.inner_text('#bulkPicStat'), 'order mode')
+    ok(not c.errors, c.errors); c.close()
+
+@test('phone_tabbar_quickbar_pinch')
+def t_phone(B):
+    c = Ctx(B, w=390, h=844)
+    rb = c.page.locator('#rail').bounding_box(); ok(rb['y'] > 760 and rb['width'] >= 380, f'tab bar at the bottom {rb}')
+    sb = c.page.locator('#stage').bounding_box(); ok(abs(sb['x'] + sb['width'] / 2 - 195) < 12, f'page centred {sb}')
+    c.ev("(()=>{const e=el('text',{text:'tiny words',x:100,y:100,fontSize:16,width:400});e.height=20;doc.elements.push(e);fullRender();commit();select(e.id);})()")
+    c.page.wait_for_selector('#selBar.on')
+    eq(c.ev("[...document.querySelectorAll('#selBar [data-sb]')].map(b=>b.dataset.sb)"), ['edit', 'props', 'dup', 'del'], 'quick actions for text')
+    s0 = c.ev('scale'); c.page.click('#selBar [data-sb="edit"]'); c.page.wait_for_timeout(300)
+    ok(c.ev('scale') > s0 * 1.5 and c.ev("$('#editText').style.display") == 'block', 'tiny text zooms in for typing')
+    c.ev("hideEditor()"); c.ev("fitZoom()"); s1 = c.ev('scale')
+    c.ev("""(()=>{const A=$('#stageArea'),T=(id,x,y)=>new Touch({identifier:id,target:A,clientX:x,clientY:y}),fire=(type,ts)=>A.dispatchEvent(new TouchEvent(type,{touches:ts,targetTouches:ts,changedTouches:ts,bubbles:true,cancelable:true}));
+      fire('touchstart',[T(1,150,400),T(2,250,400)]);fire('touchmove',[T(1,100,400),T(2,300,400)]);fire('touchend',[]);})()""")
+    ok(abs(c.ev('scale') - s1 * 2) < 0.02, f'pinch zooms ({s1} -> {c.ev("scale")})')
+    c.page.click('#rail [data-tab="text"]'); db = c.page.locator('#drawer').bounding_box()
+    ok(db['x'] == 0 and db['width'] >= 389 and db['y'] > 150, f'panel is a bottom sheet {db}')
+    ok(not c.page.locator('#selBar').is_visible(), 'quick bar hides under the panel')
     ok(not c.errors, c.errors); c.close()
 
 
