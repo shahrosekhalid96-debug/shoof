@@ -1590,7 +1590,8 @@ def t_home(B):
     # home button: recent design card + continue
     c.page.click('#homeBtn'); ok(_home_visible(c), 'home button')
     eq(c.ev("$('#homeGo').textContent"), 'Continue your design', 'continue label after editing')
-    ok(c.ev("($('#home [data-recent] img')||{}).src||''").startswith('data:image/png'), 'recent design thumbnail')
+    c.page.wait_for_function("(($('#home [data-recent] img')||{}).src||'').startsWith('data:image/')", timeout=8000)
+    ok(c.ev("($('#home [data-recent] img')||{}).src||''").startswith('data:image/'), 'recent design thumbnail')
     c.page.click('#home [data-recent]'); ok(not c.ev('homeOpen()'), 'recent card returns to editor')
     # size tile -> blank design of that size, templates filtered
     c.page.click('#homeBtn'); c.page.click('#home [data-tile="story"]')
@@ -2330,6 +2331,48 @@ def t_sec_headers(B):
     ok(not c.ev("!!document.querySelector('script[src*=\"challenges\"]')"), 'Turnstile is not loaded at start')
     ok(c.ev("(()=>{const s=document.createElement('script');s.textContent='window.__inj=1';document.head.appendChild(s);return !window.__inj})()"), 'an injected inline script is blocked')
     c.errors = [e for e in c.errors if 'CSP blocked script-src-elem inline' not in e and 'Executing inline script violates' not in e]
+    ok(not c.errors, c.errors); c.close()
+
+@test('my_designs_list')
+def t_my_designs(B):
+    c = Ctx(B, home=True)
+    ok(c.ev("!document.querySelector('#myDesigns')"), 'no list before any work')
+    # design A from a template
+    c.ev("useTemplate(TEMPLATES.findIndex(x=>x.key==='big_sale'))"); c.ev("hideHome()")
+    c.ev("(()=>{const e=doc.elements.filter(x=>x.type==='text').sort((p,q)=>q.fontSize-p.fontSize)[0];e.text='Alpha design';fullRender();commit();})()")
+    a = c.ev("curId")
+    c.ev("dsSave()"); c.page.wait_for_timeout(400)
+    # design B from a blank tile
+    c.ev("newFromTile('ig')"); c.ev("hideHome()")
+    c.ev("(()=>{addText&&0;const e=el('text',{text:'Bravo design',x:50,y:50,fontSize:90});doc.elements.push(e);fullRender();commit();})()")
+    b = c.ev("curId"); ok(a != b, 'a new design gets its own id')
+    c.page.click('#homeBtn') if c.page.locator('#homeBtn').is_visible() else c.ev('showHome()')
+    c.page.wait_for_function("document.querySelectorAll('#myDesigns .dcard').length===2", timeout=8000)
+    names = c.ev("[...document.querySelectorAll('#myDesigns .hname')].map(x=>x.textContent)")
+    eq(names, ['Bravo design', 'Alpha design'], 'newest first, named from the biggest text')
+    ok(c.ev("!!document.querySelector('#myDesigns .dcard.cur .dnow')"), 'current design marked')
+    ok(c.ev("document.querySelector('#myDesigns img').src.startsWith('data:image/jpeg')"), 'thumbnails')
+    # open A
+    c.page.click(f'#myDesigns [data-design="{a}"]')
+    c.page.wait_for_function("!homeOpen()", timeout=8000)
+    eq(c.ev("curId"), a, 'opened design A'); ok(c.ev("doc.elements.some(e=>e.text==='Alpha design')"), 'its content is back')
+    ok(c.ev("!doc.elements.some(e=>e.text==='Bravo design')"), 'B content not mixed in')
+    # rename, duplicate, delete
+    c.ev('showHome()'); c.page.wait_for_selector(f'#myDesigns [data-dsren="{a}"]')
+    c.page.click(f'#myDesigns [data-dsren="{a}"]'); c.page.fill('#dsNameIn', 'Sale poster'); c.page.click('#dsNameOk')
+    c.page.wait_for_function("[...document.querySelectorAll('#myDesigns .hname')].some(x=>x.textContent==='Sale poster')", timeout=5000)
+    c.page.click(f'#myDesigns [data-dscopy="{b}"]')
+    c.page.wait_for_function("document.querySelectorAll('#myDesigns .dcard').length===3", timeout=5000)
+    ok(c.ev("[...document.querySelectorAll('#myDesigns .hname')].some(x=>x.textContent==='Copy of Bravo design')"), 'duplicate named')
+    c.page.click(f'#myDesigns [data-dsdel="{b}"]'); c.page.click('#dsDelOk')
+    c.page.wait_for_function("document.querySelectorAll('#myDesigns .dcard').length===2", timeout=5000)
+    # survives a reload, current design restored with the same id
+    c.page.reload(); c.page.wait_for_function("typeof dsList!=='undefined'&&document.querySelectorAll('#myDesigns .dcard').length===2", timeout=10000)
+    eq(c.ev("curId"), a, 'same design id after reload')
+    ok(c.ev("doc.elements.some(e=>e.text==='Alpha design')"), 'current design restored')
+    # empty blank designs are not listed
+    c.ev("newFromTile('ig')"); c.ev("dsSave()"); c.page.wait_for_timeout(300)
+    eq(c.ev("dsList.length"), 2, 'an untouched blank design is not saved')
     ok(not c.errors, c.errors); c.close()
 
 

@@ -226,6 +226,7 @@ footer.credit{font-size:11.5px;color:var(--muted);margin-top:12px;line-height:1.
 .hgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(176px,1fr));gap:16px}
 .hcard{display:flex;flex-direction:column;align-items:stretch;padding:0;border:0;background:transparent;text-align:start;scroll-snap-align:start;gap:8px;border-radius:14px}
 .hcard:hover{background:transparent}
+.dcard{position:relative;display:flex;flex-direction:column}.dcard .hthumb{position:relative}.dnow{position:absolute;left:8px;top:8px;background:var(--accent);color:#fff;font-size:11px;font-weight:700;padding:3px 8px;border-radius:999px}.dmeta{font-size:12px;color:var(--muted)}.dacts{display:flex;gap:4px;margin-top:4px}.dacts .ib{width:32px;height:32px;padding:6px;border-radius:8px}.dacts .ib svg{width:16px;height:16px}.dacts .ib{border:1px solid var(--line);background:var(--panel);color:var(--ink)}.dacts .ib:hover{border-color:var(--accent)}#modal button.danger{background:var(--danger);border-color:var(--danger);color:#fff}.fld{display:grid;gap:6px;margin:12px 0}.fld span{font-size:13px;font-weight:600}.fld input{height:42px;border:1px solid var(--line);border-radius:10px;padding:0 12px;font-size:15px}.dcount{font-size:13px;font-weight:600;color:var(--muted);margin-inline-start:6px}.dnote{margin:-6px 0 10px;font-size:13px;color:var(--muted)}
 .hthumb{display:block;position:relative;aspect-ratio:1/1;border-radius:14px;background:#f2f1f7;overflow:hidden;border:1px solid var(--line);transition:transform .15s,box-shadow .15s}
 .hcard:hover .hthumb{transform:translateY(-3px);box-shadow:0 10px 24px rgba(20,24,40,.12)}
 .hthumb img{position:absolute;left:8%;top:8%;width:84%;height:84%;object-fit:contain;filter:drop-shadow(0 2px 6px rgba(0,0,0,.16))}
@@ -357,7 +358,7 @@ const I18N={
  en:{docTitle:'Shoof — free open-source design editor',brand:'Shoof',tag:'Free design for everyone',new:'New',open:'Open',save:'Save',export:'Download',langTitle:'Language',sizeTitle:'Canvas size',undoTitle:'Undo (Ctrl+Z)',redoTitle:'Redo (Ctrl+Y)',propsTitle:'Properties',edit:'Edit',more:'More',
   expPng:'best for social',expJpg:'smaller file',expPdf:'for print',
   fgSans:'Sans serif',fgSerif:'Serif',fgDisplay:'Display',fgScript:'Handwriting',fgMono:'Monospace',textStyles:'Text styles',changeCase:'Change case: UPPER, lower, Title',brandFile:'Kit file',brandSave:'Save kit',brandLoad:'Load kit',brandLoaded:'Brand kit loaded.',brandBadFile:'That is not a Shoof brand kit file.',
-  bgRemove:'Remove background',bgNote:'Runs on your device. Your photo is never uploaded.',bgFirst:'Getting the background remover ready (about 20 MB, first time only)…',bgWorking:'Removing the background…',bgDone:'Background removed. Undo brings it back.',bgFail:'Could not remove the background here. Try another browser, or a smaller photo.',bgNoSubject:'Could not find a clear subject in this photo.',tile_cutout:'Remove background',tileAi:'Free AI',cutTitle:'Remove a photo background',cutText:'Choose a photo and Shoof cuts out the subject. It runs on your device, so the photo is never uploaded.',cutChoose:'Choose a photo',bgDoneNew:'Background removed. Download → PNG · no background gives a see-through picture.',
+  bgRemove:'Remove background',bgNote:'Runs on your device. Your photo is never uploaded.',bgFirst:'Getting the background remover ready (about 20 MB, first time only)…',bgWorking:'Removing the background…',bgDone:'Background removed. Undo brings it back.',bgFail:'Could not remove the background here. Try another browser, or a smaller photo.',bgNoSubject:'Could not find a clear subject in this photo.',tile_cutout:'Remove background',dsTitle:'Your designs',dsNote:'Saved on this device only. Download a file to keep a copy elsewhere.',dsUntitled:'Untitled design',dsNow:'Edited just now',dsMin:'Edited {n} min ago',dsHour:'Edited {n} h ago',dsPages:'{n} pages',dsOpenNow:'Open now',dsRename:'Rename',dsName:'Name',dsSave:'Save',dsDuplicate:'Duplicate',dsCopyOf:'Copy of {name}',dsCopied:'Design duplicated',dsDelete:'Delete',dsDelTitle:'Delete this design?',dsDelText:'"{name}" will be removed from this device. This cannot be undone.',dsDeleted:'Design deleted',dsGone:'That design is no longer on this device.',dsMany:'You have more than {n} designs saved. Delete old ones to keep things fast.',tileAi:'Free AI',cutTitle:'Remove a photo background',cutText:'Choose a photo and Shoof cuts out the subject. It runs on your device, so the photo is never uploaded.',cutChoose:'Choose a photo',bgDoneNew:'Background removed. Download → PNG · no background gives a see-through picture.',
   expHImg:'Picture',expHMany:'Several at once',expHDoc:'Print and editable',
   expClear:'no background',exp2x:'double size, sharper',expSvg:'vector, editable',fontBrowse:'Preview all fonts',fontHide:'Hide font previews',textFx:'Text effect',fxNone:'No effect',fxSoft:'Soft shadow',fxRetro:'Retro shadow',fxHollow:'Hollow outline',fxNeon:'Neon glow',fxSticker:'Sticker',fxMarker:'Marker highlight',curve:'Curve',
   logoTitle:'Logo maker',logoOpen:'Make a logo',logoHint:'Type your name and pick a look. Every idea opens as a normal design, so you can change any part of it.',lgName:'Name',lgTag:'Tagline (optional)',lgKw:'What do you do? (optional)',lgKwPh:'coffee, salon, tech, bakery',lgSample:'Your Name',lgStyle:'Style',lsAll:'All styles',lsModern:'Modern',lsElegant:'Elegant',lsPlayful:'Playful',lsBold:'Bold',lsRetro:'Retro',lgMore:'More ideas',lgEdit:'Edit this logo',lgAdd:'Add to my page',lgBrand:'Save as brand logo',lgIdea:'Logo idea {n}',lgLoading:'Drawing ideas…',lgSaved:'Saved to your brand kit.',
@@ -659,7 +660,7 @@ function redo(){if(!redoStack.length)return;clearTimeout(window._nt);undoStack.p
 function updateUndo(){$('#undoBtn').disabled=!undoStack.length;$('#redoBtn').disabled=!redoStack.length;}
 function resetHistory(){undoStack.length=0;redoStack.length=0;lastSnap=JSON.stringify(doc);updateUndo();}
 let autosaveWarned=false;
-function autosave(){try{localStorage.setItem('shoof.autosave',lastSnap);autosaveWarned=false;}catch(e){if(!autosaveWarned){autosaveWarned=true;const q=e&&(e.name==='QuotaExceededError'||e.code===22||e.name==='NS_ERROR_DOM_QUOTA_REACHED');toast(t(q?'autosaveFull':'autosaveOff'),5000);}}}
+function autosave(){dsQueue();try{localStorage.setItem('shoof.autosave',lastSnap);autosaveWarned=false;}catch(e){if(!autosaveWarned){autosaveWarned=true;const q=e&&(e.name==='QuotaExceededError'||e.code===22||e.name==='NS_ERROR_DOM_QUOTA_REACHED');toast(t(q?'autosaveFull':'autosaveOff'),5000);}}}
 
 /* ============ stage ============ */
 let scale=0.5,selId=null,selIds=[];
@@ -1231,7 +1232,7 @@ function bindBrand(){const on=(id,ev,fn)=>{const n=$('#'+id);if(n)n.addEventList
  on('brandApply','click',()=>{applyBrand();});on('brandLogoMake','click',openLogoMaker);
  on('brandSave','click',()=>{saveFile('shoof-brand.json',new Blob([JSON.stringify(Object.assign({app:'shoof-brand',version:1},brand))],{type:'application/json'}));});
  on('brandLoad','change',ev=>{const fl=ev.target.files[0];ev.target.value='';if(!fl)return;if(fl.size>3e6){toast(t('brandBadFile'),4000);return;}fl.text().then(x=>{const r=JSON.parse(x);if(!r||r.app!=='shoof-brand')throw 0;brand=sanitizeBrand(r);saveBrand();renderDrawer();renderProps();toast(t('brandLoaded'));}).catch(()=>toast(t('brandBadFile'),4000));});}
-function applyDoc(d){const prev=doc,prevSel=selId;try{doc=d;selId=null;fullRender();}catch(err){doc=prev;selId=prevSel;try{fullRender();}catch(_){}throw err;}syncSize();fitZoom();pageThumbs.length=0;renderPages();refreshPageThumbs(true);}
+function applyDoc(d,keepId){const prev=doc,prevSel=selId;try{doc=d;selId=null;fullRender();}catch(err){doc=prev;selId=prevSel;try{fullRender();}catch(_){}throw err;}if(!keepId)dsNew();syncSize();fitZoom();pageThumbs.length=0;renderPages();refreshPageThumbs(true);}
 
 /* images: import with downscale (long side ≤ 2400 px), replace, placeholders */
 function hasAlpha(cx,w,h){const d=cx.getImageData(0,0,w,h).data;for(let i=3;i<d.length;i+=4)if(d[i]<255)return true;return false;}
@@ -1447,12 +1448,39 @@ const HOME_TILES=[
 const HOME_TRENDING=['neon_open','retro_coffee','big_sale','show_app','mag_style','app_launch','poster_editorial','deck_swiss','cert_appreciation'];
 const HOME_PICKS=['min_wedding','hand_bake','big_hiring','retro_market','neon_game','website_launch','deck_soft','stat_growth','ramadan_en'];
 let homeQ='',homeWork=false,homeRecentImg=null;
+/* ============ My designs: every design is kept on this device (IndexedDB), newest first; nothing is uploaded ============ */
+const DS_MAX=200;let dsDb=null,dsList=[],dsTimer=null,curId=null,curName='';
+function dsId(){return 'd'+Date.now().toString(36)+Math.random().toString(36).slice(2,7);}
+function dsOpen(){if(dsDb)return dsDb;dsDb=new Promise(res=>{try{const r=indexedDB.open('shoof',1);r.onupgradeneeded=()=>{r.result.createObjectStore('designs',{keyPath:'id'});};r.onsuccess=()=>res(r.result);r.onerror=()=>res(null);r.onblocked=()=>res(null);}catch(e){res(null);}});return dsDb;}
+async function dsTx(mode,fn){const db=await dsOpen();if(!db)return null;return new Promise(res=>{try{const tx=db.transaction('designs',mode),st=tx.objectStore('designs');let out=null;const r=fn(st);if(r)r.onsuccess=()=>{out=r.result;};tx.oncomplete=()=>res(out===null?true:out);tx.onerror=tx.onabort=()=>res(null);}catch(e){res(null);}});}
+async function dsLoadList(){const all=await dsTx('readonly',st=>st.getAll());dsList=Array.isArray(all)?all.map(({doc:_d,...m})=>m).sort((a,b)=>b.updated-a.updated):[];return dsList;}
+function dsHasWork(d){return d.pages.length>1||d.pages.some(pg=>pg.elements.some(e=>e.role!=='bg'));}
+function dsAutoName(d){const tx=(d.pages[0]||{elements:[]}).elements.filter(e=>e.type==='text'&&(String(e.text||'').match(/[\p{L}\p{N}]/gu)||[]).length>=3).sort((a,b)=>b.fontSize-a.fontSize)[0];return tx?String(tx.text).replace(/\s+/g,' ').trim().slice(0,40):'';}
+function dsNew(){dsDirty=false;curId=dsId();curName='';try{localStorage.setItem('shoof.cur',curId);}catch(e){}}
+function dsQueue(){dsDirty=true;clearTimeout(dsTimer);dsTimer=setTimeout(dsSave,1200);}
+async function dsSave(){clearTimeout(dsTimer);if(!dsDirty||!curId||!dsHasWork(doc))return;dsDirty=false;let thumb='';try{thumb=renderExport('image/jpeg',Math.min(1,320/Math.max(doc.width,doc.height)));}catch(e){}
+ const old=dsList.find(x=>x.id===curId),now=Date.now(),rec={id:curId,name:curName||(old&&old.name)||'',auto:dsAutoName(doc),created:old?old.created:now,updated:now,w:doc.width,h:doc.height,pages:doc.pages.length,thumb,doc:JSON.stringify(doc)};
+ const ok=await dsTx('readwrite',st=>st.put(rec));if(!ok)return;const {doc:_d,...meta}=rec;dsList=[meta].concat(dsList.filter(x=>x.id!==curId));
+ if(dsList.length>DS_MAX&&!dsWarned){dsWarned=true;toast(t('dsMany',{n:DS_MAX}),6000);}if(homeOpen()){const hl=$('#homeList');if(hl)hl.innerHTML=homeListHTML();}}
+let dsWarned=false,dsDirty=false;
+function dsTitle(m){return m.name||m.auto||t('dsUntitled');}
+function dsAgo(ms){const m=Math.round((Date.now()-ms)/60000);if(m<1)return t('dsNow');if(m<60)return t('dsMin',{n:m});const h=Math.round(m/60);if(h<24)return t('dsHour',{n:h});return new Date(ms).toLocaleDateString();}
+async function dsOpenDesign(id){if(id===curId){hideHome();return;}await dsSave();const rec=await dsTx('readonly',st=>st.get(id));if(!rec||!rec.doc){toast(t('dsGone'),3500);await dsLoadList();renderHome();return;}
+ let d;try{d=sanitizeDoc(JSON.parse(rec.doc));}catch(e){toast(t('notRasm'));return;}applyDoc(d,true);curId=id;curName=rec.name||'';try{localStorage.setItem('shoof.cur',id);}catch(e){}resetHistory();autosave();hideHome();}
+async function dsCopy(id){if(id===curId)await dsSave();const rec=await dsTx('readonly',st=>st.get(id));if(!rec)return;const now=Date.now(),cp=Object.assign({},rec,{id:dsId(),name:t('dsCopyOf',{name:dsTitle(rec)}).slice(0,60),created:now,updated:now});await dsTx('readwrite',st=>st.put(cp));await dsLoadList();$('#homeList').innerHTML=homeListHTML();toast(t('dsCopied'),2500);}
+function dsRename(id){const m=dsList.find(x=>x.id===id);if(!m)return;modal(`<h2>${esc(t('dsRename'))}</h2><label class="fld"><span>${esc(t('dsName'))}</span><input id="dsNameIn" maxlength="60" dir="auto" value="${esc(dsTitle(m))}"></label><div class="newfoot"><span class="sp"></span><button data-close>${esc(t('cancel'))}</button><button class="primary" id="dsNameOk" data-id="${esc(id)}">${esc(t('dsSave'))}</button></div>`);setTimeout(()=>{const i=$('#dsNameIn');if(i){i.focus();i.select();}},30);}
+async function dsRenameDo(id){const v=clean1($('#dsNameIn').value,60);$('#modal').classList.remove('open');const rec=await dsTx('readonly',st=>st.get(id));if(!rec)return;rec.name=v;if(id===curId)curName=v;await dsTx('readwrite',st=>st.put(rec));await dsLoadList();$('#homeList').innerHTML=homeListHTML();}
+function dsDelete(id){const m=dsList.find(x=>x.id===id);if(!m)return;modal(`<h2>${esc(t('dsDelTitle'))}</h2><p class="note" dir="auto">${esc(t('dsDelText',{name:dsTitle(m)}))}</p><div class="newfoot"><span class="sp"></span><button data-close>${esc(t('cancel'))}</button><button class="danger" id="dsDelOk" data-id="${esc(id)}">${esc(t('dsDelete'))}</button></div>`);}
+async function dsDeleteDo(id){$('#modal').classList.remove('open');await dsTx('readwrite',st=>st.delete(id));if(id===curId)dsNew();await dsLoadList();$('#homeList').innerHTML=homeListHTML();toast(t('dsDeleted'),2500);}
+function dsCard(m){const cur=m.id===curId;return `<div class="dcard${cur?' cur':''}"><button class="hcard" ${cur?'data-recent':''} data-design="${esc(m.id)}"><span class="hthumb">${m.thumb&&/^data:image\/(jpeg|png);base64,/.test(m.thumb)?`<img alt="" src="${esc(m.thumb)}">`:''}${cur?`<span class="dnow">${esc(t('dsOpenNow'))}</span>`:''}</span><span class="hname" dir="auto">${esc(dsTitle(m))}</span><span class="dmeta">${esc(dsAgo(m.updated))}${m.pages>1?' · '+esc(t('dsPages',{n:m.pages})):''}</span></button>
+ <div class="dacts"><button class="ib" data-dsren="${esc(m.id)}" title="${esc(t('dsRename'))}" aria-label="${esc(t('dsRename'))}: ${esc(dsTitle(m))}">${SVG('<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>')}</button><button class="ib" data-dscopy="${esc(m.id)}" title="${esc(t('dsDuplicate'))}" aria-label="${esc(t('dsDuplicate'))}: ${esc(dsTitle(m))}">${SVG('<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>')}</button><button class="ib" data-dsdel="${esc(m.id)}" title="${esc(t('dsDelete'))}" aria-label="${esc(t('dsDelete'))}: ${esc(dsTitle(m))}">${SVG('<path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/>')}</button></div></div>`;}
+function dsSection(){if(!dsList.length)return '';const list=dsList.slice(0,DS_MAX);return `<section class="hsec" id="myDesigns"><h2>${esc(t('dsTitle'))} <span class="dcount">${list.length}</span></h2><p class="dnote">${esc(t('dsNote'))}</p><div class="hrow drow">${list.map(dsCard).join('')}</div></section>`;}
 function homeOpen(){const h=$('#home');return !!h&&!h.hidden;}
 function tplCard(i){const tp=TEMPLATES[i];if(!tp)return '';return `<button class="hcard" data-htpl="${i}"><span class="hthumb">${tplThumbs[i]?`<img alt="" src="${esc(tplThumbs[i])}">`:''}</span><span class="hname" dir="auto">${esc(t('tpl_'+tp.key))}</span></button>`;}
 function homeRow(key,keys){const ids=keys.map(k2=>TEMPLATES.findIndex(x=>x.key===k2)).filter(i=>i>=0);return `<section class="hsec"><h2>${esc(t(key))}</h2><div class="hrow">${ids.map(tplCard).join('')}</div></section>`;}
 function homeListHTML(){const q=homeQ.trim();
  if(q){const list=TEMPLATES.map((tp,i)=>[tp,i]).filter(([tp])=>tplMatches(tp,q,'all'));return `<section class="hsec"><h2>${esc(t('homeResults',{q}))}</h2>`+(list.length?`<div class="hgrid">${list.map(([,i])=>tplCard(i)).join('')}</div>`:`<p class="empty">${esc(t('noTpl'))}</p>`)+'</section>';}
- const recent=homeWork&&homeRecentImg?`<section class="hsec"><h2>${esc(t('homeRecent'))}</h2><div class="hrow"><button class="hcard" data-recent><span class="hthumb"><img alt="" src="${esc(homeRecentImg)}"></span><span class="hname">${esc(t('homeContinue'))}</span></button></div></section>`:'';
+ const recent=dsList.length?dsSection():(homeWork&&homeRecentImg?`<section class="hsec"><h2>${esc(t('homeRecent'))}</h2><div class="hrow"><button class="hcard" data-recent><span class="hthumb"><img alt="" src="${esc(homeRecentImg)}"></span><span class="hname">${esc(t('homeContinue'))}</span></button></div></section>`:'');
  return recent+homeRow('homeTrending',HOME_TRENDING)+homeRow('homePicks',HOME_PICKS);}
 /* ============ describe it: the user's words pick a template (on the device) and, on the public site, a free Cloudflare AI writes the words ============ */
 const DESC_FORMATS=[[/\b(story|stories|reel|status|vertical)\b/,'story'],[/\b(poster|flyer|a4|print|leaflet)\b/,'poster'],[/\b(presentation|slides?|deck|pitch)\b/,'deck'],[/\b(certificate|badge|award)\b/,'cert'],[/\b(menu|price ?list)\b/,'food']];
@@ -1489,11 +1517,13 @@ function renderHome(){const h=$('#home');
  $('#homeDescForm').addEventListener('submit',ev=>{ev.preventDefault();describeGo();});}
 function showHome(){hideEditor();closeMenus();setDrawer(false);closeSheet();homeWork=homeWork||undoStack.length>0;
  homeRecentImg=null;if(homeWork&&doc.elements.length){try{homeRecentImg=renderExport('image/png',Math.min(1,360/Math.max(doc.width,doc.height)));}catch(e){}}
- renderHome();$('#home').hidden=false;document.body.classList.add('home-on');$('#home').scrollTop=0;}
+ renderHome();$('#home').hidden=false;document.body.classList.add('home-on');$('#home').scrollTop=0;dsSave().then(()=>dsLoadList()).then(()=>{if(homeOpen()){const hl=$('#homeList');if(hl)hl.innerHTML=homeListHTML();}});}
 function hideHome(){if(!homeOpen())return;$('#home').hidden=true;document.body.classList.remove('home-on');fitZoom();showTips();}
 function showTemplatesTab(cat){if(cat)tplCat=TPL_CATS.includes(cat)?cat:'all';curTab='templates';document.querySelectorAll('#rail button').forEach(x=>x.classList.toggle('on',x.dataset.tab==='templates'));renderDrawer();}
 function newFromTile(id,cat){const s=SIZES.find(x=>x.id===id);if(!s)return;applyDoc(withBgBlocks(blankDoc(s.w,s.h)));commit();showTemplatesTab(cat);hideHome();toast(t('homeNewHint',{name:t('sz_'+id)}),3500);}
 $('#home').addEventListener('click',ev=>{const b=ev.target.closest('button');if(!b)return;const ds=b.dataset;
+ if(ds.dsren){dsRename(ds.dsren);return;}if(ds.dscopy){dsCopy(ds.dscopy);return;}if(ds.dsdel){dsDelete(ds.dsdel);return;}
+ if(ds.design&&ds.design!==curId){dsOpenDesign(ds.design);return;}
  if(ds.htpl!==undefined){useTemplate(+ds.htpl);hideHome();}
  else if(ds.tile==='logo'){openLogoMaker();}
  else if(ds.tile==='cutout'){$('#cutPick').click();}
@@ -1900,6 +1930,7 @@ $('#openFile').onchange=ev=>{const f=ev.target.files[0];ev.target.value='';if(!f
 function modal(html){$('#modalBox').className='box';$('#modalBox').innerHTML=html;$('#modal').classList.add('open');const b=$('#modalBox .primary');if(b)b.focus();}
 $('#modal').addEventListener('click',ev=>{const tg=ev.target.closest('button')||ev.target;if(ev.target.id==='modal'||tg.dataset.close!==undefined){$('#modal').classList.remove('open');return;}
  if(tg.dataset.newsize){const sz=SIZES.find(x=>x.id===tg.dataset.newsize);if(sz){$('#newW').value=sz.w;$('#newH').value=sz.h;document.querySelectorAll('#modal [data-newsize]').forEach(b=>b.setAttribute('aria-pressed',String(b===tg)));}return;}
+ if(tg.id==='dsNameOk'){dsRenameDo(tg.dataset.id);return;}if(tg.id==='dsDelOk'){dsDeleteDo(tg.dataset.id);return;}
  if(tg.id==='cutGo'){$('#modal').classList.remove('open');$('#cutPick').click();return;}
  if(tg.id==='newTpl'){$('#modal').classList.remove('open');hideHome();curTab='templates';document.querySelectorAll('#rail button').forEach(x=>x.classList.toggle('on',x.dataset.tab==='templates'));renderDrawer();if(isMob())setDrawer(true);return;}
  if(tg.id==='doNew'){const w=Math.round(clamp(parseFloat($('#newW').value)||doc.width,LIM.minDim,LIM.maxDim)),h=Math.round(clamp(parseFloat($('#newH').value)||doc.height,LIM.minDim,LIM.maxDim));applyDoc(withBgBlocks(blankDoc(w,h)));commit();$('#modal').classList.remove('open');hideHome();}});
@@ -2112,6 +2143,7 @@ async function runClaude(action){
 }
 
 /* ============ boot ============ */
+addEventListener('pagehide',()=>{if(dsTimer)dsSave();});
 function regSW(){try{if('serviceWorker'in navigator&&location.protocol==='https:'&&!/claude|anthropic/.test(location.hostname))navigator.serviceWorker.register('sw.js').catch(()=>{});}catch(e){}}
 (function boot(){regSW();
 (function(){try{['lang','autosave'].forEach(k=>{const o=localStorage.getItem('rasm.'+k);if(o!==null&&localStorage.getItem('shoof.'+k)===null)localStorage.setItem('shoof.'+k,o);if(o!==null)localStorage.removeItem('rasm.'+k);});}catch(e){}})();
@@ -2126,7 +2158,7 @@ function regSW(){try{if('serviceWorker'in navigator&&location.protocol==='https:
  applyLang();
  try{fullRender();}catch(e){doc=withBgBlocks(sanitizeDoc(starterTemplate().make()));resetHistory();fullRender();bad=true;}
  syncSize();fitZoom();
- renderPages();refreshPageThumbs(true);homeWork=restored;showHome();if(/[?&]tool=cutout\b/.test(location.search))openCutout();
+ renderPages();refreshPageThumbs(true);try{curId=localStorage.getItem('shoof.cur');}catch(e){}if(!curId||!/^d[a-z0-9]{6,20}$/.test(curId))dsNew();homeWork=restored;if(restored)dsQueue();showHome();if(/[?&]tool=cutout\b/.test(location.search))openCutout();
  if(bad)toast(t('autosaveBad'),4000);else if(restored)toast(t('restored'));
  const fams=CORE_FONTS.flatMap(f=>[`400 40px "${f}"`,`700 40px "${f}"`]);
  const fontsReady=Promise.all(fams.map(f=>document.fonts.load(f).catch(()=>{})));
