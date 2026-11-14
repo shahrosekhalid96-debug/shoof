@@ -39,7 +39,7 @@ export async function onRequestPost({ request, env }) {
   const plain = messages.concat([{ role: 'user', content: 'Answer with one JSON object only, no other text, exactly like {"template":"key","headline":"...","subline":"...","cta":"..."}' }]);
   let r = null, why = '';
   for (const model of MODELS) {
-    try { r = parse(textOf(await env.AI.run(model, { messages: plain, max_tokens: 300, temperature: 0.4 }))); }
+    try { r = parse(textOf(await env.AI.run(model, { messages: plain, max_tokens: 300, temperature: 0.4, chat_template_kwargs: { enable_thinking: false } }))); }
     catch (e) { why = String(e && e.message || e).slice(0, 110); }
     if (r && typeof r === 'object' && r.headline) break;
     r = null;
