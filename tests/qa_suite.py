@@ -2555,6 +2555,15 @@ def t_shoofy_chat(B):
     ok(e['y'] < c.ev("doc.height*0.12"), 'moved to the top')
     eq(c.ev("undoStack.length") - u0, 1, 'all of it is one undo step')
     ok(c.ev("!!(bgBlock().fillGradient)"), 'a one-colour "gradient" is refused (background unchanged)')
+    # a background the AI picks too close to the current one is pushed so the change is visible
+    c.page.unroute('**/api/shoofy'); cur = c.ev("bgBlock().fillGradient?bgBlock().fillGradient.stops[0].color:bgBlock().fill")
+    c.page.route('**/api/shoofy', lambda r: r.fulfill(status=200, content_type='application/json', body=json.dumps({'reply': 'Done.', 'actions': [{'do': 'set_background', 'colors': [cur, cur], 'angle': 90}]})))
+    say('two tone background'); ok(c.ev(f"bgBlock().fillGradient.stops.every(s=>shCDist(s.color,'{cur}')>=30)"), 'near-identical background pushed to be visible')
+    # AI action that changes nothing: never claims success, no Undo button
+    c.page.unroute('**/api/shoofy')
+    c.page.route('**/api/shoofy', lambda r: r.fulfill(status=200, content_type='application/json', body=json.dumps({'reply': 'I made it red.', 'actions': [{'do': 'set', 'target': 'el:9999', 'props': {'fill': '#ff0000'}}]})))
+    say('zzz qqq'); last = "document.querySelector('#shMsgs .shm.bot:last-child')"
+    ok(c.ev(f"{last}.innerText.includes(t('shNoChange'))") and not c.ev(f"!!{last}.querySelector('[data-shb=undo],button[data-act=undo]')") and 'Undo' not in c.ev(f"{last}.innerText"), 'honest reply when nothing changed')
     c.page.unroute('**/api/shoofy')
     c.page.keyboard.press('Escape'); ok(not c.page.locator('#shChat').is_visible(), 'Esc closes the chat')
     c.errors = [e for e in c.errors if '502' not in e]  # the faked AI failure above

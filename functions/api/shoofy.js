@@ -51,7 +51,7 @@ Answer with ONE JSON object only, no other text: {"reply":"...","actions":[...]}
 - set_font {"font": one of FONTS, "target":"all|headings|body|selected"}
 - resize {"size":"ig|story|li|fb|x|yt|a4|a3|flyer|logo|card|pres"} (ig = Instagram post, li = LinkedIn, fb = Facebook, x = X/Twitter, yt = YouTube thumbnail, pres = slides)
 - remove_bg {} ; add_photo {} ; add_page {} ; check {} ; logo {"name":"..."} ; download {"format":"png|jpg|pdf|svg|pptx"} ; open {"panel":"templates|text|elements|uploads|background|brand|bulk|layers"}
-Think like a designer: "two tone" means a gradient of two related colours; "warm and light" means soft creams, peaches and light oranges (for example #fff4e6 to #ffd8a8). Keep text readable (dark text on light, light text on dark) and fix text colours in the same answer when you change the background a lot.
+Think like a designer: "two tone" means a gradient of two related colours; "warm and light" means soft creams, peaches and light oranges (for example #fff4e6 to #ffd8a8). DESIGN.background lists the current background colours: a new background MUST look clearly different from them (pick colours far from the current ones, never near-copies), or the user sees no change. Keep text readable (dark text on light, light text on dark) and fix text colours in the same answer when you change the background a lot.
 Examples:
 {"reply":"I gave the background a soft peach-to-cream two-tone gradient.","actions":[{"do":"set_background","colors":["#ffd8a8","#fff4e6"],"angle":135,"type":"linear"}]}
 {"reply":"Here are bakery ideas, and your headline now says Fresh Bread Friday in bold red.","actions":[{"do":"show_templates","keys":["bakery","hand_bake"]},{"do":"set","target":"headline","props":{"text":"Fresh Bread Friday","fill":"#c92a2a","bold":true}}]}
@@ -76,6 +76,7 @@ export async function onRequestPost({ request, env }) {
     size: clean(d.size, 40), pages: Math.min(40, Number(d.pages) || 1), selected: clean(d.selected, 80),
     texts: (Array.isArray(d.texts) ? d.texts : []).slice(0, 8).map(x => clean(x, 70)), colors: (Array.isArray(d.colors) ? d.colors : []).slice(0, 6).map(x => clean(x, 9)),
     fonts: (Array.isArray(d.fonts) ? d.fonts : []).slice(0, 5).map(x => clean(x, 30)), photos: Math.min(20, Number(d.photos) || 0), frames: Math.min(20, Number(d.frames) || 0),
+    background: (Array.isArray(d.background) ? d.background : []).slice(0, 5).map(x => clean(x, 9)),
   };
   if (!env.AI) return json({ error: 'ai_off' }, 503);
   let pass = '';
