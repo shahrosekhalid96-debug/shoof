@@ -106,6 +106,7 @@ class Ctx:
         p.add_init_script(CSP_WATCH)
         if not tips:  # first-visit tips have their own test
             p.add_init_script("try{localStorage.setItem('shoof.tips','1')}catch(e){}")
+            p.add_init_script("try{if(!localStorage.getItem('shoof.buddy'))localStorage.setItem('shoof.buddy','quiet')}catch(e){}")
         if init:
             p.add_init_script(init)
         if wait:
@@ -2422,6 +2423,40 @@ def t_phone(B):
     c.page.click('#rail [data-tab="text"]'); db = c.page.locator('#drawer').bounding_box()
     ok(db['x'] == 0 and db['width'] >= 389 and db['y'] > 150, f'panel is a bottom sheet {db}')
     ok(not c.page.locator('#selBar').is_visible(), 'quick bar hides under the panel')
+    ok(not c.errors, c.errors); c.close()
+
+@test('shoofy_helper')
+def t_shoofy(B):
+    c = Ctx(B, init="localStorage.setItem('shoof.buddy','on')")
+    ok(c.page.locator('#buddy').is_visible(), 'helper visible in the editor')
+    bb = c.page.locator('#buddy').bounding_box(); pb = c.page.locator('#props').bounding_box()
+    ok(bb['x'] + bb['width'] <= pb['x'], 'helper does not cover the side panel')
+    # low-contrast, tiny text and an empty photo frame
+    c.ev("(()=>{const w=el('text',{text:'pale words here',x:100,y:100,fontSize:60,width:600,fill:'#f4f4f4'});w.height=80;const s2=el('text',{text:'tiny note',x:100,y:300,fontSize:12,width:300,fill:'#111111'});s2.height=20;const p=el('placeholder',{x:500,y:500,width:300,height:300});doc.elements.push(w,s2,p);setBgFill&&0;fullRender();commit();})()")
+    c.ev("(()=>{const b=doc.elements.find(e=>e.role==='bg');if(b){b.fill='#ffffff';delete b.fillGradient;}fullRender();commit();})()")
+    ids = c.ev("bdIssues().map(x=>x.id.split(':')[0])")
+    for k in ['ct', 'sm', 'ph']: ok(k in ids, f'finds {k} ({ids})')
+    c.page.wait_for_selector('#buddyBub:not([hidden])', timeout=8000)
+    ok('Shoofy suggests' in c.page.inner_text('#buddyBub'), 'pops a suggestion by itself')
+    c.page.click('#buddyBub [data-bb="close"] >> nth=0') if c.page.locator('#buddyBub .bbacts [data-bb="close"]').count() == 0 else c.page.click('#buddyBub .bbacts [data-bb="close"]')
+    # click the helper: walk through and fix
+    c.page.click('#buddy'); c.page.wait_for_selector('#buddyBub [data-bb="fix"], #buddyBub [data-bb="act"]')
+    n0 = len(c.ev("bdIssues()"))
+    for _ in range(14):
+        if c.page.locator('#buddyBub [data-bb="next"]').count() and not c.page.locator('#buddyBub [data-bb="fix"]').count():
+            c.page.click('#buddyBub [data-bb="next"]'); continue
+        if c.page.locator('#buddyBub [data-bb="fix"]').count():
+            c.page.click('#buddyBub [data-bb="fix"]'); c.page.wait_for_timeout(150)
+        else: break
+    ok(len(c.ev("bdIssues()")) < n0, 'Fix it fixes things')
+    ok(c.ev("contrastOf(hex6(doc.elements.find(e=>e.text==='pale words here').fill),'#ffffff')>=3"), 'contrast fixed')
+    ok(c.ev("doc.elements.find(e=>e.text==='tiny note').fontSize>12"), 'small text fixed')
+    # undo works for a fix (one step)
+    c.ev("undo()"); ok(c.ev("doc.elements.find(e=>e.text==='tiny note').fontSize")>=12, 'undo ok')
+    # hide and bring back
+    c.page.keyboard.press('Escape'); c.ev("bdSetOn(false)"); ok(not c.page.locator('#buddy').is_visible(), 'can be hidden')
+    eq(c.ev("localStorage.getItem('shoof.buddy')"), 'off', 'remembered')
+    c.ev("bdSetOn(true)"); ok(c.page.locator('#buddy').is_visible(), 'comes back')
     ok(not c.errors, c.errors); c.close()
 
 

@@ -258,6 +258,38 @@ footer.credit{font-size:11.5px;color:var(--muted);margin-top:12px;line-height:1.
  .rail button{min-height:56px}
 }
 
+
+/* ============ Shoofy, the helper ============ */
+.buddy{position:fixed;right:18px;bottom:18px;z-index:40;width:66px;height:72px;border:0;background:none;padding:0;cursor:pointer;transition:transform .7s cubic-bezier(.34,1.4,.6,1);touch-action:manipulation}
+.buddy[hidden],.bbub[hidden]{display:none}
+.buddy svg{width:100%;height:100%;overflow:visible;filter:drop-shadow(0 6px 10px rgba(40,24,120,.28))}
+.buddy .bd{transform-origin:50% 90%;animation:bdBob 3.2s ease-in-out infinite}
+.buddy .lid{transform-box:fill-box;transform-origin:center;transform:scaleY(0);animation:bdBlink 5.5s infinite}
+.buddy .pp{transition:transform .25s ease-out}
+.buddy.hop .bd{animation:bdHop .6s ease-out}
+.buddy.cheer .bd{animation:bdCheer .9s ease-in-out 2}
+.buddy.sleep .lid{animation:none;transform:scaleY(.85)}
+.buddy.sleep .zz{opacity:1}
+.buddy .zz{opacity:0;transition:opacity .4s;font:700 13px Inter,sans-serif;fill:#6c4cf5}
+.buddy:focus-visible{outline:3px solid var(--accent);outline-offset:4px;border-radius:50%}
+.buddy .dot{animation:bdDot 2.4s ease-in-out infinite}
+@keyframes bdBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+@keyframes bdBlink{0%,92%,100%{transform:scaleY(0)}95%{transform:scaleY(1)}}
+@keyframes bdHop{0%{transform:translateY(0) scale(1,1)}25%{transform:translateY(0) scale(1.12,.86)}55%{transform:translateY(-18px) scale(.92,1.08)}80%{transform:translateY(0) scale(1.06,.94)}100%{transform:none}}
+@keyframes bdCheer{0%,100%{transform:rotate(0)}25%{transform:rotate(-10deg) translateY(-6px)}75%{transform:rotate(10deg) translateY(-6px)}}
+@keyframes bdDot{0%,100%{fill:#f76707}50%{fill:#ffb27a}}
+.bbub{position:fixed;z-index:41;right:18px;bottom:98px;width:min(300px,calc(100vw - 24px));background:#fff;color:var(--ink);border:1px solid var(--line);border-radius:16px;padding:14px 14px 12px;box-shadow:0 14px 40px rgba(30,20,90,.22);font-size:14px;line-height:1.45}
+.bbub::after{content:"";position:absolute;right:30px;bottom:-8px;width:14px;height:14px;background:#fff;border-right:1px solid var(--line);border-bottom:1px solid var(--line);transform:rotate(45deg)}
+.bbub h3{margin:0 0 4px;font-size:13px;color:var(--accent);letter-spacing:.02em}
+.bbub p{margin:0 0 10px}
+.bbub .bbacts{display:flex;flex-wrap:wrap;gap:6px}
+.bbub .bbacts button{height:34px;padding:0 12px;border-radius:9px;font-size:13px}
+.bbub .bbx{position:absolute;top:6px;right:6px;width:28px;height:28px;padding:0;border:0;background:none;font-size:18px;line-height:1;color:var(--muted)}
+.bbub .bbcount{color:var(--muted);font-size:12px;margin-inline-start:auto;align-self:center}
+@media (max-width:600px){.buddy{right:6px;bottom:calc(126px + env(safe-area-inset-bottom));width:50px;height:55px}.buddy.up{transform:translateY(-62px)}.bbub{right:12px;bottom:calc(190px + env(safe-area-inset-bottom))}}
+@media (min-width:981px){.buddy{right:288px}.bbub{right:288px}}
+body.home-on .buddy{bottom:22px;right:22px}body.home-on .bbub{right:22px}
+@media (prefers-reduced-motion:reduce){.buddy,.buddy .bd,.buddy .lid,.buddy .dot{animation:none!important;transition:none!important}}
 /* phones: tab bar at the bottom, panels as bottom sheets, page centred, quick actions for the selection */
 .selbar{display:none}
 @media (max-width:600px){
@@ -340,6 +372,7 @@ footer.credit{font-size:11.5px;color:var(--muted);margin-top:12px;line-height:1.
     <label for="sizeSelM" data-i18n="sizeTitle">Canvas size</label>
     <select id="sizeSelM"></select>
     <button data-more="home" class="home-item" data-i18n="home">Home</button>
+    <button data-more="buddy" id="moreBuddy" data-i18n="bdMenu">Helper</button>
     <button data-more="new" data-i18n="new">New</button>
     <button data-more="open" data-i18n="open">Open</button>
     <button data-more="save" data-i18n="save">Save</button>
@@ -377,6 +410,8 @@ footer.credit{font-size:11.5px;color:var(--muted);margin-top:12px;line-height:1.
 </div>
 <section class="home" id="home" hidden aria-labelledby="homeTitle"></section>
 <div class="scrim" id="scrim"></div>
+<button class="buddy" id="buddy" type="button" aria-haspopup="dialog" aria-expanded="false" data-i18n-aria="bdLabel" aria-label="Shoofy, your design helper" hidden><svg viewBox="0 0 66 72" aria-hidden="true"><g class="bd"><path d="M33 4c2 0 3 1.5 3 3.5V12" stroke="#5536d6" stroke-width="3" stroke-linecap="round" fill="none"/><circle class="dot" cx="33" cy="5" r="4" fill="#f76707"/><path d="M33 12c17 0 28 12 28 28 0 17-12 28-28 28S5 57 5 40C5 24 16 12 33 12z" fill="#6c4cf5"/><path d="M14 30c4-9 11-13 19-13" stroke="#9b83ff" stroke-width="4" stroke-linecap="round" fill="none" opacity=".7"/><ellipse cx="22" cy="68" rx="7" ry="3.5" fill="#5536d6"/><ellipse cx="44" cy="68" rx="7" ry="3.5" fill="#5536d6"/><circle cx="22" cy="38" r="10" fill="#fff"/><circle cx="44" cy="38" r="10" fill="#fff"/><g class="pp"><circle cx="22" cy="38" r="5.5" fill="#1d2330"/><circle cx="44" cy="38" r="5.5" fill="#1d2330"/><circle cx="24" cy="36" r="1.8" fill="#fff"/><circle cx="46" cy="36" r="1.8" fill="#fff"/></g><rect class="lid" x="11" y="27" width="22" height="22" rx="11" fill="#6c4cf5"/><rect class="lid" x="33" y="27" width="22" height="22" rx="11" fill="#6c4cf5"/><path d="M27 54q6 4 12 0" stroke="#1d2330" stroke-width="2.6" stroke-linecap="round" fill="none"/><circle cx="14" cy="50" r="3.5" fill="#ff8fb3" opacity=".55"/><circle cx="52" cy="50" r="3.5" fill="#ff8fb3" opacity=".55"/><text class="zz" x="54" y="14">z</text></g></svg></button>
+<div class="bbub" id="buddyBub" role="dialog" aria-modal="false" aria-labelledby="bbTitle" hidden></div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <div class="menu ctx" id="ctxMenu" role="menu"></div>
 <div class="sr-only" id="srStatus" role="status" aria-live="polite"></div>
@@ -391,7 +426,10 @@ const I18N={
  en:{sbEdit:'Edit',sbReplace:'Replace',sbPhoto:'Photo',sbStyle:'Style',docTitle:'Shoof — free open-source design editor',brand:'Shoof',tag:'Free design for everyone',new:'New',open:'Open',save:'Save',export:'Download',langTitle:'Language',sizeTitle:'Canvas size',undoTitle:'Undo (Ctrl+Z)',redoTitle:'Redo (Ctrl+Y)',propsTitle:'Properties',edit:'Edit',more:'More',
   expPng:'best for social',expJpg:'smaller file',expPdf:'for print',
   fgSans:'Sans serif',fgSerif:'Serif',fgDisplay:'Display',fgScript:'Handwriting',fgMono:'Monospace',textStyles:'Text styles',changeCase:'Change case: UPPER, lower, Title',brandFile:'Kit file',brandSave:'Save kit',brandLoad:'Load kit',brandLoaded:'Brand kit loaded.',brandBadFile:'That is not a Shoof brand kit file.',
-  bgRemove:'Remove background',bgNote:'Runs on your device. Your photo is never uploaded.',bgFirst:'Getting the background remover ready (about 20 MB, first time only)…',bgWorking:'Removing the background…',bgDone:'Background removed. Undo brings it back.',bgFail:'Could not remove the background here. Try another browser, or a smaller photo.',bgNoSubject:'Could not find a clear subject in this photo.',tile_cutout:'Remove background',dsTitle:'Your designs',dsNote:'Saved on this device only. Download a file to keep a copy elsewhere.',dsUntitled:'Untitled design',dsNow:'Edited just now',dsMin:'Edited {n} min ago',dsHour:'Edited {n} h ago',dsPages:'{n} pages',dsOpenNow:'Open now',dsRename:'Rename',dsName:'Name',dsSave:'Save',dsDuplicate:'Duplicate',dsCopyOf:'Copy of {name}',dsCopied:'Design duplicated',dsDelete:'Delete',dsDelTitle:'Delete this design?',dsDelText:'"{name}" will be removed from this device. This cannot be undone.',dsDeleted:'Design deleted',dsGone:'That design is no longer on this device.',dsMany:'You have more than {n} designs saved. Delete old ones to keep things fast.',tileAi:'Free AI',cutTitle:'Remove a photo background',cutText:'Choose a photo and Shoof cuts out the subject. It runs on your device, so the photo is never uploaded.',cutChoose:'Choose a photo',bgDoneNew:'Background removed. Download → PNG · no background gives a see-through picture.',
+  bgRemove:'Remove background',bgNote:'Runs on your device. Your photo is never uploaded.',bgFirst:'Getting the background remover ready (about 20 MB, first time only)…',bgWorking:'Removing the background…',bgDone:'Background removed. Undo brings it back.',bgFail:'Could not remove the background here. Try another browser, or a smaller photo.',bgNoSubject:'Could not find a clear subject in this photo.',tile_cutout:'Remove background',bdLabel:'Shoofy, your design helper',bdMenu:'Helper',bdTipH:'Shoofy suggests',bdHiH:'Hi, I am Shoofy!',bdHi:'I watch your design and point out easy wins, like hard-to-read text or empty photo frames. Click me any time.',bdHome:'Pick a size, a template, or describe what you need. I will help once you start designing.',bdCheck:'Check my design',bdGoodH:'Looking good!',bdGood:'I could not spot any problems on this page.',bdFixed:'All fixed. This page looks good now.',bdThanks:'Thanks',bdLater:'Not now',bdNext:'Next tip',bdFix:'Fix it',bdGotIt:'Got it',bdHide:'Hide helper',bdOffToast:'Helper hidden. Bring it back from the ⋯ menu → Helper.',bdAddPhoto:'Add photo',
+bdContrast:'The text "{text}" is hard to read on its background. I can switch it to a colour that stands out.',bdSmall:'The text "{text}" is very small for this size. Make it bigger so it reads on a phone?',bdOff:'Part of this item hangs off the page, so it will be cut off when you download. Move it back inside?',bdPhoto:'This photo frame is still empty. Add your own photo to finish the look.',bdFonts:'This page uses {n} different fonts. Two (one for headings, one for text) usually looks cleaner.',bdWords:'This page has about {n} words. Short posts get read more; try cutting it down or splitting it into pages.',
+bdTip1:'Tip: press Ctrl+D to duplicate, and hold Shift while resizing to keep the shape.',bdTip2:'Tip: Download → PNG · 4 social sizes makes Instagram, Story, Facebook and LinkedIn versions in one go.',bdTip3:'Tip: set your colours and fonts once in Brand, then apply them to any design.',bdTip4:'Tip: select a photo and use Remove background, free and on your device.',bdTip5:'Tip: Bulk create turns a table of names into a page for each row.',bdTip6:'Tip: Resize changes the format and moves everything into place for you.',bdTip7:'Tip: right-click any item for quick actions.',
+bdCtx_bulk:'Put tags like {Name} in your text, then paste your table here. Each row becomes its own page.',bdCtx_brand:'Add your colours, fonts and logo once. Then "Apply to this design" restyles any template in one click.',bdCtx_background:'Pick a colour, a gradient or a photo for the page background. Patterns sit on top and can be edited too.',bdCtx_layers:'Drag to reorder. The eye hides an item, the lock stops it moving by accident.',bdCtx_image:'Nice photo! Open Style to crop it, add filters, or remove its background for free.',dsTitle:'Your designs',dsNote:'Saved on this device only. Download a file to keep a copy elsewhere.',dsUntitled:'Untitled design',dsNow:'Edited just now',dsMin:'Edited {n} min ago',dsHour:'Edited {n} h ago',dsPages:'{n} pages',dsOpenNow:'Open now',dsRename:'Rename',dsName:'Name',dsSave:'Save',dsDuplicate:'Duplicate',dsCopyOf:'Copy of {name}',dsCopied:'Design duplicated',dsDelete:'Delete',dsDelTitle:'Delete this design?',dsDelText:'"{name}" will be removed from this device. This cannot be undone.',dsDeleted:'Design deleted',dsGone:'That design is no longer on this device.',dsMany:'You have more than {n} designs saved. Delete old ones to keep things fast.',tileAi:'Free AI',cutTitle:'Remove a photo background',cutText:'Choose a photo and Shoof cuts out the subject. It runs on your device, so the photo is never uploaded.',cutChoose:'Choose a photo',bgDoneNew:'Background removed. Download → PNG · no background gives a see-through picture.',
   expHImg:'Picture',expHMany:'Several at once',expHDoc:'Print and editable',
   expClear:'no background',exp2x:'double size, sharper',expSvg:'vector, editable',fontBrowse:'Preview all fonts',fontHide:'Hide font previews',textFx:'Text effect',fxNone:'No effect',fxSoft:'Soft shadow',fxRetro:'Retro shadow',fxHollow:'Hollow outline',fxNeon:'Neon glow',fxSticker:'Sticker',fxMarker:'Marker highlight',curve:'Curve',
   logoTitle:'Logo maker',logoOpen:'Make a logo',logoHint:'Type your name and pick a look. Every idea opens as a normal design, so you can change any part of it.',lgName:'Name',lgTag:'Tagline (optional)',lgKw:'What do you do? (optional)',lgKwPh:'coffee, salon, tech, bakery',lgSample:'Your Name',lgStyle:'Style',lsAll:'All styles',lsModern:'Modern',lsElegant:'Elegant',lsPlayful:'Playful',lsBold:'Bold',lsRetro:'Retro',lgMore:'More ideas',lgEdit:'Edit this logo',lgAdd:'Add to my page',lgBrand:'Save as brand logo',lgIdea:'Logo idea {n}',lgLoading:'Drawing ideas…',lgSaved:'Saved to your brand kit.',
@@ -686,7 +724,7 @@ const byId=id=>doc.elements.find(e=>e.id===id);
 
 /* ============ history (snapshot commands) ============ */
 const undoStack=[],redoStack=[];let lastSnap=JSON.stringify(doc);
-function commit(){const s=JSON.stringify(doc);if(s===lastSnap)return;undoStack.push(lastSnap);if(undoStack.length>100)undoStack.shift();redoStack.length=0;lastSnap=s;autosave();updateUndo();if(typeof refreshPageThumbs==='function')refreshPageThumbs(false);}
+function commit(){const s=JSON.stringify(doc);if(s===lastSnap)return;undoStack.push(lastSnap);if(undoStack.length>100)undoStack.shift();redoStack.length=0;lastSnap=s;autosave();updateUndo();if(typeof bdQueue==='function')bdQueue();if(typeof refreshPageThumbs==='function')refreshPageThumbs(false);}
 function restoreSnap(s){const pw=doc.width,ph=doc.height,pn=doc.pages.length;doc=hydrate(JSON.parse(s));if(selId&&!byId(selId))selId=null;fullRender();if(typeof renderPages==='function'){if(doc.pages.length!==pn)pageThumbs.length=0;renderPages();refreshPageThumbs(doc.pages.length!==pn);}syncSize();if(doc.width!==pw||doc.height!==ph)fitZoom();autosave();updateUndo();}
 function undo(){if(!undoStack.length)return;clearTimeout(window._nt);redoStack.push(lastSnap);lastSnap=undoStack.pop();restoreSnap(lastSnap);}
 function redo(){if(!redoStack.length)return;clearTimeout(window._nt);undoStack.push(lastSnap);lastSnap=redoStack.pop();restoreSnap(lastSnap);}
@@ -832,7 +870,7 @@ function attachTr(){doc.elements.forEach(e=>{if(e.role==='bg'){const nd=nodeOf(e
  else if(els.length>1){tr.nodes(nodes);tr.enabledAnchors(['top-left','top-right','bottom-left','bottom-right']);tr.keepRatio(true);}
  else tr.nodes([]);uiLayer.batchDraw();}
 /* select(id): select the element (its whole group); add=true toggles it in/out of the selection (Shift-click); single=true ignores the group */
-function select(id,add,single){if(id==null){setSel([]);}else if(!byId(id)){return;}else{const ids=single?[id]:groupMembers(id);
+function select(id,add,single){if(id&&typeof bdOnce==='function'){const se=byId(id);if(se&&se.type==='image')setTimeout(()=>bdOnce('image'),900);}if(id==null){setSel([]);}else if(!byId(id)){return;}else{const ids=single?[id]:groupMembers(id);
   if(add){const cur=sel().slice();const on=ids.every(x=>cur.includes(x));setSel(on?cur.filter(x=>!ids.includes(x)):cur.concat(ids),on?undefined:id);}else setSel(ids,id);}
  attachTr();renderProps();if(curTab==='layers')renderDrawer();if(isMob()){if(selId)openSheet();else closeSheet();}}
 function openSheet(){if(!isMob())return;if(isPhone()){selBarUpdate();return;}setDrawer(false);$('#props').classList.add('mob');selBarUpdate();}
@@ -1274,7 +1312,8 @@ function bindBrand(){const on=(id,ev,fn)=>{const n=$('#'+id);if(n)n.addEventList
  on('brandApply','click',()=>{applyBrand();});on('brandLogoMake','click',openLogoMaker);
  on('brandSave','click',()=>{saveFile('shoof-brand.json',new Blob([JSON.stringify(Object.assign({app:'shoof-brand',version:1},brand))],{type:'application/json'}));});
  on('brandLoad','change',ev=>{const fl=ev.target.files[0];ev.target.value='';if(!fl)return;if(fl.size>3e6){toast(t('brandBadFile'),4000);return;}fl.text().then(x=>{const r=JSON.parse(x);if(!r||r.app!=='shoof-brand')throw 0;brand=sanitizeBrand(r);saveBrand();renderDrawer();renderProps();toast(t('brandLoaded'));}).catch(()=>toast(t('brandBadFile'),4000));});}
-function applyDoc(d,keepId){const prev=doc,prevSel=selId;try{doc=d;selId=null;fullRender();}catch(err){doc=prev;selId=prevSel;try{fullRender();}catch(_){}throw err;}if(!keepId)dsNew();syncSize();fitZoom();pageThumbs.length=0;renderPages();refreshPageThumbs(true);}
+function bdBaseline(){if(typeof BD==='undefined')return;try{bdIssues().forEach(x=>BD.shown.add(x.id));}catch(e){}}
+function applyDoc(d,keepId){const prev=doc,prevSel=selId;try{doc=d;selId=null;fullRender();}catch(err){doc=prev;selId=prevSel;try{fullRender();}catch(_){}throw err;}if(!keepId)dsNew();setTimeout(bdBaseline,0);syncSize();fitZoom();pageThumbs.length=0;renderPages();refreshPageThumbs(true);}
 
 /* images: import with downscale (long side ≤ 2400 px), replace, placeholders */
 function hasAlpha(cx,w,h){const d=cx.getImageData(0,0,w,h).data;for(let i=3;i<d.length;i+=4)if(d[i]<255)return true;return false;}
@@ -1562,7 +1601,7 @@ function renderHome(){const h=$('#home');
 function showHome(){hideEditor();closeMenus();setDrawer(false);closeSheet();homeWork=homeWork||undoStack.length>0;
  homeRecentImg=null;if(homeWork&&doc.elements.length){try{homeRecentImg=renderExport('image/png',Math.min(1,360/Math.max(doc.width,doc.height)));}catch(e){}}
  renderHome();$('#home').hidden=false;document.body.classList.add('home-on');$('#home').scrollTop=0;dsSave().then(()=>dsLoadList()).then(()=>{if(homeOpen()){const hl=$('#homeList');if(hl)hl.innerHTML=homeListHTML();}});}
-function hideHome(){if(!homeOpen())return;$('#home').hidden=true;document.body.classList.remove('home-on');fitZoom();showTips();selBarUpdate();}
+function hideHome(){if(!homeOpen())return;setTimeout(()=>{if(typeof bdAnim==='function'){bdAnim('hop');}},250);$('#home').hidden=true;document.body.classList.remove('home-on');fitZoom();showTips();selBarUpdate();}
 function showTemplatesTab(cat){if(cat)tplCat=TPL_CATS.includes(cat)?cat:'all';curTab='templates';document.querySelectorAll('#rail button').forEach(x=>x.classList.toggle('on',x.dataset.tab==='templates'));renderDrawer();}
 function newFromTile(id,cat){const s=SIZES.find(x=>x.id===id);if(!s)return;applyDoc(withBgBlocks(blankDoc(s.w,s.h)));commit();showTemplatesTab(cat);hideHome();toast(t('homeNewHint',{name:t('sz_'+id)}),3500);}
 $('#home').addEventListener('click',ev=>{const b=ev.target.closest('button');if(!b)return;const ds=b.dataset;
@@ -1720,7 +1759,7 @@ $('#drawer').addEventListener('click',ev=>{const b=ev.target.closest('[data-tsty
  else if(ds.layer){if(byId(ds.layer))select(ds.layer,ev.shiftKey,true);}
  if((ds.tpl!==undefined||ds.text||ds.shape||ds.up!==undefined)&&isMob()){setDrawer(false);if(selId)openSheet();}});
 $('#drawer').addEventListener('keydown',ev=>{if(ev.key==='Enter'){const li=ev.target.closest('li[data-layer]');if(li&&ev.target===li&&byId(li.dataset.layer))select(li.dataset.layer);}});
-$('#rail').addEventListener('click',ev=>{const b=ev.target.closest('button[data-tab]');if(!b)return;const same=curTab===b.dataset.tab;curTab=b.dataset.tab;document.querySelectorAll('#rail button').forEach(x=>x.classList.toggle('on',x===b));renderDrawer();if(isMob())setDrawer(!same||!$('#drawer').classList.contains('mob'));});
+$('#rail').addEventListener('click',ev=>{const b=ev.target.closest('button[data-tab]');if(!b)return;const same=curTab===b.dataset.tab;curTab=b.dataset.tab;if(typeof bdOnce==='function'&&['bulk','brand','background','layers'].includes(curTab))setTimeout(()=>bdOnce(curTab),700);document.querySelectorAll('#rail button').forEach(x=>x.classList.toggle('on',x===b));renderDrawer();if(isMob())setDrawer(!same||!$('#drawer').classList.contains('mob'));});
 $('#scrim').addEventListener('click',()=>setDrawer(false));
 
 /* ============ properties ============ */
@@ -1919,7 +1958,7 @@ let jspdfP=null;
 function loadJsPDF(){if(window.jspdf&&window.jspdf.jsPDF)return Promise.resolve(window.jspdf.jsPDF);if(!jspdfP)jspdfP=new Promise(res=>{const s=document.createElement('script');s.src='vendor/jspdf.umd.min.js';s.onload=()=>res((window.jspdf&&window.jspdf.jsPDF)||null);s.onerror=()=>{jspdfP=null;s.remove();res(null);};document.head.appendChild(s);});return jspdfP;}
 /* run fn on every page in turn (rendered at scale 1 by the callers), then come back to the current page */
 async function eachPage(fn){const p0=doc.page,sel0=sel().slice();try{for(let i=0;i<doc.pages.length;i++){doc.page=i;fullRender(true);await fn(i);}}finally{doc.page=p0;fullRender(true);setSel(sel0.filter(id=>byId(id)));attachTr();}}
-async function exportAs(kind){hideEditor();closeMenus();const base='shoof-design',multi=doc.pages.length>1,suf=multi?'-p'+(doc.page+1):'';
+async function exportAs(kind){hideEditor();closeMenus();setTimeout(()=>{if(typeof bdAnim==='function')bdAnim('cheer');},400);const base='shoof-design',multi=doc.pages.length>1,suf=multi?'-p'+(doc.page+1):'';
  try{
   if(kind==='png')await saveFile(base+suf+'.png',dataURLtoBlob(renderExport('image/png')));
   else if(kind==='pngclear')await saveFile(base+suf+'-transparent.png',dataURLtoBlob(renderExport('image/png',1,true)));
@@ -1963,7 +2002,7 @@ $('#exportBtn').onclick=ev=>{ev.stopPropagation();const o=!$('#exportMenu').clas
 $('#moreBtn').onclick=ev=>{ev.stopPropagation();const o=!$('#moreMenu').classList.contains('open');closeMenus();$('#moreMenu').classList.toggle('open',o);$('#moreBtn').setAttribute('aria-expanded',String(o));};
 document.addEventListener('click',ev=>{if(!ev.target.closest('#exportMenu,#moreMenu'))closeMenus();});
 $('#exportMenu').addEventListener('click',ev=>{const b=ev.target.closest('[data-exp]');if(b)exportAs(b.dataset.exp);});
-$('#moreMenu').addEventListener('click',ev=>{const b=ev.target.closest('[data-more]');if(!b)return;const a=b.dataset.more;closeMenus();if(a==='new')$('#newBtn').click();else if(a==='open')$('#openFile').click();else if(a==='save')saveDesign();else if(a==='lang')switchLang();else if(a==='about')$('#rail .about-btn').click();else if(a==='home')showHome();});
+$('#moreMenu').addEventListener('click',ev=>{const b=ev.target.closest('[data-more]');if(!b)return;const a=b.dataset.more;closeMenus();if(a==='new')$('#newBtn').click();else if(a==='open')$('#openFile').click();else if(a==='save')saveDesign();else if(a==='lang')switchLang();else if(a==='about')$('#rail .about-btn').click();else if(a==='buddy')bdSetOn(!BD.on);else if(a==='home')showHome();});
 function saveDesign(){saveFile('design.shoof.json',new Blob([JSON.stringify(doc)],{type:'application/json'}));}
 $('#saveBtn').onclick=saveDesign;
 $('#openBtn').onclick=()=>$('#openFile').click();
@@ -1993,7 +2032,7 @@ $('#zoomIn').onclick=()=>{scale=Math.min(4,scale*1.2);applyZoom();};$('#zoomOut'
 
 /* phone quick actions for the selected item */
 const isPhone=()=>window.innerWidth<=600;
-function selBarUpdate(){const b=$('#selBar');if(!b)return;const S=sel(),e=selId&&byId(selId),show=isPhone()&&S.length>0&&!homeOpen()&&!$('#props').classList.contains('mob')&&!$('#drawer').classList.contains('mob')&&!($('#editText')&&$('#editText').style.display==='block');
+function selBarUpdate(){const b=$('#selBar');if(!b)return;{const bd=$('#buddy');if(bd){bd.classList.toggle('up',isPhone()&&sel().length>0&&!homeOpen());setTimeout(()=>{if(typeof bdPlace==='function')bdPlace();},720);}}const S=sel(),e=selId&&byId(selId),show=isPhone()&&S.length>0&&!homeOpen()&&!$('#props').classList.contains('mob')&&!$('#drawer').classList.contains('mob')&&!($('#editText')&&$('#editText').style.display==='block');
  b.classList.toggle('on',!!show);if(!show){b.innerHTML='';return;}const one=S.length===1&&e,lk=one&&e.locked,btn=(a,ico,lab,cls)=>`<button data-sb="${a}"${cls?` class="${cls}"`:''}>${SVG(ico)}<span>${esc(t(lab))}</span></button>`;
  let h='';if(one&&e.type==='text'&&!lk)h+=btn('edit','<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>','sbEdit');
  if(one&&(e.type==='image'||e.type==='placeholder')&&!lk)h+=btn('img','<rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5L5 21"/>',e.type==='image'?'sbReplace':'sbPhoto');
@@ -2211,6 +2250,53 @@ async function runClaude(action){
 
 /* ============ boot ============ */
 addEventListener('pagehide',()=>{if(dsTimer)dsSave();});
+
+/* ============ Shoofy, the on-device design helper: looks at what you do, moves with you, suggests fixes ============ */
+const BD={on:true,quiet:false,shown:new Set(),last:0,timer:null,idle:null,list:[],i:0,seen:new Set()};
+try{const v=localStorage.getItem('shoof.buddy');BD.on=v!=='off';BD.quiet=v==='quiet';BD.seen=new Set(JSON.parse(localStorage.getItem('shoof.bdSeen')||'[]'));}catch(e){}
+const bdEl=()=>$('#buddy'),bdBub=()=>$('#buddyBub');
+function bdShowEl(){const b=bdEl();if(b)b.hidden=!BD.on;if(!BD.on)bdClose();}
+function bdAnim(c){const b=bdEl();if(!b||!BD.on)return;b.classList.remove('hop','cheer','sleep');void b.offsetWidth;b.classList.add(c);setTimeout(()=>b.classList.remove(c),c==='cheer'?1900:700);bdWake();}
+function bdWake(){const b=bdEl();if(!b)return;b.classList.remove('sleep');clearTimeout(BD.idle);BD.idle=setTimeout(()=>{if(bdBub().hidden)b.classList.add('sleep');},45000);}
+function bdLook(x,y){const b=bdEl();if(!b||b.hidden)return;const r=b.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height*.53,dx=x-cx,dy=y-cy,d=Math.max(1,Math.hypot(dx,dy)),k=Math.min(3.2,d/40);b.querySelector('.pp').style.transform=`translate(${(dx/d*k).toFixed(2)}px,${(dy/d*k).toFixed(2)}px)`;}
+addEventListener('pointermove',ev=>{bdLook(ev.clientX,ev.clientY);bdWake();},{passive:true});
+/* the design checks: each returns {id,msg,el?,fix?,act?} */
+function bdIssues(){const out=[],pg=doc.pages[doc.page],W=doc.width,H=doc.height;if(!pg)return out;const els=pg.elements;let words=0;const fams=new Set();
+ els.forEach((e,i)=>{if(e.hidden)return;
+  if(e.type==='text'){const tx=String(e.text||'').trim();if(!tx)return;words+=tx.split(/\s+/).length;fams.add(e.fontFamily||'Inter');
+   const bg=underColor(pg,i),fg=hex6(e.fill||'#000000');if(bg&&!e.fillGradient&&!e.stroke&&!e.highlight&&!e.curve&&!(e.shadowBlur>8)&&(e.opacity==null||e.opacity>=0.9)&&contrastOf(fg,bg)<2.2){const dark=contrastOf('#111111',bg)>=contrastOf('#ffffff',bg);out.push({id:'ct:'+e.id,msg:t('bdContrast',{text:tx.slice(0,24)}),el:e,fix:()=>{e.fill=dark?'#111111':'#ffffff';}});}
+   if(e.fontSize<Math.min(W,H)*0.017&&!e.locked&&(e.opacity==null||e.opacity>=0.6))out.push({id:'sm:'+e.id,msg:t('bdSmall',{text:tx.slice(0,24)}),el:e,fix:()=>{e.fontSize=Math.round(Math.min(W,H)*0.032);}});}
+  if(e.role==='bg'||e.locked)return;const b=elBox(e);const inX=Math.max(0,Math.min(b.x+b.w,W)-Math.max(b.x,0)),inY=Math.max(0,Math.min(b.y+b.h,H)-Math.max(b.y,0));
+  if(['text','image','icon','chart'].includes(e.type)&&(e.opacity==null||e.opacity>=0.6)&&b.w*b.h>0&&inX*inY<b.w*b.h*0.6&&!(b.w>=W*0.95||b.h>=H*0.95))out.push({id:'off:'+e.id,msg:t('bdOff'),el:e,fix:()=>{e.x+=clamp(b.x,0,Math.max(0,W-b.w))-b.x;e.y+=clamp(b.y,0,Math.max(0,H-b.h))-b.y;}});
+  if(e.type==='placeholder')out.push({id:'ph:'+e.id,msg:t('bdPhoto'),el:e,act:[t('bdAddPhoto'),()=>pickImageFor(e.id)]});});
+ if(fams.size>3)out.push({id:'fonts:'+doc.page+':'+fams.size,msg:t('bdFonts',{n:fams.size})});
+ if(words>70&&W*H<=1080*1920)out.push({id:'words:'+doc.page,msg:t('bdWords',{n:words})});
+ return out;}
+const BD_TIPS=['bdTip1','bdTip2','bdTip3','bdTip4','bdTip5','bdTip6','bdTip7'];
+function bdOpen(html){const u=bdBub();if(!u||!BD.on)return;u.innerHTML=`<button class="bbx" data-bb="close" aria-label="${esc(t('close'))}">×</button>`+html;u.hidden=false;bdPlace();bdEl().setAttribute('aria-expanded','true');bdWake();BD.last=Date.now();}
+function bdPlace(){const u=bdBub(),b=bdEl();if(!u||u.hidden||!b)return;const r=b.getBoundingClientRect();u.style.bottom=Math.max(8,innerHeight-r.top+12)+'px';u.style.right=Math.max(8,innerWidth-r.right-4)+'px';}
+addEventListener('resize',()=>bdPlace());
+function bdClose(){const u=bdBub();if(u){u.hidden=true;u.innerHTML='';}const b=bdEl();if(b)b.setAttribute('aria-expanded','false');}
+function bdShowIssue(){const it=BD.list[BD.i];if(!it){bdOpen(`<h3 id="bbTitle">${esc(t('bdGoodH'))}</h3><p>${esc(t('bdGood'))}</p><p>${esc(t(BD_TIPS[Math.floor(Math.random()*BD_TIPS.length)]))}</p><div class="bbacts"><button data-bb="close">${esc(t('bdThanks'))}</button><button data-bb="off">${esc(t('bdHide'))}</button></div>`);return;}
+ BD.shown.add(it.id);if(it.el&&byId(it.el.id)&&!homeOpen()){select(it.el.id);attachTr();renderProps();}
+ bdOpen(`<h3 id="bbTitle">${esc(t('bdTipH'))}</h3><p>${esc(it.msg)}</p><div class="bbacts">${it.fix?`<button class="primary" data-bb="fix">${esc(t('bdFix'))}</button>`:''}${it.act?`<button class="primary" data-bb="act">${esc(it.act[0])}</button>`:''}${BD.i+1<BD.list.length?`<button data-bb="next">${esc(t('bdNext'))}</button>`:`<button data-bb="close">${esc(t('bdLater'))}</button>`}<span class="bbcount">${BD.i+1}/${BD.list.length}</span></div>`);}
+function bdCheck(manual){if(!BD.on||homeOpen())return;BD.list=bdIssues().filter(x=>manual||!BD.shown.has(x.id));BD.i=0;if(manual){bdShowIssue();return;}
+ if(!BD.list.length||BD.quiet||editingId||!bdBub().hidden||Date.now()-BD.last<25000)return;BD.list=BD.list.slice(0,1);bdAnim('hop');bdShowIssue();}
+function bdQueue(){clearTimeout(BD.timer);if(BD.on)BD.timer=setTimeout(()=>bdCheck(false),2600);}
+function bdOnce(key){if(!BD.on||BD.quiet||BD.seen.has(key)||homeOpen()||!bdBub().hidden)return;BD.seen.add(key);try{localStorage.setItem('shoof.bdSeen',JSON.stringify([...BD.seen]));}catch(e){}
+ bdAnim('hop');bdOpen(`<h3 id="bbTitle">${esc(t('bdTipH'))}</h3><p>${esc(t('bdCtx_'+key))}</p><div class="bbacts"><button data-bb="close">${esc(t('bdGotIt'))}</button></div>`);}
+function bdSetOn(v){BD.on=v;try{localStorage.setItem('shoof.buddy',v?'on':'off');}catch(e){}bdShowEl();if(v){bdAnim('hop');bdOpen(`<h3 id="bbTitle">${esc(t('bdHiH'))}</h3><p>${esc(t('bdHi'))}</p><div class="bbacts"><button class="primary" data-bb="check">${esc(t('bdCheck'))}</button></div>`);}else toast(t('bdOffToast'),4000);}
+$('#buddy').addEventListener('click',ev=>{ev.stopPropagation();if(!bdBub().hidden){bdClose();return;}bdAnim('hop');if(homeOpen()){bdOpen(`<h3 id="bbTitle">${esc(t('bdHiH'))}</h3><p>${esc(t('bdHome'))}</p><div class="bbacts"><button data-bb="close">${esc(t('bdGotIt'))}</button></div>`);return;}bdCheck(true);});
+$('#buddyBub').addEventListener('click',ev=>{const b=ev.target.closest('[data-bb]');if(!b)return;const a=b.dataset.bb,it=BD.list[BD.i];
+ if(a==='close'){bdClose();bdEl().focus();}else if(a==='off'){bdClose();bdSetOn(false);}else if(a==='check')bdCheck(true);
+ else if(a==='next'){BD.i++;bdShowIssue();}
+ else if(a==='fix'&&it&&it.fix&&byId(it.el?it.el.id:'')!==undefined){it.fix();if(it.el)bump(it.el);fullRender();commit();bdAnim('cheer');BD.list=bdIssues().filter(x=>!BD.shown.has(x.id)||x.id!==it.id);BD.list=BD.list.filter(x=>x.id!==it.id);BD.i=0;if(BD.list.length)bdShowIssue();else bdOpen(`<h3 id="bbTitle">${esc(t('bdGoodH'))}</h3><p>${esc(t('bdFixed'))}</p><div class="bbacts"><button data-bb="close">${esc(t('bdThanks'))}</button></div>`);}
+ else if(a==='act'&&it&&it.act){bdClose();it.act[1]();}});
+addEventListener('keydown',ev=>{if(ev.key==='Escape'&&!bdBub().hidden){bdClose();}});
+document.addEventListener('pointerdown',ev=>{if(!bdBub().hidden&&!ev.target.closest('#buddyBub,#buddy'))bdClose();},true);
+/* moves with your progress */
+function bdHop(){bdAnim('hop');}
+
 function regSW(){try{if('serviceWorker'in navigator&&location.protocol==='https:'&&!/claude|anthropic/.test(location.hostname))navigator.serviceWorker.register('sw.js').catch(()=>{});}catch(e){}}
 (function boot(){regSW();
 (function(){try{['lang','autosave'].forEach(k=>{const o=localStorage.getItem('rasm.'+k);if(o!==null&&localStorage.getItem('shoof.'+k)===null)localStorage.setItem('shoof.'+k,o);if(o!==null)localStorage.removeItem('rasm.'+k);});}catch(e){}})();
@@ -2225,7 +2311,7 @@ function regSW(){try{if('serviceWorker'in navigator&&location.protocol==='https:
  applyLang();
  try{fullRender();}catch(e){doc=withBgBlocks(sanitizeDoc(starterTemplate().make()));resetHistory();fullRender();bad=true;}
  syncSize();fitZoom();
- renderPages();refreshPageThumbs(true);try{curId=localStorage.getItem('shoof.cur');}catch(e){}if(!curId||!/^d[a-z0-9]{6,20}$/.test(curId))dsNew();homeWork=restored;if(restored)dsQueue();showHome();if(/[?&]tool=cutout\b/.test(location.search))openCutout();
+ renderPages();refreshPageThumbs(true);try{curId=localStorage.getItem('shoof.cur');}catch(e){}if(!curId||!/^d[a-z0-9]{6,20}$/.test(curId))dsNew();homeWork=restored;if(restored)dsQueue();showHome();bdShowEl();bdWake();if(/[?&]tool=cutout\b/.test(location.search))openCutout();
  if(bad)toast(t('autosaveBad'),4000);else if(restored)toast(t('restored'));
  const fams=CORE_FONTS.flatMap(f=>[`400 40px "${f}"`,`700 40px "${f}"`]);
  const fontsReady=Promise.all(fams.map(f=>document.fonts.load(f).catch(()=>{})));
