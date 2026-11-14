@@ -2430,10 +2430,11 @@ function shOpen(){if(!$('#shChat'))return;SH.open=true;$('#shChat').hidden=false
 function shClose(){SH.open=false;const c=$('#shChat');if(c)c.hidden=true;document.body.classList.remove('sh-on');const b=bdEl();if(b)b.setAttribute('aria-expanded','false');}
 async function shSend(text){text=String(text||'').replace(/\s+/g,' ').trim().slice(0,400);if(!text||SH.busy)return;shSay({who:'me',text});SH.busy=true;shRender();
  let res=null,viaAI=false;
- if(shHost()){try{const tpl=shTplSearch(text,10),token=await tsToken(),ac=new AbortController(),tm=setTimeout(()=>ac.abort(),30000);
+ if(shHost()){try{const tpl=shTplSearch(text,10),ac=new AbortController(),tm=setTimeout(()=>ac.abort(),30000);
    const hist=SH.msgs.filter(m=>m.text&&(m.who==='me'||m.who==='bot')).slice(-6).map(m=>({role:m.who==='me'?'user':'assistant',content:m.text.slice(0,400)}));
-   const r=await fetch('api/shoofy',{method:'POST',headers:{'content-type':'application/json'},signal:ac.signal,body:JSON.stringify({messages:hist,design:shDesign(),templates:tpl.map(c=>({k:c.k,n:c.n})),icons:shIconSearch(text,20),...(token?{token}:{})})});clearTimeout(tm);
-   if(r.ok){const j=await r.json();if(j&&(j.reply||Array.isArray(j.actions))){res={reply:String(j.reply||''),actions:j.actions};viaAI=true;}}}catch(e){}}
+   const go=async token=>fetch('api/shoofy',{method:'POST',headers:{'content-type':'application/json'},credentials:'same-origin',signal:ac.signal,body:JSON.stringify({messages:hist,design:shDesign(),templates:tpl.map(c=>({k:c.k,n:c.n})),icons:shIconSearch(text,20),...(token?{token}:{})})});
+   let r=await go(SH.passUntil>Date.now()?'':await tsToken());if(r.status===403){r=await go(await tsToken());}clearTimeout(tm);if(r.ok)SH.passUntil=Date.now()+25*60*1000;
+   if(r.ok){const j=await r.json();if(j&&(j.reply||Array.isArray(j.actions))){res={reply:String(j.reply||''),actions:Array.isArray(j.actions)?j.actions:[]};viaAI=true;if(!res.actions.length){const loc=shLocal(text);if(loc.actions.length)res.actions=loc.actions;if(loc.iconAlts)res.iconAlts=loc.iconAlts;}}}}catch(e){}}
  if(!res)res=shLocal(text);
  if(homeOpen()&&res.actions.some(a=>a&&!['show_templates','logo','open','check'].includes(a.do))){hideHome();}
  const out=await shRun(res.actions,viaAI?'ai':'local');SH.busy=false;
