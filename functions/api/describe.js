@@ -32,11 +32,18 @@ export async function onRequestPost({ request, env }) {
   const messages = [
     { role: 'system', content: 'You help small businesses make social media posts and posters. Choose the template that best fits the request and write the words for it. Headline: at most 6 words, punchy. Subline: one short sentence with the key detail (date, offer, place) from the request. CTA: 1 to 3 words for a button. Use only facts from the request; never invent prices, dates or names. Answer in the language of the request. Reply with JSON only.' },
     { role: 'user', content: `Request: ${text}\n\nTemplates:\n${cands.map(c => `- ${c.k}: ${c.n}`).join('\n')}` }];
-  let out;
-  try { out = await env.AI.run(MODEL, { messages, max_tokens: 220, temperature: 0.4, response_format: { type: 'json_schema', json_schema: schema } }); }
-  catch (e) { return json({ error: 'ai_failed' }, 502); }
-  let r = out && out.response; if (typeof r === 'string') { try { r = JSON.parse(r); } catch { r = null; } }
-  if (!r || typeof r !== 'object') return json({ error: 'ai_failed' }, 502);
+  // first ask in JSON mode; if the model cannot meet it, ask in plain text and pull the JSON out
+  let r = null, why = '';
+  const parse = v => { if (v && typeof v === 'object') return v; if (typeof v !== 'string') return null; const m = v.match(/\{[\s\S]*\}/); if (!m) return null; try { return JSON.parse(m[0]); } catch { return null; } };
+  try { r = parse((await env.AI.run(MODEL, { messages, max_tokens: 260, temperature: 0.4, response_format: { type: 'json_schema', json_schema: schema } })).response); }
+  catch (e) { why = String(e && e.message || e).slice(0, 160); }
+  if (!r) {
+    try {
+      const plain = messages.concat([{ role: 'user', content: 'Answer with one JSON object only, exactly like {"template":"key","headline":"...","subline":"...","cta":"..."}' }]);
+      r = parse((await env.AI.run(MODEL, { messages: plain, max_tokens: 260, temperature: 0.3 })).response);
+    } catch (e) { why = (why ? why + ' | ' : '') + String(e && e.message || e).slice(0, 160); }
+  }
+  if (!r || typeof r !== 'object') return json({ error: 'ai_failed', detail: clean(why || 'no JSON in reply', 330) }, 502);
   return json({ template: keys.includes(r.template) ? r.template : keys[0], headline: clean(r.headline, 60), subline: clean(r.subline, 140), cta: clean(r.cta, 28) });
 }
 
