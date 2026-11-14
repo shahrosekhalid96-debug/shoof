@@ -17,16 +17,29 @@ async function overLimit(request) {
   return false;
 }
 
+// Turnstile (Cloudflare's free bot check): only switched on when the TURNSTILE_SECRET variable is set in Pages settings
+async function human(token, secret, request) {
+  if (typeof token !== 'string' || !token || token.length > 2048) return false;
+  const form = new FormData(); form.append('secret', secret); form.append('response', token);
+  const ip = request.headers.get('CF-Connecting-IP'); if (ip) form.append('remoteip', ip);
+  try {
+    const r = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', { method: 'POST', body: form });
+    const j = await r.json();
+    return !!(j && j.success && (!j.hostname || j.hostname === new URL(request.url).hostname));
+  } catch { return false; }
+}
+
 export async function onRequestPost({ request, env }) {
   const origin = request.headers.get('Origin');
   if (origin && origin !== new URL(request.url).origin) return json({ error: 'origin' }, 403);
-  if (Number(request.headers.get('content-length') || 0) > 4000) return json({ error: 'too_big' }, 413);
+  if (Number(request.headers.get('content-length') || 0) > 7000) return json({ error: 'too_big' }, 413);
   let body; try { body = await request.json(); } catch { return json({ error: 'bad_json' }, 400); }
   const text = clean(body && body.text, 300);
   const cands = (Array.isArray(body && body.candidates) ? body.candidates : []).slice(0, 12)
     .map(c => ({ k: String(c && c.k || ''), n: clean(c && c.n, 60) })).filter(c => /^[a-z0-9_]{1,40}$/.test(c.k));
   if (text.length < 3 || !cands.length) return json({ error: 'bad_input' }, 400);
   if (!env.AI) return json({ error: 'ai_off' }, 503);
+  if (env.TURNSTILE_SECRET && !(await human(body && body.token, env.TURNSTILE_SECRET, request))) return json({ error: 'bot_check' }, 403);
   if (await overLimit(request)) return json({ error: 'limit' }, 429);
   const keys = cands.map(c => c.k);
   const schema = { type: 'object', properties: { template: { type: 'string', enum: keys }, headline: { type: 'string' }, subline: { type: 'string' }, cta: { type: 'string' } }, required: ['template', 'headline', 'subline', 'cta'] };

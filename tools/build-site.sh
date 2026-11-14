@@ -11,5 +11,7 @@ cp welcome.html LICENSE manifest.webmanifest sw.js _site/
 cp -r vendor fonts welcome icons _site/
 # the free AI writer (Cloudflare Pages Function) is read from ./functions by Cloudflare itself; nothing to copy
 [ -d templates ] && cp -r templates _site/ || true
+# security headers (CSP pinned to the inline scripts above), read by Cloudflare Pages
+python3 tools/headers.py _site/_headers
 touch _site/.nojekyll
 echo "site assembled: $(find _site -type f | wc -l) files, $(du -sh _site | cut -f1)"

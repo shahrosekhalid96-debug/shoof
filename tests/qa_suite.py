@@ -62,14 +62,23 @@ IMG2 = make_png(WORK + '/bg.png', 64, 64, (20, 120, 220))
 
 
 # ---------------------------------------------------------------- harness
+sys.path.insert(0, os.path.join(APP_DIR, 'tools'))
+import headers as _site_headers
+# test-only relaxations: Playwright's wait_for_function evaluates strings ('unsafe-eval'), and COOP / upgrade-insecure need https.
+# Real violations by the app are still caught: the init script below turns every securitypolicyviolation into a console error.
+SITE_HEADERS = {k: v for k, v in _site_headers.HEADERS.items() if k != 'Cross-Origin-Opener-Policy'}
+SITE_HEADERS['Content-Security-Policy'] = _site_headers.csp().replace('; upgrade-insecure-requests', '').replace("'wasm-unsafe-eval'", "'wasm-unsafe-eval' 'unsafe-eval'")
+CSP_WATCH = "document.addEventListener('securitypolicyviolation',e=>{if(e.violatedDirective!=='script-src'||e.blockedURI!=='eval')console.error('CSP blocked '+e.violatedDirective+' '+e.blockedURI)})"
+
+
 def route(r):
     u = r.request.url
     if u.startswith('http://rasm.test/'):
         rel = urllib.parse.unquote(urllib.parse.urlparse(u).path).lstrip('/') or 'index.html'
         if rel in BLOCK:
             return r.abort()
-        if rel == 'index.html':
-            return r.fulfill(path=APP, content_type='text/html; charset=utf-8')
+        if rel == 'index.html':  # served with the real site's security headers, so anything they would block fails the tests
+            return r.fulfill(path=APP, content_type='text/html; charset=utf-8', headers=SITE_HEADERS)
         full = os.path.normpath(os.path.join(APP_DIR, rel))
         if full.startswith(APP_DIR + os.sep) and os.path.isfile(full):
             ctype = {'.js': 'application/javascript', '.mjs': 'application/javascript', '.wasm': 'application/wasm', '.css': 'text/css', '.woff2': 'font/woff2', '.webp': 'image/webp', '.webmanifest': 'application/manifest+json', '.html': 'text/html; charset=utf-8'}.get(os.path.splitext(full)[1]) \
@@ -94,6 +103,7 @@ class Ctx:
         p.on('console', self._console)
         if lang:
             p.add_init_script(f"try{{if(!sessionStorage.getItem('qa_l')){{localStorage.setItem('shoof.lang','{lang}');sessionStorage.setItem('qa_l','1')}}}}catch(e){{}}")
+        p.add_init_script(CSP_WATCH)
         if not tips:  # first-visit tips have their own test
             p.add_init_script("try{localStorage.setItem('shoof.tips','1')}catch(e){}")
         if init:
@@ -1863,7 +1873,7 @@ AXE_JS = os.path.join(ROOT, 'tests', 'vendor', 'axe.min.js')   # axe-core (MPL-2
 
 
 def axe_violations(c):
-    c.page.add_script_tag(path=AXE_JS)
+    c.page.add_script_tag(url='http://rasm.test/tests/vendor/axe.min.js')  # loaded as our own file, so the strict policy allows it
     return c.page.evaluate("async()=>{const r=await axe.run(document,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21a','wcag21aa']},resultTypes:['violations']});return r.violations.map(v=>v.id+' x'+v.nodes.length+' '+v.nodes[0].target.join(' '))}")
 
 
@@ -2301,6 +2311,25 @@ def t_bg_home(B):
     ok(pg.locator('#cutGo').is_visible(), 'landing link opens the remover dialog')
     with pg.expect_file_chooser() as fc2: pg.click('#cutGo')
     ok(fc2.value is not None, 'dialog opens the photo picker'); pg.close()
+    ok(not c.errors, c.errors); c.close()
+
+
+@test('security_headers_and_bot_check')
+def t_sec_headers(B):
+    import subprocess
+    h = _site_headers.csp()
+    ok("'unsafe-eval'" not in h and "script-src 'self' 'wasm-unsafe-eval' 'sha256-" in h and "'unsafe-inline'" not in h.split('script-src')[1].split(';')[0], 'scripts locked to our own files and pinned inline code')
+    ok("frame-ancestors 'none'" in h and "object-src 'none'" in h and "base-uri 'none'" in h, 'no framing, plugins or base hijack')
+    eq(len(_site_headers.inline_hashes()), 3, 'every inline script is pinned (2 in the editor, 1 on the landing page)')
+    subprocess.run(['bash', os.path.join(APP_DIR, 'tools', 'build-site.sh')], cwd=APP_DIR, check=True, capture_output=True)
+    hf = open(os.path.join(APP_DIR, '_site', '_headers')).read()
+    ok(hf.startswith('/*') and 'Strict-Transport-Security' in hf and 'Content-Security-Policy' in hf and 'X-Frame-Options: DENY' in hf, 'build writes the _headers file')
+    c = Ctx(B, home=True)
+    eq(c.ev("TS_HOST"), 'shoof.pages.dev', 'bot check only on the live site')
+    eq(c.ev("tsToken()"), '', 'no bot check (and no outside request) anywhere else')
+    ok(not c.ev("!!document.querySelector('script[src*=\"challenges\"]')"), 'Turnstile is not loaded at start')
+    ok(c.ev("(()=>{const s=document.createElement('script');s.textContent='window.__inj=1';document.head.appendChild(s);return !window.__inj})()"), 'an injected inline script is blocked')
+    c.errors = [e for e in c.errors if 'CSP blocked script-src-elem inline' not in e and 'Executing inline script violates' not in e]
     ok(not c.errors, c.errors); c.close()
 
 
