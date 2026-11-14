@@ -2504,6 +2504,50 @@ def t_nice(B):
     ok(d.ev("document.activeElement.id==='shIn'"), 'keyboard opening moves focus into the chat box')
     ok(not d.errors, d.errors); d.close()
 
+@test('shoofy_learns_and_polishes')
+def t_shoofy_learns(B):
+    import subprocess, shutil
+    if shutil.which('node'):
+        r = subprocess.run(['node', os.path.join(ROOT, 'tests', 'server', 'shoofy_learn.mjs')], capture_output=True, text=True, timeout=60)
+        ok(r.returncode == 0, 'server learning unit test: ' + (r.stdout + r.stderr)[-300:])
+    c = Ctx(B, init="localStorage.setItem('shoof.buddy','on')")
+    # a well-made template comes out of Polish unchanged — every single one
+    changed = c.ev("""(()=>{const out=[];TEMPLATES.forEach((tp,i)=>{useTemplate(i);if(shPolish())out.push(tp.key);});return out;})()""")
+    eq(changed, [], 'Polish leaves every template alone')
+    # a messy page gets tidied, as one undo step
+    c.ev("""(()=>{const i=TEMPLATES.findIndex(x=>x.key==='hiring');useTemplate(i);const mk=(t,x,y,fs)=>{addText('b');Object.assign(byId(selId),{text:t,x,y,fontSize:fs,width:600,align:'left'});};
+      mk('Everything must go',12,700,56);mk('Up to 50% off',17,760,44);fullRender();commit();setSel([]);})()""")
+    c.page.click('#buddy'); c.page.wait_for_selector('#shChat:not([hidden])')
+    def say(q):
+        n = c.ev("SH.msgs.length"); c.page.fill('#shIn', q); c.page.press('#shIn', 'Enter')
+        c.page.wait_for_function(f"SH.msgs.length>={n+2}&&!SH.busy&&!SH.tw", timeout=8000)
+    say('tidy the layout please')
+    xs = c.ev("doc.elements.filter(e=>/Everything|Up to/.test(e.text)).map(e=>[e.x,e.y,Math.round(shPolish&&0)])")
+    ok(xs[0][0] == xs[1][0] and xs[0][0] >= 50, f'pulled inside the margin and lined up {xs}')
+    ok(xs[1][1] > 760, 'overlapping text moved below')
+    c.ev("undo()"); eq(c.ev("doc.elements.filter(e=>/Everything|Up to/.test(e.text)).map(e=>e.x)"), [12, 17], 'one undo step brings it back'); c.ev("redo()")
+    # 👍 teaches this device; the same request later is answered from memory
+    ok(c.page.locator('#shMsgs .shm.bot:last-child .shrate button').count() == 2, 'rate buttons on an edit')
+    c.page.click("#shMsgs .shm.bot:last-child [data-shv$=':1']")
+    ok('polish' in (c.ev("localStorage.getItem('shoof.shMem')") or ''), 'liked answer remembered on this device')
+    say('tidy the layout please')
+    ok(c.ev("SH.msgs[SH.msgs.length-1].text") == c.ev("t('shAgain')") or c.ev("SH.msgs[SH.msgs.length-1].text") == c.ev("t('shPolished0')") or 'tidy' in c.ev("SH.msgs[SH.msgs.length-1].text").lower(), 'reused')
+    ok(c.ev("shLocal('tidy the layout please').reply") == c.ev("t('shAgain')"), 'memory answers the same request')
+    # AI path: the signed id comes back; Undo sends a bad signal, the shared memory is told; liked examples are sent along
+    c.ev("localStorage.setItem('shoof.shAI','1')"); sent = []
+    def route(r):
+        b = json.loads(r.request.post_data or '{}'); sent.append(b)
+        if 'feedback' in b: return r.fulfill(status=200, content_type='application/json', body='{"ok":true}')
+        r.fulfill(status=200, content_type='application/json', body=json.dumps({'reply': 'Made the headline red.', 'actions': [{'do': 'set', 'target': 'headline', 'props': {'fill': '#c92a2a'}}], 'rid': '7.' + 'a' * 64}))
+    c.page.route('**/api/shoofy', route)
+    say('tidy the layout and make the headline red')
+    ok(any(b.get('mine') for b in sent), 'liked examples from this device are sent with the request')
+    c.page.click("#shMsgs .shm.bot:last-child button[data-sha=undo]"); c.page.wait_for_timeout(200)
+    ok(any(b.get('feedback') == {'rid': '7.' + 'a' * 64, 'v': -1} for b in sent), f'Undo reports a bad answer {[b for b in sent if "feedback" in b]}')
+    c.page.unroute('**/api/shoofy')
+    ok(c.page.locator('#shChat .shnote').is_visible(), 'privacy note visible')
+    ok(not c.errors, c.errors); c.close()
+
 @test('shoofy_chat')
 def t_shoofy_chat(B):
     c = Ctx(B, home=True, init="localStorage.setItem('shoof.buddy','on')")

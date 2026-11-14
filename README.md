@@ -76,6 +76,10 @@ tests/qa_suite.py     Playwright end-to-end suite (desktop and phone, EN and AR)
 LICENSE               GNU AGPL-3.0
 ```
 
+### Shoofy, the design helper (and what it learns)
+Click the purple mascot to chat: it finds templates, changes colours, fonts and text, moves things, and **Tidy the layout** lines items up, fixes margins and moves overlapping text, all as one undo step.
+On shoof.pages.dev Shoofy uses free Cloudflare Workers AI and **learns from 👍 / 👎**. Undo counts as a 👎 and a change you keep counts as a small 👍. Liked answers are kept in your browser and reused for similar requests. The anonymous part shared with everyone is the request text (links, emails and long numbers removed) plus the actions taken, stored in a Cloudflare D1 database. Your design, photos, name and IP address are never stored. The best-rated answers to similar requests become examples for the AI, and the worst become things to avoid. Old answers nobody rated are deleted after three weeks.
+
 ### "Ask Claude" (works only inside Claude)
 When Shoof is opened as an artifact inside [Claude](https://claude.ai), an **Ask Claude / اسأل Claude** tab appears. It runs on the **viewer's own Claude account** through the artifact's `sample` capability, so there are no API keys and nothing for you to pay for or configure.
 - **Quick actions:** write a post, translate EN ↔ AR, rewrite text, caption + hashtags (with a Copy button), make it bilingual, restyle, fix layout. You can also type your own request.
