@@ -215,7 +215,8 @@ footer.credit{font-size:11.5px;color:var(--muted);margin-top:12px;line-height:1.
 .hactions button{border-radius:999px;padding:9px 18px;min-height:40px}
 .hbody{max-width:1180px;margin:0 auto;padding:28px 24px 56px}
 .hbody h2{font-size:18px;margin:6px 0 12px;font-weight:700}
-.htiles{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:12px;margin:0 0 30px}
+.tile.hot{position:relative;border-color:#f5b98f;box-shadow:0 0 0 3px #fff1e6}.tbadge{position:absolute;top:-9px;right:8px;font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;background:#c94d0a;color:#fff;border-radius:999px;padding:2px 7px}
+.htiles{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:12px;margin:0 0 30px}
 .tile{flex-direction:column;gap:10px;padding:16px 6px 12px;border:1px solid var(--line);border-radius:16px;background:#fff;font-size:13px;font-weight:500;line-height:1.25;text-align:center}
 .tile:hover{background:#fff;transform:translateY(-2px);box-shadow:0 6px 18px rgba(20,24,40,.08);border-color:#d9d4f3}
 .tile .ti{width:52px;height:52px;border-radius:16px;display:grid;place-items:center}
@@ -315,6 +316,7 @@ footer.credit{font-size:11.5px;color:var(--muted);margin-top:12px;line-height:1.
   <input type="file" id="openFile" accept=".json,.shoof,.rasm,application/json" hidden>
   <input type="file" id="replaceFile" accept="image/*" hidden>
   <input type="file" id="imgPick" accept="image/*" multiple hidden>
+  <input type="file" id="cutPick" accept="image/*" hidden>
 </header>
 <div class="main">
   <nav class="rail" id="rail">
@@ -355,7 +357,7 @@ const I18N={
  en:{docTitle:'Shoof — free open-source design editor',brand:'Shoof',tag:'Free design for everyone',new:'New',open:'Open',save:'Save',export:'Download',langTitle:'Language',sizeTitle:'Canvas size',undoTitle:'Undo (Ctrl+Z)',redoTitle:'Redo (Ctrl+Y)',propsTitle:'Properties',edit:'Edit',more:'More',
   expPng:'best for social',expJpg:'smaller file',expPdf:'for print',
   fgSans:'Sans serif',fgSerif:'Serif',fgDisplay:'Display',fgScript:'Handwriting',fgMono:'Monospace',textStyles:'Text styles',changeCase:'Change case: UPPER, lower, Title',brandFile:'Kit file',brandSave:'Save kit',brandLoad:'Load kit',brandLoaded:'Brand kit loaded.',brandBadFile:'That is not a Shoof brand kit file.',
-  bgRemove:'Remove background',bgNote:'Runs on your device. Your photo is never uploaded.',bgFirst:'Getting the background remover ready (about 20 MB, first time only)…',bgWorking:'Removing the background…',bgDone:'Background removed. Undo brings it back.',bgFail:'Could not remove the background here. Try another browser, or a smaller photo.',bgNoSubject:'Could not find a clear subject in this photo.',
+  bgRemove:'Remove background',bgNote:'Runs on your device. Your photo is never uploaded.',bgFirst:'Getting the background remover ready (about 20 MB, first time only)…',bgWorking:'Removing the background…',bgDone:'Background removed. Undo brings it back.',bgFail:'Could not remove the background here. Try another browser, or a smaller photo.',bgNoSubject:'Could not find a clear subject in this photo.',tile_cutout:'Remove background',tileAi:'Free AI',cutTitle:'Remove a photo background',cutText:'Choose a photo and Shoof cuts out the subject. It runs on your device, so the photo is never uploaded.',cutChoose:'Choose a photo',bgDoneNew:'Background removed. Download → PNG · no background gives a see-through picture.',
   expHImg:'Picture',expHMany:'Several at once',expHDoc:'Print and editable',
   expClear:'no background',exp2x:'double size, sharper',expSvg:'vector, editable',fontBrowse:'Preview all fonts',fontHide:'Hide font previews',textFx:'Text effect',fxNone:'No effect',fxSoft:'Soft shadow',fxRetro:'Retro shadow',fxHollow:'Hollow outline',fxNeon:'Neon glow',fxSticker:'Sticker',fxMarker:'Marker highlight',curve:'Curve',
   logoTitle:'Logo maker',logoOpen:'Make a logo',logoHint:'Type your name and pick a look. Every idea opens as a normal design, so you can change any part of it.',lgName:'Name',lgTag:'Tagline (optional)',lgKw:'What do you do? (optional)',lgKwPh:'coffee, salon, tech, bakery',lgSample:'Your Name',lgStyle:'Style',lsAll:'All styles',lsModern:'Modern',lsElegant:'Elegant',lsPlayful:'Playful',lsBold:'Bold',lsRetro:'Retro',lgMore:'More ideas',lgEdit:'Edit this logo',lgAdd:'Add to my page',lgBrand:'Save as brand logo',lgIdea:'Logo idea {n}',lgLoading:'Drawing ideas…',lgSaved:'Saved to your brand kit.',
@@ -1434,6 +1436,7 @@ const TYPE_GLYPH={pattern:'░',blob:'◍',parallelogram:'▱',icon:'✦',chart:
 /* ============ home (welcome screen) ============ */
 /* [label key, size id, template category, tile colour, icon colour, icon] */
 const HOME_TILES=[
+ ['tile_cutout','cutout','','#fff1e6','#c94d0a','<path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2"/><circle cx="12" cy="10" r="3"/><path d="M7 18c.8-2.3 2.7-3.5 5-3.5s4.2 1.2 5 3.5"/>'],
  ['tile_ig','ig','social','#ffe4ec','#d6336c','<rect x="4" y="4" width="16" height="16" rx="3.5"/><path d="M12 16.2s-4-2.4-4-5.1a2 2 0 0 1 4-.9 2 2 0 0 1 4 .9c0 2.7-4 5.1-4 5.1z"/>'],
  ['tile_story','story','story','#efe7ff','#6c4cf5','<rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M10.5 5.5h3M10.5 10.5l3.5 2-3.5 2z"/>'],
  ['tile_poster','a4','poster','#fff0d9','#c76a12','<rect x="5" y="3" width="14" height="18" rx="1.5"/><path d="M8 7h8M8 10h5M8 17l3-3 2 2 3-3"/>'],
@@ -1475,7 +1478,7 @@ function renderHome(){const h=$('#home');
  <label class="hsearch">${ICON.search}<input type="search" id="homeSearch" dir="auto" maxlength="80" value="${esc(homeQ)}" placeholder="${esc(t('homeSearchPh'))}" aria-label="${esc(t('homeSearchPh'))}"></label>
  <form class="hdesc" id="homeDescForm"><label for="homeDesc">${ICON_SET.sparkles?SVG(`<path d="${ICON_SET.sparkles}"/>`):''}<span>${esc(t('descLabel'))}</span></label><div class="hdrow"><input id="homeDesc" dir="auto" maxlength="300" autocomplete="off" placeholder="${esc(t('descPh'))}"><button type="submit" id="homeDescGo">${esc(t('descGo'))}</button></div><p class="hdnote">${esc(t('descNote'))}</p></form>
  <div class="hactions"><button class="primary" id="homeGo">${esc(t(homeWork?'homeContinue':'homeOpenEditor'))}</button><button id="homeBlank">${esc(t('homeBlank'))}</button></div></div>
- <div class="hbody"><h2>${esc(t('homeCats'))}</h2><div class="htiles">${HOME_TILES.map(([lk,sz,,bg,fg,ico])=>`<button class="tile" data-tile="${sz}"><span class="ti" style="background:${bg};color:${fg}">${SVG(ico)}</span>${esc(t(lk))}</button>`).join('')}</div><div id="homeList">${homeListHTML()}</div></div>`;
+ <div class="hbody"><h2>${esc(t('homeCats'))}</h2><div class="htiles">${HOME_TILES.map(([lk,sz,,bg,fg,ico])=>`<button class="tile${sz==='cutout'?' hot':''}" data-tile="${sz}"><span class="ti" style="background:${bg};color:${fg}">${SVG(ico)}</span>${esc(t(lk))}${sz==='cutout'?`<span class="tbadge">${esc(t('tileAi'))}</span>`:''}</button>`).join('')}</div><div id="homeList">${homeListHTML()}</div></div>`;
  const q=$('#homeSearch');q.addEventListener('input',()=>{homeQ=q.value.slice(0,80);$('#homeList').innerHTML=homeListHTML();});
  $('#homeDescForm').addEventListener('submit',ev=>{ev.preventDefault();describeGo();});}
 function showHome(){hideEditor();closeMenus();setDrawer(false);closeSheet();homeWork=homeWork||undoStack.length>0;
@@ -1487,6 +1490,7 @@ function newFromTile(id,cat){const s=SIZES.find(x=>x.id===id);if(!s)return;apply
 $('#home').addEventListener('click',ev=>{const b=ev.target.closest('button');if(!b)return;const ds=b.dataset;
  if(ds.htpl!==undefined){useTemplate(+ds.htpl);hideHome();}
  else if(ds.tile==='logo'){openLogoMaker();}
+ else if(ds.tile==='cutout'){$('#cutPick').click();}
  else if(ds.tile){const tl=HOME_TILES.find(x=>x[1]===ds.tile);newFromTile(ds.tile,tl&&tl[2]);}
  else if(ds.recent!==undefined||b.id==='homeGo')hideHome();
  else if(b.id==='homeBlank')openNewDialog();});
@@ -1822,8 +1826,13 @@ async function cutout(src){const ort=await loadOrt();if(!ort)throw new Error('or
  if(hi-lo<0.05)throw new Error('nosubject');const mk=cx.createImageData(S,S);for(let i=0;i<N;i++){const v=(m[i]-lo)/(hi-lo);mk.data[i*4+3]=Math.round(255*Math.max(0,Math.min(1,(v-0.12)/0.7)));}cx.clearRect(0,0,S,S);cx.putImageData(mk,0,0);
  const k=Math.min(1,LIM.imgPx/Math.max(im.naturalWidth,im.naturalHeight)),w=Math.max(1,Math.round(im.naturalWidth*k)),h=Math.max(1,Math.round(im.naturalHeight*k)),o=document.createElement('canvas');o.width=w;o.height=h;const ox=o.getContext('2d');
  ox.drawImage(im,0,0,w,h);ox.globalCompositeOperation='destination-in';ox.imageSmoothingQuality='high';ox.drawImage(cv,0,0,w,h);const u=o.toDataURL('image/png');if(u.length>LIM.src)throw new Error('big');return u;}
-async function removeBg(id){const e=byId(id);if(!e||e.type!=='image'||bgBusy)return;bgBusy=true;renderProps();toast(t(bgSess?'bgWorking':'bgFirst'),bgSess?4000:15000);
- try{const u=await cutout(e.src);const e2=byId(id);if(e2&&e2.type==='image'){e2.src=u;bump(e2);fullRender();commit();toast(t('bgDone'),3200);}}
+/* home tile / landing page: one photo → a page the size of the photo → background removed straight away */
+function openCutout(){modal(`<h2>${esc(t('cutTitle'))}</h2><p class="note">${esc(t('cutText'))}</p><div class="newfoot"><span class="sp"></span><button data-close>${esc(t('cancel'))}</button><button class="primary" id="cutGo">${esc(t('cutChoose'))}</button></div>`);}
+function startCutout(f){prepImage(f).then(u=>{rememberUpload(u);const im=new Image();im.onload=()=>{const k=Math.min(1,1600/Math.max(im.naturalWidth,im.naturalHeight)),W=Math.max(50,Math.round(im.naturalWidth*k)),H=Math.max(50,Math.round(im.naturalHeight*k));
+ applyDoc(withBgBlocks(blankDoc(W,H)));const e=el('image',{src:u,x:0,y:0,width:W,height:H,radius:0});doc.elements.push(e);selId=e.id;fullRender();commit();hideHome();removeBg(e.id,'bgDoneNew');};im.src=u;}).catch(()=>toast(t('imgFail')));}
+$('#cutPick').addEventListener('change',ev=>{const f=ev.target.files[0];ev.target.value='';if(f)startCutout(f);});
+async function removeBg(id,doneKey){const e=byId(id);if(!e||e.type!=='image'||bgBusy)return;bgBusy=true;renderProps();toast(t(bgSess?'bgWorking':'bgFirst'),bgSess?4000:15000);
+ try{const u=await cutout(e.src);const e2=byId(id);if(e2&&e2.type==='image'){e2.src=u;bump(e2);fullRender();commit();toast(t(doneKey||'bgDone'),doneKey?6000:3200);}}
  catch(err){console.warn('Shoof background removal failed',err);toast(t(err&&err.message==='nosubject'?'bgNoSubject':'bgFail'),5000);}
  finally{bgBusy=false;renderProps();}}
 let jspdfP=null;
@@ -1885,6 +1894,7 @@ $('#openFile').onchange=ev=>{const f=ev.target.files[0];ev.target.value='';if(!f
 function modal(html){$('#modalBox').className='box';$('#modalBox').innerHTML=html;$('#modal').classList.add('open');const b=$('#modalBox .primary');if(b)b.focus();}
 $('#modal').addEventListener('click',ev=>{const tg=ev.target.closest('button')||ev.target;if(ev.target.id==='modal'||tg.dataset.close!==undefined){$('#modal').classList.remove('open');return;}
  if(tg.dataset.newsize){const sz=SIZES.find(x=>x.id===tg.dataset.newsize);if(sz){$('#newW').value=sz.w;$('#newH').value=sz.h;document.querySelectorAll('#modal [data-newsize]').forEach(b=>b.setAttribute('aria-pressed',String(b===tg)));}return;}
+ if(tg.id==='cutGo'){$('#modal').classList.remove('open');$('#cutPick').click();return;}
  if(tg.id==='newTpl'){$('#modal').classList.remove('open');hideHome();curTab='templates';document.querySelectorAll('#rail button').forEach(x=>x.classList.toggle('on',x.dataset.tab==='templates'));renderDrawer();if(isMob())setDrawer(true);return;}
  if(tg.id==='doNew'){const w=Math.round(clamp(parseFloat($('#newW').value)||doc.width,LIM.minDim,LIM.maxDim)),h=Math.round(clamp(parseFloat($('#newH').value)||doc.height,LIM.minDim,LIM.maxDim));applyDoc(withBgBlocks(blankDoc(w,h)));commit();$('#modal').classList.remove('open');hideHome();}});
 $('#modal').addEventListener('input',ev=>{if(ev.target.id==='newW'||ev.target.id==='newH'){const w=+$('#newW').value,h=+$('#newH').value;document.querySelectorAll('#modal [data-newsize]').forEach(b=>{const sz=SIZES.find(x=>x.id===b.dataset.newsize);b.setAttribute('aria-pressed',String(sz.w===w&&sz.h===h));});}});
@@ -2110,7 +2120,7 @@ function regSW(){try{if('serviceWorker'in navigator&&location.protocol==='https:
  applyLang();
  try{fullRender();}catch(e){doc=withBgBlocks(sanitizeDoc(starterTemplate().make()));resetHistory();fullRender();bad=true;}
  syncSize();fitZoom();
- renderPages();refreshPageThumbs(true);homeWork=restored;showHome();
+ renderPages();refreshPageThumbs(true);homeWork=restored;showHome();if(/[?&]tool=cutout\b/.test(location.search))openCutout();
  if(bad)toast(t('autosaveBad'),4000);else if(restored)toast(t('restored'));
  const fams=CORE_FONTS.flatMap(f=>[`400 40px "${f}"`,`700 40px "${f}"`]);
  const fontsReady=Promise.all(fams.map(f=>document.fonts.load(f).catch(()=>{})));

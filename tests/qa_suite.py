@@ -1557,7 +1557,7 @@ def t_home(B):
     c = Ctx(B, home=True)
     ok(_home_visible(c), 'home screen should show on boot')
     eq(c.ev("['#undoBtn','#redoBtn','#exportBtn','#saveBtn','#sizeSel','#homeBtn'].filter(s=>$(s).getClientRects().length)"), [], 'editor-only header controls hidden on home')
-    eq(c.page.locator('#home .tile').count(), 7, 'category tiles')
+    eq(c.page.locator('#home .tile').count(), 8, 'category tiles')
     eq(c.ev("[...document.querySelectorAll('#home .hsec h2')].map(h=>h.textContent)"), ['Trending', 'Picks for you'], 'rows')
     c.page.wait_for_function("document.querySelectorAll('#home .hrow .hthumb img').length>=12", timeout=10000)
     eq(c.ev("$('#homeGo').textContent"), 'Open the editor', 'first-visit primary action')
@@ -2279,6 +2279,31 @@ def t_bg_remove(B):
     ok(not c.errors, c.errors); c.close()
 
 
+@test('background_remover_from_home')
+def t_bg_home(B):
+    c = Ctx(B, home=True)
+    tile = c.page.locator('#home [data-tile="cutout"]')
+    ok(tile.is_visible() and c.ev("document.querySelector('#home .htiles .tile').dataset.tile") == 'cutout', 'remove-background tile is first on the home screen')
+    ok('Free AI' in tile.text_content(), 'tile carries the Free AI badge')
+    src = c.ev("""()=>{const k=document.createElement('canvas');k.width=640;k.height=480;const x=k.getContext('2d');x.fillStyle='#9fb3d1';x.fillRect(0,0,640,480);x.fillStyle='#c83c32';x.beginPath();x.roundRect(220,120,200,270,30);x.fill();return k.toDataURL('image/jpeg',0.9);}""")
+    import base64, tempfile
+    fp = os.path.join(tempfile.mkdtemp(), 'photo.jpg'); open(fp, 'wb').write(base64.b64decode(src.split(',', 1)[1]))
+    with c.page.expect_file_chooser() as fc: tile.click()
+    fc.value.set_files(fp)
+    c.page.wait_for_function("!homeOpen()&&doc.elements.some(e=>e.type==='image')", timeout=10000)
+    eq([c.ev('doc.width'), c.ev('doc.height')], [640, 480], 'page is the size of the photo')
+    ok(c.ev("doc.elements[0].role==='bg'"), 'page still starts with a background block')
+    for _ in range(240):
+        if c.ev("!bgBusy&&doc.elements.find(e=>e.type==='image').src.startsWith('data:image/png')"): break
+        c.page.wait_for_timeout(250)
+    ok(c.ev("doc.elements.find(e=>e.type==='image').src.startsWith('data:image/png')"), 'background removed straight away')
+    pg = c.page.context.new_page(); pg.goto(c.page.url.split('?')[0].split('#')[0] + '?tool=cutout'); pg.wait_for_timeout(1200)
+    ok(pg.locator('#cutGo').is_visible(), 'landing link opens the remover dialog')
+    with pg.expect_file_chooser() as fc2: pg.click('#cutGo')
+    ok(fc2.value is not None, 'dialog opens the photo picker'); pg.close()
+    ok(not c.errors, c.errors); c.close()
+
+
 @test('bulk_create_pages_and_zip')
 def t_bulk(B):
     import zipfile, io as _io
@@ -2370,7 +2395,8 @@ def t_landing(B):
         pg = c.page.context.new_page(); pg.set_viewport_size({'width': w, 'height': h}); errs = []; pg.on('pageerror', lambda e: errs.append(str(e)))
         pg.goto(base + '/welcome.html'); pg.wait_for_timeout(900)
         eq(pg.title(), 'Shoof — free design for everyone', 'title'); ok(pg.locator('h1').is_visible(), 'headline')
-        eq(pg.evaluate("[...document.querySelectorAll('a.btn')].map(a=>a.getAttribute('href')).filter(x=>x!=='#examples')"), ['./editor', './editor', './editor'], 'buttons open the editor')
+        eq(pg.evaluate("[...document.querySelectorAll('a.btn')].map(a=>a.getAttribute('href')).filter(x=>x!=='#examples')"), ['./editor', './editor', './editor?tool=cutout', './editor'], 'buttons open the editor')
+        ok(pg.locator('#cutout h2').is_visible() and pg.locator('.top a[href="#cutout"]').count() == 1 and 'Background remover' in pg.locator('#inside .card h3').first.inner_text(), 'background remover is a highlight')
         pg.evaluate("window.scrollTo(0,document.body.scrollHeight)"); pg.wait_for_timeout(900)
         eq(pg.evaluate("Promise.all([...document.images].map(i=>fetch(i.src).then(r=>r.ok&&/image/.test(r.headers.get('content-type')))) ).then(a=>a.filter(x=>!x).length)"), 0, 'every picture exists'); ok(pg.evaluate("[...document.images].filter(i=>i.complete&&i.naturalWidth).length>=3"), 'pictures show'); eq(pg.evaluate("document.documentElement.scrollWidth"), w, f'no sideways scroll at {w}')
         ok(pg.evaluate("[...document.querySelectorAll('.reveal')].filter(n=>n.getBoundingClientRect().top<innerHeight).every(n=>getComputedStyle(n).opacity==='1')"), 'sections on screen are revealed')
