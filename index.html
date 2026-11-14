@@ -1458,7 +1458,7 @@ function homeListHTML(){const q=homeQ.trim();
 const DESC_FORMATS=[[/\b(story|stories|reel|status|vertical)\b/,'story'],[/\b(poster|flyer|a4|print|leaflet)\b/,'poster'],[/\b(presentation|slides?|deck|pitch)\b/,'deck'],[/\b(certificate|badge|award)\b/,'cert'],[/\b(menu|price ?list)\b/,'food']];
 let descBusy=false;
 /* Turnstile: Cloudflare's free bot check, only on the live site; loaded when Make it is pressed, never at start */
-const TS_KEY='',TS_HOST='shoof.pages.dev';let tsP=null;
+const TS_KEY='0x4AAAAAAGAgtDp3FK79wc2g',TS_HOST='shoof.pages.dev';let tsP=null;
 function tsLoad(){if(window.turnstile)return Promise.resolve(window.turnstile);if(!tsP)tsP=new Promise(res=>{const s=document.createElement('script');s.src='https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';s.async=true;s.onload=()=>res(window.turnstile||null);s.onerror=()=>{tsP=null;s.remove();res(null);};document.head.appendChild(s);});return tsP;}
 async function tsToken(){if(!TS_KEY||location.hostname!==TS_HOST)return '';const ts=await tsLoad(),box=$('#homeTs');if(!ts||!box)return '';
  return new Promise(res=>{let id=null;const done=v=>{clearTimeout(tm);try{if(id!==null)ts.remove(id);}catch(e){}res(v||'');},tm=setTimeout(()=>done(''),20000);
