@@ -2375,6 +2375,33 @@ def t_my_designs(B):
     eq(c.ev("dsList.length"), 2, 'an untouched blank design is not saved')
     ok(not c.errors, c.errors); c.close()
 
+@test('bulk_create_pictures_per_row')
+def t_bulk_pics(B):
+    import base64, tempfile
+    c = Ctx(B)
+    c.ev("(()=>{newFromTile('ig');hideHome();const p=el('placeholder',{x:100,y:100,width:500,height:500});doc.elements.push(p);const t1=el('text',{text:'{Name}',x:100,y:700,fontSize:80,width:800});t1.height=100;doc.elements.push(t1);fullRender();commit();})()")
+    c.page.click('#rail [data-tab="bulk"]')
+    c.page.fill('#bulkIn', 'Name\tPhoto\nLatte\tlatte.jpg\nMocha\tC:\\pics\\Mocha.PNG\nTea\tmissing.png')
+    d = tempfile.mkdtemp(); files = []
+    for nm, col in [('latte.png', '#c8a27a'), ('mocha.png', '#5b3a29')]:
+        u = c.ev(f"(()=>{{const k=document.createElement('canvas');k.width=80;k.height=60;const x=k.getContext('2d');x.fillStyle='{col}';x.fillRect(0,0,80,60);return k.toDataURL('image/png');}})()")
+        fp = os.path.join(d, nm); open(fp, 'wb').write(base64.b64decode(u.split(',', 1)[1])); files.append(fp)
+    c.page.set_input_files('#bulkPicIn', files)
+    c.page.wait_for_selector('#bulkPicStat', timeout=8000)
+    t = c.page.inner_text('#bulkPicStat')
+    ok('matched to 2 of 3 rows by the Photo column' in t, t)
+    c.page.click('#bulkPagesBtn')
+    c.page.wait_for_function("doc.pages.length===4", timeout=8000)
+    px = c.ev("""doc.pages.slice(1).map(pg=>{const f=pg.elements.find(e=>e.type==='image'||e.type==='placeholder');return f.type==='image'?f.src.slice(0,30):'frame';})""")
+    eq(px[2], 'frame', 'row without a picture keeps the empty frame')
+    ok(px[0].startswith('data:image/') and px[1].startswith('data:image/') and c.ev("doc.pages[1].elements.find(e=>e.type==='image').src!==doc.pages[2].elements.find(e=>e.type==='image').src"), 'each row got its own picture')
+    eq(c.ev("doc.pages.slice(1).map(pg=>pg.elements.find(e=>e.type==='text').text)"), ['Latte', 'Mocha', 'Tea'], 'text still filled')
+    eq(c.ev("doc.pages[0].elements.some(e=>e.type==='image')"), False, 'the original page is untouched')
+    # by order when no column names the files
+    c.ev("undo()"); c.page.fill('#bulkIn', 'Name\nOne\nTwo')
+    c.page.wait_for_selector('#bulkPicStat'); ok('used in row order for 2 of 2 rows' in c.page.inner_text('#bulkPicStat'), 'order mode')
+    ok(not c.errors, c.errors); c.close()
+
 
 @test('bulk_create_pages_and_zip')
 def t_bulk(B):
