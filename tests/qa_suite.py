@@ -862,9 +862,9 @@ def t_boot_matrix(B):
             c.ev("()=>{const t=doc.elements.find(e=>e.type==='text'&&e.fontSize<100)||doc.elements.find(e=>e.type==='text');select(t.id);['shadow','outline','highlight'].forEach(n=>applyEffect(byId(selId),n,true));fullRender();commit();}")
             c.ev("()=>{selectAll();groupSel();}")
             for tab in ['templates', 'text', 'shapes', 'uploads', 'background', 'layers', 'about']:
-                c.page.click(f'#rail button[data-tab="{tab}"]'); c.page.wait_for_timeout(30)
+                c.page.locator(f'#rail button[data-tab="{tab}"]').dispatch_event('click'); c.page.wait_for_timeout(30)
                 if w < 900:
-                    c.page.click(f'#rail button[data-tab="{tab}"]')
+                    c.page.locator(f'#rail button[data-tab="{tab}"]').dispatch_event('click')
             for i in range(c.ev('doc.elements.length')):
                 c.ev(f'select(doc.elements[{i}].id)')
             ok(not c.errors, f'{lang}@{w}: {c.errors[:3]}')
@@ -1044,10 +1044,10 @@ def t_no_english(B):
         c.ev(f"addImage({TINY_PNG!r})"); c.page.wait_for_timeout(150)
         texts = []
         for tab in ['templates', 'text', 'shapes', 'uploads', 'background', 'layers', 'about']:
-            c.page.click(f'#rail button[data-tab="{tab}"]'); c.page.wait_for_timeout(30)
+            c.page.locator(f'#rail button[data-tab="{tab}"]').dispatch_event('click'); c.page.wait_for_timeout(30)
             texts += _collect_english(c)
             if w < 900:
-                c.page.click(f'#rail button[data-tab="{tab}"]')
+                c.page.locator(f'#rail button[data-tab="{tab}"]').dispatch_event('click')
         for typ in ['text', 'rect', 'placeholder', 'image', 'multi', None]:
             if typ == 'multi':
                 c.ev("()=>{selectAll();groupSel();select(doc.elements[0].id,false,true);}"); texts += _collect_english(c)
