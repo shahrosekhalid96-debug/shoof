@@ -8,6 +8,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Shoof — free open-source design editor</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2714%27 fill=%27%231d2330%27/%3E%3Ccircle cx=%2721%27 cy=%2732%27 r=%2711%27 fill=%27none%27 stroke=%27white%27 stroke-width=%275%27/%3E%3Ccircle cx=%2743%27 cy=%2732%27 r=%2711%27 fill=%27none%27 stroke=%27white%27 stroke-width=%275%27/%3E%3Ccircle cx=%2724%27 cy=%2733%27 r=%275%27 fill=%27%23e8590c%27/%3E%3Ccircle cx=%2746%27 cy=%2733%27 r=%275%27 fill=%27%23e8590c%27/%3E%3C/svg%3E">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<meta name="theme-color" content="#1d2330">
 <link rel="stylesheet" href="fonts/fonts.css">
 <script src="vendor/konva.min.js"></script>
 <style>
@@ -203,6 +206,7 @@ footer.credit{font-size:11.5px;color:var(--muted);margin-top:12px;line-height:1.
 .hero{padding:56px 24px 60px;text-align:center;border-bottom:1px solid #f0edf7;background:radial-gradient(circle at 12% 18%,#ffe1ea 0,rgba(255,225,234,0) 42%),radial-gradient(circle at 88% 12%,#dfe6ff 0,rgba(223,230,255,0) 44%),radial-gradient(circle at 70% 95%,#d9f5ea 0,rgba(217,245,234,0) 46%),linear-gradient(135deg,#f5efff,#fff3e8)}
 .hero h1{margin:0 0 8px;font:700 clamp(26px,4vw,42px)/1.15 Poppins,Inter,"IBM Plex Sans Arabic",sans-serif;letter-spacing:-.01em}
 .hsub{margin:0 auto 24px;color:#4b5263;max-width:560px;font-size:15px;line-height:1.5}
+.hdesc{max-width:640px;margin:16px auto 0;text-align:start}.hdesc label{display:flex;align-items:center;gap:6px;font-size:14px;font-weight:600;color:var(--ink);margin:0 0 6px 6px}.hdesc label svg{width:16px;height:16px;color:var(--accent)}.hdrow{display:flex;gap:8px}.hdrow input{flex:1;min-width:0;height:46px;border-radius:999px;border:1px solid #ddd6f6;padding:0 18px;font-size:15px;background:#fff}.hdrow button{height:46px;border-radius:999px;padding:0 22px;background:var(--ink);color:#fff;border:0;font-weight:700}.hdrow button:disabled{opacity:.6}.hdnote{margin:6px 0 0 8px;font-size:12px;color:var(--muted)}
 .hsearch{display:flex;align-items:center;gap:10px;max-width:640px;margin:0 auto;background:#fff;border-radius:999px;padding:0 20px;height:56px;box-shadow:0 8px 28px rgba(108,76,245,.13),0 1px 3px rgba(0,0,0,.06);border:1px solid #ece8f8;cursor:text}
 .hsearch svg{width:20px;height:20px;color:var(--muted);flex:none}
 .hsearch input{flex:1;border:0;outline:0;font-size:16px;background:transparent;min-width:0;height:100%}
@@ -406,6 +410,7 @@ const I18N={
   qaPost:'Make a post about…',qaTranslate:'Translate EN ↔ AR',qaRewrite:'Rewrite copy',qaCaption:'Caption + hashtags',qaBilingual:'Make it bilingual',qaRestyle:'Restyle colours & fonts',qaFix:'Fix my design',
   qaPostNeed:'Write the topic in the box first, then press “Make a post about…” again.',
   gradient:'Gradient',gradLinear:'Linear',gradRadial:'Radial',gradType:'Type',gradColors:'Colours',gradAngle:'Angle',gradSwap:'Swap colours',gradNone:'Remove gradient',gradPreset:'Gradient preset {n}',
+  descLabel:'Or describe what you need',descPh:'e.g. Instagram post for my bakery: 20% off cakes this Friday',descGo:'Make it',descWorking:'Making…',descShort:'Write a few words about what you need first.',descDone:'Done. Every word and colour can still be changed.',descLocal:'Picked the closest template. Change the words to yours.',descLimit:'The free AI writer is busy for today. Picked the closest template instead.',descNote:'On shoof.pages.dev a free AI writes the words; only this sentence is sent. Everything else stays on your device.',
   home:'Home',homeTitle:'What will you design today?',homeSub:'Free templates. No account, no watermark. Your designs stay in your browser.',homeSearchPh:'Search templates, e.g. sale, event, story',
   homeContinue:'Continue your design',homeOpenEditor:'Open the editor',homeBlank:'Blank design',homeCats:'Start with a size',homeTrending:'Trending',homePicks:'Picks for you',homeRecent:'Your design',
   homeResults:'Templates for “{q}”',homeNewHint:'Blank {name} ready. Pick a template or add text and shapes.',
@@ -1446,12 +1451,33 @@ function homeListHTML(){const q=homeQ.trim();
  if(q){const list=TEMPLATES.map((tp,i)=>[tp,i]).filter(([tp])=>tplMatches(tp,q,'all'));return `<section class="hsec"><h2>${esc(t('homeResults',{q}))}</h2>`+(list.length?`<div class="hgrid">${list.map(([,i])=>tplCard(i)).join('')}</div>`:`<p class="empty">${esc(t('noTpl'))}</p>`)+'</section>';}
  const recent=homeWork&&homeRecentImg?`<section class="hsec"><h2>${esc(t('homeRecent'))}</h2><div class="hrow"><button class="hcard" data-recent><span class="hthumb"><img alt="" src="${esc(homeRecentImg)}"></span><span class="hname">${esc(t('homeContinue'))}</span></button></div></section>`:'';
  return recent+homeRow('homeTrending',HOME_TRENDING)+homeRow('homePicks',HOME_PICKS);}
+/* ============ describe it: the user's words pick a template (on the device) and, on the public site, a free Cloudflare AI writes the words ============ */
+const DESC_FORMATS=[[/\b(story|stories|reel|status|vertical)\b/,'story'],[/\b(poster|flyer|a4|print|leaflet)\b/,'poster'],[/\b(presentation|slides?|deck|pitch)\b/,'deck'],[/\b(certificate|badge|award)\b/,'cert'],[/\b(menu|price ?list)\b/,'food']];
+let descBusy=false;
+function descCandidates(text){const low=text.toLowerCase(),words=low.split(/[^a-z0-9؀-ۿ]+/).filter(w=>w.length>2),fmt=(DESC_FORMATS.find(([re])=>re.test(low))||[])[1];
+ return TEMPLATES.map((tp,i)=>{if(tp.cats.includes('arabic')&&!hasArabic(text))return null;const hay=(tp.key.replace(/_/g,' ')+' '+(tp.kw||'')+' '+t('tpl_'+tp.key)+' '+tp.cats.join(' ')).toLowerCase();let sc=0;words.forEach(w=>{if(hay.includes(w))sc+=2;else if(w.length>4&&hay.includes(w.slice(0,-1)))sc+=1;});
+  if(fmt)sc+=tp.cats.includes(fmt)?4:-3;if(TPL_NEW.test(tp.key))sc+=0.5;return {i,k:tp.key,n:t('tpl_'+tp.key),sc};}).filter(Boolean).sort((a,b)=>b.sc-a.sc).slice(0,10);}
+/* put the words into the template: biggest text = headline, next = supporting line, text sitting on a rounded button = button label */
+function fillDescribed(r){const els=doc.pages[0].elements,txt=els.filter(e=>e.type==='text'&&!e.curve&&String(e.text).trim().length>1),onPill=e=>{const cx=e.x+e.width/2,cy=e.y+e.fontSize*0.6;return els.some(q=>(q.type==='rect')&&q.radius>=q.height*0.3&&q.height<e.fontSize*4&&cx>=q.x&&cx<=q.x+q.width&&cy>=q.y&&cy<=q.y+q.height);};
+ const cta=r.cta&&txt.find(e=>onPill(e)&&String(e.text).length<=30),rest=txt.filter(e=>e!==cta).sort((a,b)=>b.fontSize-a.fontSize),put=(e,v)=>{if(!e||!v)return;const h=Math.max(e.height||0,estTextH(e));e.text=String(v).slice(0,LIM.text);fitText(e,h);};
+ put(rest[0],r.headline);put(rest.find((e,j)=>j>0&&e.fontSize<rest[0].fontSize*0.8),r.subline);put(cta,r.cta);}
+async function describeGo(){const inp=$('#homeDesc'),text=(inp&&inp.value||'').trim().slice(0,300);if(text.length<3){toast(t('descShort'),3000);if(inp)inp.focus();return;}if(descBusy)return;
+ const cands=descCandidates(text);if(!cands.length){toast(t('noTpl'),3000);return;}descBusy=true;const btn=$('#homeDescGo');if(btn){btn.disabled=true;btn.textContent=t('descWorking');}
+ let r=null,why='';try{const ac=new AbortController(),tm=setTimeout(()=>ac.abort(),20000);const res=await fetch('api/describe',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({text,candidates:cands.map(c=>({k:c.k,n:c.n}))}),signal:ac.signal});clearTimeout(tm);
+  if(res.ok&&/json/.test(res.headers.get('content-type')||'')){const j=await res.json();if(j&&typeof j.template==='string')r=j;}else why=res.status===429?'descLimit':'';}catch(e){}
+ const pick=(r&&cands.find(c=>c.k===r.template))||cands[0];hideHome();useTemplate(pick.i);
+ if(r){const fs=[...new Set(doc.pages[0].elements.filter(e=>e.type==='text').map(e=>e.fontFamily))];await Promise.all(fs.map(loadFont));fillDescribed({headline:clean1(r.headline,60),subline:clean1(r.subline,140),cta:clean1(r.cta,28)});fullRender();commit();toast(t('descDone'),4000);}
+ else toast(t(why||'descLocal'),5000);
+ descBusy=false;if(btn){btn.disabled=false;btn.textContent=t('descGo');}}
+function clean1(v,n){return String(v==null?'':v).replace(/[\u0000-\u001f<>]/g,' ').replace(/\s+/g,' ').trim().slice(0,n);}
 function renderHome(){const h=$('#home');
  h.innerHTML=`<div class="hero"><h1 id="homeTitle">${esc(t('homeTitle'))}</h1><p class="hsub">${esc(t('homeSub'))}</p>
  <label class="hsearch">${ICON.search}<input type="search" id="homeSearch" dir="auto" maxlength="80" value="${esc(homeQ)}" placeholder="${esc(t('homeSearchPh'))}" aria-label="${esc(t('homeSearchPh'))}"></label>
+ <form class="hdesc" id="homeDescForm"><label for="homeDesc">${ICON_SET.sparkles?SVG(`<path d="${ICON_SET.sparkles}"/>`):''}<span>${esc(t('descLabel'))}</span></label><div class="hdrow"><input id="homeDesc" dir="auto" maxlength="300" autocomplete="off" placeholder="${esc(t('descPh'))}"><button type="submit" id="homeDescGo">${esc(t('descGo'))}</button></div><p class="hdnote">${esc(t('descNote'))}</p></form>
  <div class="hactions"><button class="primary" id="homeGo">${esc(t(homeWork?'homeContinue':'homeOpenEditor'))}</button><button id="homeBlank">${esc(t('homeBlank'))}</button></div></div>
  <div class="hbody"><h2>${esc(t('homeCats'))}</h2><div class="htiles">${HOME_TILES.map(([lk,sz,,bg,fg,ico])=>`<button class="tile" data-tile="${sz}"><span class="ti" style="background:${bg};color:${fg}">${SVG(ico)}</span>${esc(t(lk))}</button>`).join('')}</div><div id="homeList">${homeListHTML()}</div></div>`;
- const q=$('#homeSearch');q.addEventListener('input',()=>{homeQ=q.value.slice(0,80);$('#homeList').innerHTML=homeListHTML();});}
+ const q=$('#homeSearch');q.addEventListener('input',()=>{homeQ=q.value.slice(0,80);$('#homeList').innerHTML=homeListHTML();});
+ $('#homeDescForm').addEventListener('submit',ev=>{ev.preventDefault();describeGo();});}
 function showHome(){hideEditor();closeMenus();setDrawer(false);closeSheet();homeWork=homeWork||undoStack.length>0;
  homeRecentImg=null;if(homeWork&&doc.elements.length){try{homeRecentImg=renderExport('image/png',Math.min(1,360/Math.max(doc.width,doc.height)));}catch(e){}}
  renderHome();$('#home').hidden=false;document.body.classList.add('home-on');$('#home').scrollTop=0;}
@@ -2070,7 +2096,8 @@ async function runClaude(action){
 }
 
 /* ============ boot ============ */
-(function boot(){
+function regSW(){try{if('serviceWorker'in navigator&&location.protocol==='https:'&&!/claude|anthropic/.test(location.hostname))navigator.serviceWorker.register('sw.js').catch(()=>{});}catch(e){}}
+(function boot(){regSW();
 (function(){try{['lang','autosave'].forEach(k=>{const o=localStorage.getItem('rasm.'+k);if(o!==null&&localStorage.getItem('shoof.'+k)===null)localStorage.setItem('shoof.'+k,o);if(o!==null)localStorage.removeItem('rasm.'+k);});}catch(e){}})();
  loadBrand();
  let saved=null;try{saved=localStorage.getItem('shoof.lang');}catch(e){}

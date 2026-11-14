@@ -23,16 +23,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Assemble static site
-        run: |
-          mkdir -p _site
-          cp index.html LICENSE _site/
-          cp welcome.html _site/ && cp -r welcome _site/   # landing page and its example pictures
-          cp -r vendor fonts _site/              # required: the app loads Konva, jsPDF and fonts locally
-          [ -d templates ] && cp -r templates _site/
-          [ -f manifest.webmanifest ] && cp manifest.webmanifest _site/
-          [ -f sw.js ]     && cp sw.js _site/
-          [ -d icons ]     && cp -r icons _site/
-          touch _site/.nojekyll
+        run: bash tools/build-site.sh   # same files as Cloudflare: landing page at /, editor at /editor
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

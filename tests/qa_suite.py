@@ -72,7 +72,7 @@ def route(r):
             return r.fulfill(path=APP, content_type='text/html; charset=utf-8')
         full = os.path.normpath(os.path.join(APP_DIR, rel))
         if full.startswith(APP_DIR + os.sep) and os.path.isfile(full):
-            ctype = {'.js': 'application/javascript', '.mjs': 'application/javascript', '.wasm': 'application/wasm', '.css': 'text/css', '.woff2': 'font/woff2', '.webp': 'image/webp', '.html': 'text/html; charset=utf-8'}.get(os.path.splitext(full)[1]) \
+            ctype = {'.js': 'application/javascript', '.mjs': 'application/javascript', '.wasm': 'application/wasm', '.css': 'text/css', '.woff2': 'font/woff2', '.webp': 'image/webp', '.webmanifest': 'application/manifest+json', '.html': 'text/html; charset=utf-8'}.get(os.path.splitext(full)[1]) \
                 or mimetypes.guess_type(full)[0] or 'application/octet-stream'
             return r.fulfill(path=full, content_type=ctype)
         return r.fulfill(status=404, body='not found')
@@ -2370,7 +2370,7 @@ def t_landing(B):
         pg = c.page.context.new_page(); pg.set_viewport_size({'width': w, 'height': h}); errs = []; pg.on('pageerror', lambda e: errs.append(str(e)))
         pg.goto(base + '/welcome.html'); pg.wait_for_timeout(900)
         eq(pg.title(), 'Shoof — free design for everyone', 'title'); ok(pg.locator('h1').is_visible(), 'headline')
-        eq(pg.evaluate("[...document.querySelectorAll('a.btn')].map(a=>a.getAttribute('href')).filter(x=>x!=='#examples')"), ['./', './', './'], 'buttons open the editor')
+        eq(pg.evaluate("[...document.querySelectorAll('a.btn')].map(a=>a.getAttribute('href')).filter(x=>x!=='#examples')"), ['./editor', './editor', './editor'], 'buttons open the editor')
         pg.evaluate("window.scrollTo(0,document.body.scrollHeight)"); pg.wait_for_timeout(900)
         eq(pg.evaluate("Promise.all([...document.images].map(i=>fetch(i.src).then(r=>r.ok&&/image/.test(r.headers.get('content-type')))) ).then(a=>a.filter(x=>!x).length)"), 0, 'every picture exists'); ok(pg.evaluate("[...document.images].filter(i=>i.complete&&i.naturalWidth).length>=3"), 'pictures show'); eq(pg.evaluate("document.documentElement.scrollWidth"), w, f'no sideways scroll at {w}')
         ok(pg.evaluate("[...document.querySelectorAll('.reveal')].filter(n=>n.getBoundingClientRect().top<innerHeight).every(n=>getComputedStyle(n).opacity==='1')"), 'sections on screen are revealed')
@@ -2382,6 +2382,66 @@ def t_landing(B):
     pg = c.page.context.new_page(); pg.emulate_media(reduced_motion='reduce'); pg.goto(base + '/welcome.html'); pg.wait_for_timeout(300)
     ok(pg.evaluate("getComputedStyle(document.querySelector('.track')).animationName==='none'&&!document.documentElement.classList.contains('js')"), 'motion is off when the visitor asks for less motion'); pg.close()
     ok(not c.errors, c.errors); c.close()
+
+
+@test('describe_it_ai_and_fallback')
+def t_describe(B):
+    import subprocess
+    c = Ctx(B, home=True)
+    ok(c.page.locator('#homeDesc').is_visible(), 'describe box on the home screen')
+    cands = c.ev("descCandidates('Instagram story for my bakery: 20% off cakes this Friday')")
+    ok(len(cands) == 10 and all(TPL in c.ev('TEMPLATES.map(t=>t.key)') for TPL in [x['k'] for x in cands]), 'ten real candidates')
+    ok(c.ev("TEMPLATES[%d].cats.includes('story')" % cands[0]['i']), f'format word picks a story template ({cands[0]["k"]})')
+    # 1. no AI here (local test server answers 404): picks the closest template, says so, words unchanged
+    c.page.fill('#homeDesc', 'Poster for our farmers market this Saturday'); c.page.click('#homeDescGo')
+    c.page.wait_for_function("!homeOpen()&&!descBusy", timeout=20000)
+    k1 = c.ev("TEMPLATES.find(t=>JSON.stringify(sanitizeDoc(t.make()).pages[0].elements.map(e=>e.text||''))===JSON.stringify(doc.pages[0].elements.map(e=>e.text||'')))?.key")
+    ok(k1 and c.ev("TEMPLATES.find(t=>t.key==='%s').cats.includes('poster')" % k1) or c.ev("doc.height>doc.width"), f'fallback picked a poster ({k1})')
+    # 2. AI answers: chosen template, words filled in, one undo step, request carries only the sentence and candidates
+    seen = []
+    def fake(route):
+        body = json.loads(route.request.post_data); seen.append(body)
+        route.fulfill(status=200, content_type='application/json', body=json.dumps({'template': body['candidates'][1]['k'], 'headline': 'Friday Cake Sale', 'subline': '20% off every cake this Friday only', 'cta': 'Order now'}))
+    c.page.route('**/api/describe', fake)
+    c.ev('showHome()'); c.page.fill('#homeDesc', 'Instagram post for my bakery: 20% off cakes this Friday'); c.page.click('#homeDescGo')
+    c.page.wait_for_function("!homeOpen()&&!descBusy", timeout=20000); c.page.wait_for_timeout(300)
+    eq(sorted(seen[0].keys()), ['candidates', 'text'], 'only the sentence and template names are sent'); eq(len(seen[0]['candidates']), 10, 'ten candidates')
+    texts = c.ev("doc.pages[0].elements.filter(e=>e.type==='text').map(e=>e.text)")
+    ok('Friday Cake Sale' in texts and '20% off every cake this Friday only' in texts, f'headline and line filled {texts}')
+    ok(c.ev("doc.pages[0].elements[0].role==='bg'"), 'background stays an editable block')
+    ok(c.ev("doc.pages[0].elements.filter(e=>e.type==='text').every(e=>e.fontSize>=4)"), 'text still sized')
+    c.page.keyboard.press('Control+z'); c.page.wait_for_timeout(150)
+    ok('Friday Cake Sale' not in c.ev("doc.pages[0].elements.filter(e=>e.type==='text').map(e=>e.text)"), 'undo removes the AI words')
+    # 3. hostile AI output stays plain text
+    c.page.unroute('**/api/describe'); c.page.route('**/api/describe', lambda r: r.fulfill(status=200, content_type='application/json', body=json.dumps({'template': 'nope', 'headline': '<img src=x onerror=alert(1)>' + 'x' * 400, 'subline': 'ok', 'cta': ''})))
+    c.ev('showHome()'); c.page.fill('#homeDesc', 'sale post'); c.page.click('#homeDescGo'); c.page.wait_for_function("!homeOpen()&&!descBusy", timeout=20000)
+    ok(not c.ev("!!document.querySelector('img[src=x]')") and c.ev("doc.pages[0].elements.filter(e=>e.type==='text').every(e=>e.text.length<=60||!/onerror/.test(e.text))"), 'AI text never becomes HTML and is capped')
+    c.ev('showHome()'); c.page.fill('#homeDesc', 'a'); c.page.click('#homeDescGo'); ok(c.ev('homeOpen()'), 'too short stays on home')
+    # 4. the server function itself: valid JS that exports the handlers
+    r = subprocess.run(['node', '-e', "import('%s').then(m=>console.log(typeof m.onRequestPost, typeof m.onRequest))" % os.path.join(APP_DIR, 'functions', 'api', 'describe.js')], capture_output=True, text=True)
+    eq(r.stdout.strip(), 'function function', 'Cloudflare function loads')
+    errs = [e for e in c.errors if 'status of 404' not in e]  # the no-AI step answers 404 on purpose
+    ok(not errs, errs); c.close()
+
+
+@test('install_offline_and_front_door')
+def t_pwa(B):
+    import subprocess, shutil
+    man = json.load(open(os.path.join(APP_DIR, 'manifest.webmanifest'), encoding='utf-8'))
+    eq(man['start_url'], './editor', 'installed app opens the editor'); eq(man['display'], 'standalone', 'opens like an app')
+    for ic in man['icons']: eq(png_size(open(os.path.join(APP_DIR, ic['src']), 'rb').read()), tuple(int(x) for x in ic['sizes'].split('x')), ic['src'])
+    r = subprocess.run(['node', '--check', os.path.join(APP_DIR, 'sw.js')], capture_output=True, text=True); eq(r.returncode, 0, 'service worker parses ' + r.stderr)
+    sw = open(os.path.join(APP_DIR, 'sw.js'), encoding='utf-8').read(); ok("/api/" in sw and "url.origin !== location.origin" in sw, 'never caches the AI writer or other sites')
+    c = Ctx(B); ok(c.ev("document.querySelector('link[rel=manifest]').getAttribute('href')") == 'manifest.webmanifest', 'editor links the manifest')
+    ok(not c.ev("navigator.serviceWorker&&navigator.serviceWorker.controller"), 'no service worker on the test (non-https) host'); c.close()
+    out = os.path.join(APP_DIR, '_site'); shutil.rmtree(out, ignore_errors=True)
+    r = subprocess.run(['bash', os.path.join(APP_DIR, 'tools', 'build-site.sh')], capture_output=True, text=True); eq(r.returncode, 0, r.stderr)
+    try:
+        ok('Designs that look' in open(os.path.join(out, 'index.html'), encoding='utf-8').read(), 'home page is the landing page')
+        eq(open(os.path.join(out, 'editor.html'), encoding='utf-8').read(), open(APP, encoding='utf-8').read(), 'editor at /editor')
+        for f in ['sw.js', 'manifest.webmanifest', 'icons/icon-512.png', 'welcome/big_sale.webp', 'vendor/ai/u2netp.onnx', 'fonts/fonts.css']: ok(os.path.exists(os.path.join(out, f)), f)
+        for f in ['tests', 'tools', 'functions', 'CLAUDE.md']: ok(not os.path.exists(os.path.join(out, f)), f'{f} not published')
+    finally: shutil.rmtree(out, ignore_errors=True)
 
 
 def main():

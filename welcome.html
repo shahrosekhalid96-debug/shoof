@@ -6,6 +6,9 @@
 <title>Shoof — free design for everyone</title>
 <meta name="description" content="Shoof is a free, open-source design editor that runs in your browser. Posts, posters, logos and presentations, with no account and nothing uploaded.">
 <meta name="theme-color" content="#6c4cf5">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
 <style>
 /* Shoof landing page: one file, no libraries, no outside requests. Motion is CSS only and switches off for people who ask for reduced motion. */
 @font-face{font-family:'Poppins';font-weight:700;font-display:swap;src:url(fonts/poppins-latin-700-normal.woff2) format('woff2')}
@@ -124,13 +127,13 @@ footer .sp{flex:1}
 <body>
 <div class="wrap">
  <header class="top">
-  <a href="./" title="Open the editor">
+  <a href="./editor" title="Open the editor">
    <svg class="logo" viewBox="0 0 104 40" role="img" aria-label="Shoof"><title>Shoof</title><text x="0" y="30" font-family="Poppins,Inter,system-ui,sans-serif" font-weight="700" font-size="30" fill="currentColor">sh</text><circle cx="54" cy="20" r="9.5" fill="none" stroke="currentColor" stroke-width="4"/><circle cx="78" cy="20" r="9.5" fill="none" stroke="currentColor" stroke-width="4"/><circle class="pupil" cx="57" cy="21" r="4" fill="#e8590c"/><circle class="pupil" cx="81" cy="21" r="4" fill="#e8590c"/><text x="92" y="30" font-family="Poppins,Inter,system-ui,sans-serif" font-weight="700" font-size="30" fill="currentColor">f</text></svg>
   </a>
   <span class="sp"></span>
   <a class="link" href="#inside">What's inside</a>
   <a class="link" href="https://github.com/shahrosekhalid96-debug/shoof" rel="noopener">Source code</a>
-  <a class="btn primary small" href="./">Open Shoof</a>
+  <a class="btn primary small" href="./editor">Open Shoof</a>
  </header>
 
  <main>
@@ -140,7 +143,7 @@ footer .sp{flex:1}
    <h1 class="rise">Designs that look <em>designed</em>, made in minutes.</h1>
    <p class="lede rise">Shoof is a design editor that runs in your browser. Make posts, posters, logos and presentations from 122 templates, then download them in the format you need.</p>
    <div class="cta rise">
-    <a class="btn primary" href="./">Start designing <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+    <a class="btn primary" href="./editor">Start designing <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
     <a class="btn" href="#examples">See examples</a>
    </div>
    <p class="note rise">Nothing to install. Your designs stay on your device.</p>
@@ -203,7 +206,7 @@ footer .sp{flex:1}
   <div class="band reveal">
    <h2>Ready when you are.</h2>
    <p>It opens in a second and costs nothing. Arabic and English are both supported.</p>
-   <a class="btn" href="./">Open Shoof <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+   <a class="btn" href="./editor">Open Shoof <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
   </div>
  </section>
 
@@ -211,10 +214,11 @@ footer .sp{flex:1}
   <span>Shoof is free software under the AGPL-3.0 licence.</span>
   <span class="sp"></span>
   <a href="https://github.com/shahrosekhalid96-debug/shoof" rel="noopener">Source code on GitHub</a>
-  <a href="./">Open the editor</a>
+  <a href="./editor">Open the editor</a>
  </footer>
 </div>
 <script>
+try{if('serviceWorker'in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(function(){});}catch(e){}
 /* fade sections in as they scroll into view; skipped entirely for reduced motion or old browsers */
 (function(){if(!('IntersectionObserver' in window)||matchMedia('(prefers-reduced-motion: reduce)').matches)return;document.documentElement.classList.add('js');
 var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{rootMargin:'0px 0px -8% 0px',threshold:0.08});

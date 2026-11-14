@@ -5,7 +5,7 @@
 **A free, open-source design editor for social posts and posters — in English and Arabic.**
 **محرر تصاميم مجاني ومفتوح المصدر للمنشورات والملصقات — بالعربية والإنجليزية.**
 
-[Live demo](https://shoof.pages.dev/) · [About Shoof](https://shoof.pages.dev/welcome.html) · [Report a bug](../../issues/new?template=bug_report.md) · [Request a feature](../../issues/new?template=feature_request.md) · [Contributing](CONTRIBUTING.md) · [العربية](#العربية)
+[Open Shoof](https://shoof.pages.dev/editor) · [About Shoof](https://shoof.pages.dev/) · [Report a bug](../../issues/new?template=bug_report.md) · [Request a feature](../../issues/new?template=feature_request.md) · [Contributing](CONTRIBUTING.md) · [العربية](#العربية)
 
 `AGPL-3.0` · no account · no watermark · no tracking · works offline · runs entirely in your browser
 
@@ -30,7 +30,9 @@ Arabic is fully supported, not added as an afterthought. The interface switches 
 - **Multi-page designs**: a pages bar to add, duplicate, reorder and delete pages (great for decks and carousels)
 - **Export**: PNG (also with no background, or double size), JPG, WebP, PDF (all pages), **SVG** (shapes, icons and text stay editable vectors) and **PowerPoint .pptx** with editable text
 - **122 original templates and 35 mockups** (three-phone fan, laptop with phone, TV, story frame, video thumbnail, chat bubbles, review card, tote bag, mug, shopping bag, ID card, shop sign, magazine cover, gallery wall and more): phones, laptop, monitor, browser, watch, billboard, framed poster, business cards and photo grids, all built from editable shapes with photo slots; new template families for app and website launches, price lists, certificates, name badges, photo grids and big-number posts
-- **Landing page**: `welcome.html`, a short, light introduction to share with new people
+- **Landing page** at https://shoof.pages.dev/ ; the editor is at https://shoof.pages.dev/editor
+- **Describe it (free)**: type what you need and a free AI picks a template and writes the words (only that sentence is sent; on other copies it simply picks the closest template)
+- **Install and use offline**: add Shoof to your phone or computer from the browser; once opened it works without internet
 - **Logo maker (free)**: type a name, tagline and what you do, pick a style, and choose from 24 logo ideas at a time; each one opens as a normal editable design, or saves straight into your brand kit
 - **Bulk create (free)**: paste rows from Excel or Google Sheets, drop `{Column}` tags into a design, and get one page per row or a zip of PNGs (name cards, price tags, certificates, one post per product)
 - **Background remover (free, private)**: a small AI model runs in your browser, so photos never leave your device
