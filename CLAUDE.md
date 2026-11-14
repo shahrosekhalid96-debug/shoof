@@ -79,6 +79,7 @@ git push                                    # Actions: tests + Pages deploy (~20
 gh run list -R shahrosekhalid96-debug/shoof
 ```
 - Chrome at `/usr/bin/google-chrome` or Playwright Chromium (auto-detected). Tests serve local files via a fake host and fail on any external request.
+- Branch protection: ruleset "Protect main" (id 27258013, active, 2026-11-14) blocks deleting and force-pushing `main`; normal pushes still allowed. Required status checks deliberately NOT on (would force PRs).
 - GitHub notes: this session's proxy allows repo-scoped git/gh only. Repo settings (Pages, app access) must be changed in Shary's Chrome (Claude in Chrome, "Browser 2" is signed in to GitHub). The Claude GitHub App has access to `shoof` and `cleantube-shield-updates`.
 
 ## Licence rules for assets
