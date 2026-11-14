@@ -2511,7 +2511,7 @@ def t_shoofy_chat(B):
     ok(c.page.locator('#shMsgs .shchips button').count() >= 4, 'hello message with quick chips')
     def say(q, wait='#shMsgs .shm.bot >> nth=-1'):
         n = c.ev("SH.msgs.length"); c.page.fill('#shIn', q); c.page.press('#shIn', 'Enter')
-        c.page.wait_for_function(f"SH.msgs.length>={n+2}&&!SH.busy", timeout=8000)
+        c.page.wait_for_function(f"SH.msgs.length>={n+2}&&!SH.busy&&!SH.tw", timeout=8000)
     say('bakery poster for a sale')
     cards = c.page.locator('#shMsgs .shm.bot:last-child [data-shtpl]')
     ok(cards.count() >= 3, 'finds templates as cards (on-device)')
@@ -2537,12 +2537,32 @@ def t_shoofy_chat(B):
     ok(c.ev("JSON.stringify([...colorUsage(doc).keys()].sort())") != before, 'AI palette applied'); eq(c.ev("JSON.stringify(brand)"), brand0, 'brand kit left untouched')
     c.page.unroute('**/api/shoofy'); c.page.route('**/api/shoofy', lambda r: r.fulfill(status=502, body='{}'))
     say('make the background black'); eq(c.ev("bgBlock().fill.toLowerCase()"), '#111111', 'falls back to the on-device brain when the AI fails')
+    # harder requests: two-tone background on-device, and detailed edits from the AI
+    c.page.unroute('**/api/shoofy'); c.ev("localStorage.removeItem('shoof.shAI')")
+    say('find a mix combination of two tone colours and do that to my background it should be warm and light')
+    ok(c.ev("!!(bgBlock().fillGradient&&bgBlock().fillGradient.stops.length===2)"), 'two-tone warm light background (on-device)')
+    c.ev("localStorage.setItem('shoof.shAI','1')")
+    n_head = c.ev("shDesign().elements.find(x=>x.type==='text').n")
+    c.page.route('**/api/shoofy', lambda r: r.fulfill(status=200, content_type='application/json', body=json.dumps({'reply': 'Bigger, bold, red, at the top, with a shadow.', 'actions': [
+        {'do': 'set', 'target': f'el:{n_head}', 'props': {'fontSize': 120, 'bold': True, 'fill': '#c92a2a', 'shadow': True, 'evil': '<script>'}},
+        {'do': 'move', 'target': f'el:{n_head}', 'to': 'top'},
+        {'do': 'set', 'target': 'all_shapes', 'props': {'gradient': {'colors': ['#ff0000', '#0000ff'], 'angle': 45}}},
+        {'do': 'set', 'target': 'el:9999', 'props': {'fill': '#000000'}},
+        {'do': 'set_background', 'colors': ['#111111', 'not-a-colour']}]})))
+    u0 = c.ev("undoStack.length"); say('make the main text huge, bold and red at the top with a shadow')
+    e = c.ev(f"(()=>{{const x=doc.pages[doc.page].elements[{n_head}];return {{fs:x.fontSize,b:x.bold,f:x.fill,sh:x.shadowBlur>0,y:elBox(x).y,evil:'evil' in x}}}})()")
+    ok(e['fs'] == 120 and e['b'] and e['f'] == '#c92a2a' and e['sh'] and not e['evil'], f'detailed edit applied safely {e}')
+    ok(e['y'] < c.ev("doc.height*0.12"), 'moved to the top')
+    eq(c.ev("undoStack.length") - u0, 1, 'all of it is one undo step')
+    ok(c.ev("!!(bgBlock().fillGradient)"), 'a one-colour "gradient" is refused (background unchanged)')
+    c.page.unroute('**/api/shoofy')
     c.page.keyboard.press('Escape'); ok(not c.page.locator('#shChat').is_visible(), 'Esc closes the chat')
     c.errors = [e for e in c.errors if '502' not in e]  # the faked AI failure above
     ok(not c.errors, c.errors); c.close()
     m = Ctx(B, w=390, h=844, init="localStorage.setItem('shoof.buddy','on')")
     m.page.click('#buddy'); bb = m.page.locator('#shChat').bounding_box()
-    ok(bb['x'] == 0 and bb['width'] >= 389, f'phone: chat is a bottom sheet {bb}'); ok(not m.page.locator('#buddy').is_visible(), 'Shoofy steps aside while chatting')
+    ok(bb['x'] == 0 and bb['width'] >= 389, f'phone: chat is a bottom sheet {bb}')
+    mb = m.page.locator('#buddy').bounding_box(); ok(m.page.locator('#buddy').is_visible() and mb['y'] < bb['y'] + 10 and mb['y'] + mb['height'] > bb['y'], f'Shoofy sits on top of the chat {mb} {bb}')
     ok(not m.errors, m.errors); m.close()
 
 
