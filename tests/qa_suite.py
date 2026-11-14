@@ -2546,6 +2546,15 @@ def t_shoofy_learns(B):
     ok(any(b.get('feedback') == {'rid': '7.' + 'a' * 64, 'v': -1} for b in sent), f'Undo reports a bad answer {[b for b in sent if "feedback" in b]}')
     c.page.unroute('**/api/shoofy')
     ok(c.page.locator('#shChat .shnote').is_visible(), 'privacy note visible')
+    # the AI is told what each item is and how the page is laid out top to bottom
+    c.ev("(()=>{const i=TEMPLATES.findIndex(x=>/giveaway/.test(x.key));useTemplate(i);})()")
+    d = c.ev("shDesign()"); roles = {e['n']: e['role'] for e in d['elements']}
+    ok(roles[0].startswith('page background') and 'full-width band covering the top' in roles[2], f'background and band named {roles.get(0)} / {roles.get(2)}')
+    ok(any(r.startswith('card holding') for r in roles.values()) and any(r.startswith('badge') for r in roles.values()) and any(r.startswith('button/pill') for r in roles.values()), 'cards, badges, pills named')
+    ok('band el:2' in d['layout'] and 'page background el:0' in d['layout'], 'layout map ' + d['layout'])
+    c.ev("shTargets('el:0')[0].fill='#ffe066'"); eq(c.ev("shTargets('el:0').length"), 1, 'page background addressable for colour')
+    c.ev("(async()=>{await shRun([{do:'delete',target:'el:0'},{do:'move',target:'el:0',to:'top'}]);})()"); c.page.wait_for_timeout(200)
+    ok(c.ev("!!bgBlock()&&doc.elements[0].role==='bg'&&bgBlock().x===0&&bgBlock().y===0"), 'but never deleted or moved')
     ok(not c.errors, c.errors); c.close()
 
 @test('shoofy_chat')
