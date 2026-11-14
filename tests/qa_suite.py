@@ -2440,7 +2440,7 @@ def t_shoofy(B):
     ok('Shoofy suggests' in c.page.inner_text('#buddyBub'), 'pops a suggestion by itself')
     c.page.click('#buddyBub [data-bb="close"] >> nth=0') if c.page.locator('#buddyBub .bbacts [data-bb="close"]').count() == 0 else c.page.click('#buddyBub .bbacts [data-bb="close"]')
     # click the helper: walk through and fix
-    c.page.click('#buddy'); c.page.wait_for_selector('#buddyBub [data-bb="fix"], #buddyBub [data-bb="act"]')
+    c.ev("bdCheck(true)"); c.page.wait_for_selector('#buddyBub [data-bb="fix"], #buddyBub [data-bb="act"]')
     n0 = len(c.ev("bdIssues()"))
     for _ in range(14):
         if c.page.locator('#buddyBub [data-bb="next"]').count() and not c.page.locator('#buddyBub [data-bb="fix"]').count():
@@ -2501,8 +2501,49 @@ def t_nice(B):
     d.ev("hideHome()"); d.page.click('#rail [data-tab="templates"]')
     ch = d.page.locator('#drawer .chips.one'); ok(ch.count() == 1 and d.ev("(()=>{const r=$('#drawer .chips.one');return r.scrollWidth>r.clientWidth&&r.offsetHeight<60})()"), 'category chips in one scrolling row')
     d.page.focus('#buddy'); d.page.keyboard.press('Enter'); d.page.wait_for_timeout(200)
-    ok(d.ev("!!document.activeElement.closest('#buddyBub')"), 'keyboard opening moves focus into the bubble')
+    ok(d.ev("document.activeElement.id==='shIn'"), 'keyboard opening moves focus into the chat box')
     ok(not d.errors, d.errors); d.close()
+
+@test('shoofy_chat')
+def t_shoofy_chat(B):
+    c = Ctx(B, home=True, init="localStorage.setItem('shoof.buddy','on')")
+    c.page.click('#buddy'); c.page.wait_for_selector('#shChat:not([hidden])')
+    ok(c.page.locator('#shMsgs .shchips button').count() >= 4, 'hello message with quick chips')
+    def say(q, wait='#shMsgs .shm.bot >> nth=-1'):
+        n = c.ev("SH.msgs.length"); c.page.fill('#shIn', q); c.page.press('#shIn', 'Enter')
+        c.page.wait_for_function(f"SH.msgs.length>={n+2}&&!SH.busy", timeout=8000)
+    say('bakery poster for a sale')
+    cards = c.page.locator('#shMsgs .shm.bot:last-child [data-shtpl]')
+    ok(cards.count() >= 3, 'finds templates as cards (on-device)')
+    k0 = c.ev("TEMPLATES[+document.querySelectorAll('#shMsgs [data-shtpl]')[0].dataset.shtpl].key"); ok('bake' in k0 or 'sale' in k0, f'relevant first match ({k0})')
+    cards.first.click(); c.page.wait_for_function("!homeOpen()")
+    say('make the background navy')
+    eq(c.ev("bgBlock().fill.toLowerCase()"), '#1b2a4a', 'background changed')
+    c.page.locator('#shMsgs [data-sha="undo"]').last.click(); ok(c.ev("bgBlock().fill.toLowerCase()") != '#1b2a4a', 'Undo from the chat')
+    say('change the headline to "Grand Opening"')
+    eq(c.ev("doc.elements.filter(e=>e.type==='text').sort((a,b)=>b.fontSize-a.fontSize)[0].text"), 'Grand Opening', 'headline rewritten')
+    say('use an elegant font'); ok(c.ev("doc.elements.some(e=>e.fontFamily==='Playfair Display')"), 'font changed')
+    say('add a coffee cup'); ok(c.ev("doc.elements.some(e=>e.type==='icon')"), 'icon added')
+    say('turn it into a story'); eq([c.ev('doc.width'), c.ev('doc.height')], [1080, 1920], 'resized')
+    say('check my design'); ok(c.ev("!!SH.msgs[SH.msgs.length-1].text"), 'check answers')
+    say('blorf zzkx'); ok(c.ev("SH.msgs[SH.msgs.length-1].chips===true&&document.querySelectorAll('#shMsgs .shm.bot:last-child .shchips button').length>=4"), 'unsure -> suggestions')
+    # AI path (mocked server): bad output is ignored or escaped, good actions run
+    c.ev("localStorage.setItem('shoof.shAI','1')")
+    c.page.route('**/api/shoofy', lambda r: r.fulfill(status=200, content_type='application/json', body=json.dumps({'reply': '<img src=x id=pwn> All set', 'actions': [{'do': 'recolor', 'colors': ['#ff0000', '#00aa00', 'javascript:x']}, {'do': 'add_icon', 'name': '../../evil'}, {'do': 'show_templates', 'keys': ['big_sale', 'no_such']}, {'do': 'wipe_everything'}, {'do': 'set_background', 'color': 'url(x)'}]})))
+    before = c.ev("JSON.stringify([...colorUsage(doc).keys()].sort())"); brand0 = c.ev("JSON.stringify(brand)")
+    say('make it pop')
+    ok(c.ev("!document.querySelector('#pwn')") and '<img' in c.ev("document.querySelector('#shMsgs .shm.bot:last-child').innerText"), 'AI reply shown as text, never as HTML')
+    eq(c.ev("document.querySelectorAll('#shMsgs .shm.bot:last-child [data-shtpl]').length"), 1, 'only real template keys become cards')
+    ok(c.ev("JSON.stringify([...colorUsage(doc).keys()].sort())") != before, 'AI palette applied'); eq(c.ev("JSON.stringify(brand)"), brand0, 'brand kit left untouched')
+    c.page.unroute('**/api/shoofy'); c.page.route('**/api/shoofy', lambda r: r.fulfill(status=502, body='{}'))
+    say('make the background black'); eq(c.ev("bgBlock().fill.toLowerCase()"), '#111111', 'falls back to the on-device brain when the AI fails')
+    c.page.keyboard.press('Escape'); ok(not c.page.locator('#shChat').is_visible(), 'Esc closes the chat')
+    c.errors = [e for e in c.errors if '502' not in e]  # the faked AI failure above
+    ok(not c.errors, c.errors); c.close()
+    m = Ctx(B, w=390, h=844, init="localStorage.setItem('shoof.buddy','on')")
+    m.page.click('#buddy'); bb = m.page.locator('#shChat').bounding_box()
+    ok(bb['x'] == 0 and bb['width'] >= 389, f'phone: chat is a bottom sheet {bb}'); ok(not m.page.locator('#buddy').is_visible(), 'Shoofy steps aside while chatting')
+    ok(not m.errors, m.errors); m.close()
 
 
 @test('bulk_create_pages_and_zip')
