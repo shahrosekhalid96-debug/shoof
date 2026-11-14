@@ -2543,6 +2543,14 @@ def t_shoofy_learns(B):
     say('tidy the layout and make the headline red')
     ok(any(b.get('mine') for b in sent), 'liked examples from this device are sent with the request')
     c.page.click("#shMsgs .shm.bot:last-child button[data-sha=undo]"); c.page.wait_for_timeout(200)
+    # small talk is understood: praise counts as a 👍 for the last change, complaints as a 👎, nothing is 'not changed'
+    for q, kind in [('excellent', 'praise'), ('thank you so much', 'thanks'), ('ok', 'ok'), ("that's wrong", 'bad'), ('love it!', 'praise'), ('not bad', 'praise'), ('make it bigger', ''), ('no, make the title blue', ''), ('nice but change the font', '')]:
+        eq(c.ev(f"shTalk({json.dumps(q)})"), kind, f'small talk: {q}')
+    n0 = len(sent); say('make the headline red')
+    say('excellent')
+    ok(c.ev("t('shPraise1')+t('shPraise2')+t('shPraise3')").find(c.ev("SH.msgs[SH.msgs.length-1].text")) >= 0, 'praise answered warmly')
+    ok(any(b.get('feedback', {}).get('v') == 2 for b in sent[n0:]), 'praise counted as a 👍')
+    ok(len([b for b in sent[n0:] if 'messages' in b]) == 1, 'small talk does not call the AI')
     ok(any(b.get('feedback') == {'rid': '7.' + 'a' * 64, 'v': -1} for b in sent), f'Undo reports a bad answer {[b for b in sent if "feedback" in b]}')
     c.page.unroute('**/api/shoofy')
     ok(c.page.locator('#shChat .shnote').is_visible(), 'privacy note visible')

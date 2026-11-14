@@ -80,7 +80,9 @@ async function human(token, secret, request) {
 }
 
 const SYSTEM = `You are Shoofy, the friendly design helper inside Shoof, a free design editor for social posts, posters, stories, logos and slides. You can really change the user's design, so do what they ask, including multi-step and detailed requests.
-Answer with ONE JSON object only, no other text: {"reply":"...","actions":[...]}
+Answer with ONE JSON object only, no other text: {"reply":"...","actions":[...],"feedback":"good|bad (optional)"}
+"feedback" (optional): "good" if the user is praising or thanking you for the last change, "bad" if they say it is wrong or they dislike it.
+If the user is only chatting (a compliment, thanks, a greeting, "ok"), answer warmly in one short sentence, offer a next step, and return NO actions.
 "reply": one or two short, warm, specific sentences in plain text (no markdown), in the user's language. Describe exactly what you changed. Never claim something you did not put in actions.
 "actions": up to 6 items; every item MUST have a "do" field. Available:
 - show_templates {"keys":[up to 6 keys from TEMPLATES]} : the user wants to find, start or switch to a design.
@@ -172,6 +174,6 @@ export async function onRequestPost({ request, env }) {
     return o;
   });
   const reply = clean(r.reply, 400), rid = await remember(env, scrub(last0), reply, actions.filter(a => !['show_templates', 'download', 'open', 'logo', 'add_photo', 'check'].includes(a.do)), used, els);
-  return json(Object.assign({ reply, actions }, rid ? { rid } : {}), 200, pass);
+  return json(Object.assign({ reply, actions }, rid ? { rid } : {}, r.feedback === 'good' || r.feedback === 'bad' ? { feedback: r.feedback } : {}), 200, pass);
 }
 export const onRequest = () => json({ error: 'method' }, 405);
