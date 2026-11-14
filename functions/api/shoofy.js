@@ -91,8 +91,11 @@ export async function onRequestPost({ request, env }) {
     if (Array.isArray(o.output)) { const m = o.output.filter(x => x && x.type === 'message').flatMap(x => x.content || []).map(c => c.text || '').join(''); if (m) return m; } return ''; };
   const parse = v => { if (v && typeof v === 'object') return v; const s = String(v || '').replace(/<think>[\s\S]*?<\/think>/g, ''); const m = s.match(/\{[\s\S]*\}/); if (!m) return null; try { return JSON.parse(m[0]); } catch { return null; } };
   let r = null, why = '';
-  for (const model of MODELS) {
-    try { const opts = model.includes('gpt-oss') ? { messages, max_tokens: 1400, reasoning: { effort: 'low' } } : { messages, max_tokens: 600, temperature: 0.3, chat_template_kwargs: { enable_thinking: false } }; r = parse(textOf(await env.AI.run(model, opts))); }
+  /* quick model for short, simple asks; the strong reasoning model for detailed or multi-step ones (and as the back-up) */
+  const last = msgs[msgs.length - 1].content, hard = last.split(/\s+/).length > 9 || /\b(and|then|also|but|after|while|instead|both|each|every|all)\b|,|;/i.test(last);
+  const order = hard ? MODELS : ['@cf/google/gemma-4-26b-a4b-it', '@cf/openai/gpt-oss-120b', '@cf/qwen/qwen3.8-27b'];
+  for (const model of order) {
+    try { const opts = model.includes('gpt-oss') ? { messages, max_tokens: 1200, reasoning: { effort: 'low' } } : { messages, max_tokens: 600, temperature: 0.3, chat_template_kwargs: { enable_thinking: false } }; r = parse(textOf(await env.AI.run(model, opts))); }
     catch (e) { why = String(e && e.message || e).slice(0, 110); }
     if (r && typeof r === 'object' && (r.reply || Array.isArray(r.actions))) break; r = null;
   }
