@@ -77,9 +77,9 @@ export async function onRequestPost({ request, env }) {
   const messages = [{ role: 'system', content: SYSTEM + '\n' + facts }].concat(msgs);
   const textOf = o => o && (o.response !== undefined ? o.response : (o.choices && o.choices[0] && o.choices[0].message && o.choices[0].message.content));
   const parse = v => { if (v && typeof v === 'object') return v; const s = String(v || '').replace(/<think>[\s\S]*?<\/think>/g, ''); const m = s.match(/\{[\s\S]*\}/); if (!m) return null; try { return JSON.parse(m[0]); } catch { return null; } };
-  let r = null, why = '';
+  let r = null, why = '', raw = '';
   for (const model of MODELS) {
-    try { r = parse(textOf(await env.AI.run(model, { messages, max_tokens: 420, temperature: 0.3, chat_template_kwargs: { enable_thinking: false } }))); }
+    try { const o = await env.AI.run(model, { messages, max_tokens: 420, temperature: 0.3, chat_template_kwargs: { enable_thinking: false } }); raw = JSON.stringify(textOf(o)).slice(0, 900); r = parse(textOf(o)); }
     catch (e) { why = String(e && e.message || e).slice(0, 110); }
     if (r && typeof r === 'object' && (r.reply || Array.isArray(r.actions))) break; r = null;
   }
@@ -90,6 +90,6 @@ export async function onRequestPost({ request, env }) {
     for (const k of FIELDS) if (a[k] !== undefined) o[k] = Array.isArray(a[k]) ? a[k].slice(0, 6).map(x => clean(x, 80)) : clean(a[k], 300);
     return o;
   });
-  return json({ reply: clean(r.reply, 400), actions });
+  return json(body.dbg === 'shoofy-raw' ? { reply: clean(r.reply, 400), actions, raw } : { reply: clean(r.reply, 400), actions });
 }
 export const onRequest = () => json({ error: 'method' }, 405);
