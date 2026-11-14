@@ -5,7 +5,7 @@
 **A free, open-source design editor for social posts and posters — in English and Arabic.**
 **محرر تصاميم مجاني ومفتوح المصدر للمنشورات والملصقات — بالعربية والإنجليزية.**
 
-[Live demo](https://shahrosekhalid96-debug.github.io/shoof/) · [Report a bug](../../issues/new?template=bug_report.md) · [Request a feature](../../issues/new?template=feature_request.md) · [Contributing](CONTRIBUTING.md) · [العربية](#العربية)
+[Live demo](https://shoof.pages.dev/) · [About Shoof](https://shoof.pages.dev/welcome.html) · [Report a bug](../../issues/new?template=bug_report.md) · [Request a feature](../../issues/new?template=feature_request.md) · [Contributing](CONTRIBUTING.md) · [العربية](#العربية)
 
 `AGPL-3.0` · no account · no watermark · no tracking · works offline · runs entirely in your browser
 

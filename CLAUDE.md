@@ -2,7 +2,8 @@
 
 Shoof (شوف, "look!") is a free, open-source (AGPL-3.0), browser-only Canva alternative for social posts and posters. Owner: Shary (GitHub `shahrosekhalid96-debug`). Formerly named "Rasm".
 
-- **Live site:** https://shahrosekhalid96-debug.github.io/shoof/ (GitHub Pages, auto-deploys on every push to `main`)
+- **Live site (main):** https://shoof.pages.dev/ — Cloudflare Pages project `shoof` (account Shahrosekhalid96@gmail.com), auto-deploys every push to `main` via `bash tools/build-site.sh` → `_site`. Serves `vendor/ai/` too, so the background remover works there. Unknown paths fall back to the editor.
+- **Backup site:** https://shahrosekhalid96-debug.github.io/shoof/ (GitHub Pages, also auto-deploys on push)
 - **Repo:** https://github.com/shahrosekhalid96-debug/shoof
 - **Claude artifact copy** (only place Ask Claude works): https://claude.ai/artifact/SC37XwK2xKrF4yu41YQpoK — slug `cbfef32e-d2be-48eb-beba-49773200fd62`, capabilities `downloads` + `sample` declared. Republish with `publish_files` (index.html; vendor/ and fonts/ already uploaded).
 - **Status:** v0.2 public preview. CEO review gave GO. 91/91 tests green locally and on GitHub Actions. Sprint 3 (2026-11-08): home screen + gradients. Sprint 4 (2026-11-09): Elements panel. Sprint 5 (2026-11-09): 50 generated English templates. Sprint 6 (2026-11-09): UX review fixes + axe-core WCAG 2.1 AA gate.
@@ -85,7 +86,7 @@ gh run list -R shahrosekhalid96-debug/shoof
 - Done in sprint 5: ~~50 English templates~~ via generator (Shary chose 50, not 100+). More can be added as rows in the generator's content table.
 - Waiting on Shary: Open Peeps / Open Doodles zips (he is downloading them) → add an Illustrations section to Elements.
 5. ~~Text style presets, more fonts~~ (sprint 12). Curved text done in sprint 13.
-6. ~~Brand kit~~ (sprint 11). SVG export done (sprint 13). Next: phone editing polish (Shary: later). Bulk create done (sprint 14). Other ideas to stand out: install/offline app, describe-it-and-Claude-designs-it on the home screen, per-row images in bulk create. Hosting plan discussed: free Cloudflare Pages + R2 + Workers AI relay — waiting for Shary to create the Cloudflare account.
+6. ~~Brand kit~~ (sprint 11). SVG export done (sprint 13). Next: phone editing polish (Shary: later). Bulk create done (sprint 14). Other ideas to stand out: install/offline app, describe-it-and-Claude-designs-it on the home screen, per-row images in bulk create. Cloudflare Pages is live (2026-11-12, `shoof.pages.dev`). Still open: R2 (must be enabled in the dashboard first, may ask for a card), the Workers AI relay for describe-it, making `welcome.html` the front door. The Cloudflare Developer Platform connector in Claude can manage Workers/KV/D1/R2 but not Pages; Pages settings are done in the dashboard (Browser 2).
 7. Later: multi-page designs, resize/adapt to other formats, background removal, animation.
 - Also: one automated "gates" addition — axe-core contrast check, page-weight budget, screenshot comparison.
 - Gradient follow-ups: multi-stop editor (data model already allows 5 stops), gradient on image frames/placeholders.
