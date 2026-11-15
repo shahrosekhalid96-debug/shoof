@@ -2413,6 +2413,22 @@ def t_photo_search(B):
     ok(not [e for e in c.errors if '429' not in e], c.errors); c.close()
 
 
+@test('animation_video_and_gif')
+def t_animation(B):
+    c = Ctx(B); c.ev("useTemplate(TEMPLATES.findIndex(x=>/giveaway/.test(x.key)))"); c.page.wait_for_timeout(300)
+    before = c.ev("JSON.stringify(doc.pages)"); u = c.ev("undoStack.length")
+    c.page.click('#exportBtn'); c.page.click('#expAnim'); c.page.wait_for_selector('#anVid'); eq(c.page.locator('[data-an]').count(), 4, 'four movements')
+    c.page.click('[data-an=pop]')
+    mid = c.ev("(async()=>{const P=anPlan();anSet(P,'rise',200);const a=P.items.map(i=>i.n.opacity());anEnd(P);return [P.items.length,a[0]>0,a[a.length-1]===0,P.items.every(i=>i.n.opacity()===i.op)];})()")
+    ok(mid[0] >= 5 and mid[1] and mid[2] and mid[3], f'items appear one by one and are put back {mid}')
+    gif = c.ev("(async()=>{const b=await anGif('pop');const u=new Uint8Array(await b.arrayBuffer());return [String.fromCharCode(...u.slice(0,6)),u.length,b.type];})()")
+    ok(gif[0] == 'GIF89a' and gif[1] > 20000 and gif[2] == 'image/gif', f'real GIF made {gif}')
+    with c.page.expect_download(timeout=30000) as dl: c.page.click('#anVid')
+    name = dl.value.suggested_filename; ok(name.endswith('.webm') or name.endswith('.mp4'), f'video saved as {name}'); ok(os.path.getsize(dl.value.path()) > 20000, 'video has content')
+    eq(c.ev("JSON.stringify(doc.pages)"), before, 'the design itself is unchanged'); eq(c.ev("undoStack.length"), u, 'no undo steps added')
+    ok(not c.errors, c.errors); c.close()
+
+
 @test('background_remover_on_device')
 def t_bg_remove(B):
     c = Ctx(B); c.blank()
