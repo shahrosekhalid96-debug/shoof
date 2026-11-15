@@ -2592,6 +2592,19 @@ def t_designs_from_scratch(B):
     c.page.click('#shMsgs .shm.bot:last-child .dgcards .shcard >> nth=0'); c.page.wait_for_timeout(400)
     ok(c.ev("doc.elements[0].role==='bg'&&doc.elements.some(e=>e.type==='text'&&/Coffee Shop/i.test(e.text))"), 'design opened and editable')
     c.ev("undo()")
+    # visual sense: a card recoloured to match the band behind it is nudged so it stays visible, text stays readable
+    c.ev("(()=>{useTemplate(TEMPLATES.findIndex(x=>/giveaway/.test(x.key)));})()"); c.ev("localStorage.setItem('shoof.shAI','1')")
+    seq = [{'reply': 'Done.', 'actions': [{'do': 'set', 'target': 'el:2', 'props': {'fill': '#0b1f44'}}, {'do': 'set', 'target': 'el:8', 'props': {'fill': '#0b1f44'}}]},
+           {'reply': 'We could add a gift or a star icon. Which would you prefer?', 'actions': []}]
+    c.page.route('**/api/shoofy', lambda r: r.fulfill(status=200, content_type='application/json', body=json.dumps(seq.pop(0))))
+    say('make the band and the first card navy')
+    ok(c.ev("shCDist(doc.elements[2].fill,doc.elements[8].fill)>=42"), 'card no longer blends into the band')
+    ok(c.ev("doc.elements.filter(e=>e.type==='text'&&/Follow/.test(e.text)).every(e=>contrastOf(e.fill,doc.elements[8].fill)>=4.5)"), 'its text stays readable')
+    # talking about icons shows icons, never templates
+    say('can you add an icon?')
+    ok(c.ev("(SH.msgs[SH.msgs.length-1].icons||[]).includes('gift')") and not c.ev("(SH.msgs[SH.msgs.length-1].cards||[]).length"), 'icon question shows icons, not templates')
+    c.page.click('#shMsgs .shm.bot:last-child .shicons button >> nth=0'); ok(c.ev("doc.elements.some(e=>e.type==='icon'&&e.icon==='star')") or c.ev("doc.elements.some(e=>e.type==='icon')"), 'tapping an icon adds it')
+    c.page.unroute('**/api/shoofy'); c.ev("localStorage.removeItem('shoof.shAI')")
     ok(not c.errors, c.errors); c.close()
 
 @test('shoofy_design_consultant')
