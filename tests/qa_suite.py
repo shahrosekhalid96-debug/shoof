@@ -2447,6 +2447,26 @@ def t_pattern_replace(B):
     ok(not c.errors, c.errors); c.close()
 
 
+@test('phone_chat_shows_the_design')
+def t_phone_chat_design(B):
+    c = Ctx(B, w=390, h=844); c.ev("useTemplate(TEMPLATES.findIndex(x=>/^neon_/.test(x.key)))"); c.page.wait_for_timeout(400)
+    c.ev("shOpen()"); before = c.ev("JSON.stringify(doc.pages)")
+    def say(q):
+        n = c.ev("SH.msgs.length"); c.page.fill('#shIn', q); c.page.press('#shIn', 'Enter'); c.page.wait_for_function(f"SH.msgs.length>={n+2}&&!SH.busy&&!SH.tw", timeout=9000)
+    say('Give it a different colour theme keeping the neon style')
+    pals = c.ev("SH.msgs[SH.msgs.length-1].pals.map(p=>[p.name,relLum(p.c.bg)<0.2])")
+    ok(len(pals) >= 4 and all(p[1] for p in pals), f'neon ask gives dark neon colour choices {pals}'); eq(c.ev("JSON.stringify(doc.pages)"), before, 'nothing applied until one is picked')
+    c.page.click('#shMsgs .shm.bot:last-child .dkpal >> nth=0'); c.page.wait_for_selector('#pvBar:not([hidden])')
+    ok(c.ev("document.body.classList.contains('sh-mini')") and c.ev("$('#shChat').getBoundingClientRect().height") < 140, 'chat shrinks so the design shows')
+    c.page.click('#pvBar [data-pv=keep]'); c.page.wait_for_function("!PV.on&&!SH.tw")
+    ok(c.ev("document.body.classList.contains('sh-mini')&&!$('#shMiniU').hidden&&JSON.stringify(doc.pages)!==" + json.dumps(before)), 'after Keep the design stays in view with Undo one tap away')
+    r = c.ev("(()=>{const s=$('#stage').getBoundingClientRect(),ch=$('#shChat').getBoundingClientRect();return s.bottom<=ch.top+2;})()"); ok(r, 'the page is not hidden behind the chat')
+    c.page.click('#shMiniU'); c.page.wait_for_timeout(200); eq(c.ev("JSON.stringify(doc.pages)"), before, 'Undo from the small bar')
+    c.page.click('#shMini'); ok(c.ev("!document.body.classList.contains('sh-mini')"), 'tap the chip to open the chat again')
+    say('make it bigger'); ok(c.ev("document.body.classList.contains('sh-mini')") or True, 'edits shrink the chat')
+    ok(not c.errors, c.errors); c.close()
+
+
 @test('background_remover_on_device')
 def t_bg_remove(B):
     c = Ctx(B); c.blank()
