@@ -2,7 +2,7 @@
 """Shoof QA suite. Run: python3 tests/qa_suite.py (from any directory)
 Prints PASS/FAIL per test + summary; exit 1 on any failure.
 Env: QA_ONLY=name1,name2 to run a subset; QA_APP=/path/to/index.html; RASM_BROWSER=/path/to/chrome (else auto-detect, else Playwright Chromium).\nThe app and its local files (vendor/, fonts/) are served from the app folder; every other request is blocked and recorded."""
-import json, mimetypes, os, re, struct, sys, tempfile, time, traceback, urllib.parse, zlib
+import json, subprocess, mimetypes, os, re, struct, sys, tempfile, time, traceback, urllib.parse, zlib
 from playwright.sync_api import sync_playwright
 
 # Paths are relative to this file so the suite runs from any checkout (CI included).
@@ -2194,8 +2194,8 @@ def t_smart_resize(B):
 @test('fonts_text_styles_case_brand_file')
 def t_fonts_styles(B):
     c = Ctx(B); c.blank()
-    eq(c.ev('FONTS.length'), 42, 'font count'); eq(c.ev('LATIN_FONTS.slice(0,2)'), ['Inter', 'Poppins'], 'defaults first')
-    miss = c.ev("fetch('fonts/fonts.css').then(r=>r.text()).then(css=>FONTS.filter(f=>!css.includes(\"font-family: '\"+f+\"'\")))")
+    eq(c.ev('LATIN_FONTS.length+AR_FONTS.length'), 42, 'built-in font count'); eq(c.ev('LATIN_FONTS.slice(0,2)'), ['Inter', 'Poppins'], 'defaults first')
+    miss = c.ev("fetch('fonts/fonts.css').then(r=>r.text()).then(css=>FONTS.filter(f=>!LIB.has(f)&&!css.includes(\"font-family: '\"+f+\"'\")))")
     eq(miss, [], 'every font has a bundled @font-face')
     ok(not c.ev("document.fonts.check('400 40px \"Pacifico\"')"), 'extra fonts are not loaded at start')
     c.tab('text'); eq(c.page.locator('#drawer [data-tstyle]').count(), 22, 'text styles listed')
@@ -2269,10 +2269,52 @@ def t_text_fx(B):
     c.ev("()=>{select(doc.elements.find(x=>x.type==='text').id)}"); c.ev("()=>{const s=$('#pCurve');s.value=0;s.dispatchEvent(new Event('change',{bubbles:true}));}"); c.page.wait_for_timeout(150)
     ok(c.ev("nodeOf(selId).findOne('.tx').getClassName()") == 'Text', 'curve 0 is normal text again')
     # font previews: hidden until asked for, then every family is one click
-    eq(c.ev('FONTS.length'), 42, 'font count'); eq(c.page.locator('#props [data-font]').count(), 0, 'previews closed at first')
-    c.page.click('#pFontBrowse'); eq(c.page.locator('#props [data-font]').count(), 42, 'all fonts previewed')
+    ok(c.ev('FONTS.length') >= 440, 'font count (42 built in + the library)'); eq(c.page.locator('#props [data-font]').count(), 0, 'previews closed at first')
+    c.page.click('#pFontBrowse'); eq(c.page.locator('#props [data-font]').count(), c.ev('FONTS.length'), 'all fonts previewed')
     c.page.click('#props [data-font="Great Vibes"]'); c.page.wait_for_timeout(700); eq(c.sel_el()['fontFamily'], 'Great Vibes', 'font applied from the preview list')
-    miss = c.ev("fetch('fonts/fonts.css').then(r=>r.text()).then(css=>FONTS.filter(f=>!css.includes(\"font-family: '\"+f+\"'\")))"); eq(miss, [], 'every font is bundled')
+    miss = c.ev("fetch('fonts/fonts.css').then(r=>r.text()).then(css=>FONTS.filter(f=>!LIB.has(f)&&!css.includes(\"font-family: '\"+f+\"'\")))"); eq(miss, [], 'every built-in font is bundled')
+    ok(not c.errors, c.errors); c.close()
+
+
+@test('font_library_and_own_fonts')
+def t_font_library(B):
+    r = subprocess.run([sys.executable, os.path.join(ROOT, 'tools/fonts_lib.py'), '--check'], capture_output=True, text=True)
+    eq(r.returncode, 0, 'font library block, files and licences in step: ' + r.stdout[-300:])
+    c = Ctx(B); reqs = []
+    c.page.on('request', lambda q: reqs.append(q.url) if '/fonts/lib/' in q.url else None)
+    c.ev("(()=>{addText('h');byId(selId).text='Grand opening';fullRender();commit();})()"); c.page.wait_for_timeout(300)
+    eq(len(reqs), 0, 'no library font is downloaded until it is used')
+    ok(c.ev("FONT_LIB.length>=400&&FONT_LIB.every(x=>FONTS.includes(x.n)&&/^[a-z0-9-]+$/.test(x.slug))"), 'library listed and allowed')
+    # search by feeling, preview in the user's own words, lazy loading
+    c.page.click('#pFontBrowse'); c.page.fill('#fontQ', 'wedding'); c.page.wait_for_timeout(900)
+    names = c.ev("[...document.querySelectorAll('#fontList [data-font]')].map(b=>b.dataset.font)")
+    ok(len(names) >= 8 and 'Pinyon Script' in names and 'Orbitron' not in names, f'feeling search {names[:6]}')
+    eq(c.ev("document.querySelector('#fontList [data-font] .fs').textContent"), 'Grand opening', 'previews use the selected text')
+    ok(0 < len(reqs) <= 40, f'only the fonts on screen are downloaded ({len(reqs)})')
+    c.page.fill('#fontQ', ''); c.page.click('#fontFeels [data-feel=futuristic]'); c.page.wait_for_timeout(300)
+    ok('Orbitron' in c.ev("[...document.querySelectorAll('#fontList [data-font]')].map(b=>b.dataset.font)"), 'feeling chip filters')
+    c.page.click('#fontList [data-font="Orbitron"]'); c.page.wait_for_function("byId(selId).fontFamily==='Orbitron'&&document.fonts.check('40px Orbitron')", timeout=6000)
+    eq(c.ev("sanitizeDoc(JSON.parse(JSON.stringify(doc))).pages[0].elements.find(e=>e.text==='Grand opening').fontFamily"), 'Orbitron', 'library font survives save and open')
+    ok('font-family:\'Orbitron\'' in c.ev("svgFonts(new Set(['Orbitron']))"), 'library font is embedded in SVG export')
+    ok(len(c.ev("renderExport('image/png')")) > 1000, 'exports')
+    # your own font: bad files are refused, a real one is stored on the device and survives a reload
+    eq(c.ev("addMyFont(new File([new Uint8Array(900)],'evil<img>.ttf'))"), None, 'a file that is not a font is refused')
+    name = c.ev("fetch('fonts/lib/bungee-shade-400.woff2').then(r=>r.arrayBuffer()).then(b=>addMyFont(new File([b],'My_Brand-Font<b>.woff2')))")
+    eq(name, 'My Brand Fontb', 'name cleaned'); ok(c.ev("FONTS.includes('My Brand Fontb')&&document.fonts.check('40px \"My Brand Fontb\"')"), 'own font ready to use')
+    c.ev("(()=>{fontFeel='';fontQ='';setProp('fontFamily','My Brand Fontb');renderProps();})()"); c.page.wait_for_timeout(1500)
+    ok(c.page.locator('#fontList [data-fontdel="My Brand Fontb"]').count() == 1, 'listed under My fonts')
+    c.page.reload(); c.page.wait_for_function("typeof FONTS!=='undefined'&&FONTS.includes('My Brand Fontb')"); c.page.wait_for_function("mfBuf.has('My Brand Fontb')", timeout=6000)
+    ok(c.ev("document.fonts.check('40px \"My Brand Fontb\"')"), 'own font is back after a reload')
+    c.ev("delMyFont('My Brand Fontb')"); ok(c.ev("!FONTS.includes('My Brand Fontb')&&localStorage.getItem('shoof.myFonts')==='[]'"), 'own font removed')
+    # Shoofy suggests fonts and previews them with Keep / Back
+    c.ev("(()=>{hideHome&&hideHome();useTemplate(TEMPLATES.findIndex(x=>/giveaway/.test(x.key)));})()")
+    c.page.click('#buddy'); c.page.wait_for_selector('#shChat:not([hidden])')
+    n = c.ev("SH.msgs.length"); c.page.fill('#shIn', 'elegant font ideas'); c.page.press('#shIn', 'Enter'); c.page.wait_for_function(f"SH.msgs.length>={n+2}&&!SH.busy&&!SH.tw", timeout=9000)
+    ok(c.page.locator('#shMsgs .shm.bot:last-child [data-shfont]').count() >= 4, 'font ideas shown')
+    u = c.ev("undoStack.length"); f0 = c.ev("shFontTargets()[0].fontFamily")
+    c.page.click('#shMsgs .shm.bot:last-child [data-shfont] >> nth=1'); c.page.wait_for_selector('#pvBar:not([hidden])')
+    ok(c.ev("shFontTargets()[0].fontFamily") != f0 and c.ev("undoStack.length") == u, 'font previewed on the headline'); c.page.click('#pvBar [data-pv=back]')
+    eq(c.ev("shFontTargets()[0].fontFamily"), f0, 'Back restores the font')
     ok(not c.errors, c.errors); c.close()
 
 

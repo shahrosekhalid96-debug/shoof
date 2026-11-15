@@ -24,7 +24,7 @@ Arabic is fully supported, not added as an afterthought. The interface switches 
 - **Welcome home screen**: big template search, "start with a size" tiles (Instagram post, Story, Poster, Flyer, Logo, Business card, Presentation), Trending and Picks rows, and a "Continue your design" card
 - **122 templates** including 4 multi-slide pitch decks and 6 editorial posters (105 built by a generator script, plus 17 originals incl. Arabic and bilingual), filterable by format (Social, Posters, Stories, With photo) and topic (Sale & promo, Events, Hiring, Quotes, Tips, Food, Real estate, Business, Seasonal, Arabic) and searchable in EN and AR. Sizes cover Instagram, Stories/Reels, LinkedIn, Facebook, X and YouTube thumbnails, plus A4 and A3 posters.
 - **New-design dialog** with 12 size presets or a custom size (16–10000 px)
-- **Text**: 42 bundled open-licence fonts in groups (sans, serif, display, handwriting, monospace, Arabic) with a live preview list, 22 ready-made **text styles**, a change-case button, plus size, colour, alignment, line height and letter spacing (automatically 0 for Arabic)
+- **Text**: **440+ open-licence fonts** (each one downloads only when you use it), search by name or feeling (elegant, retro, wedding…) with previews in your own words, **upload your own font for free** (kept on your device), Shoofy font ideas you can try before applying, 22 ready-made **text styles**, a change-case button, plus size, colour, alignment, line height and letter spacing (automatically 0 for Arabic)
 - **Text effects**: shadow, outline and highlight box
 - **Elements panel** (searchable): shapes (incl. blob and slanted box), device mockups with photo slots (phone, tablet, laptop, browser, polaroid), 11 subtle code-drawn patterns (halftone dots, wave lines, contour rings, stripes, pixel dither), infographic blocks (step buttons, mind map, timeline, process, stats, percentage ring), line styles (dashed, dotted, arrows), photo frames with circle/blob/arch/hexagon/heart/diamond masks, 9 stickers, bar/line/pie/donut charts with editable data, and 209 Lucide icons (recolour, line weight, fill)
 - **Multi-page designs**: a pages bar to add, duplicate, reorder and delete pages (great for decks and carousels)
@@ -69,7 +69,7 @@ npx serve .                # then visit http://localhost:3000
 ```
 index.html            the whole app (HTML + CSS + JS, single file)
 vendor/               Konva 10.9.1 (MIT) and jsPDF 4.2.1 (MIT, loaded only on the first PDF export)
-fonts/                fonts.css + self-hosted woff2 (Latin and Arabic subsets) + each font's OFL licence
+fonts/                fonts.css + self-hosted woff2 (Latin and Arabic subsets) + each font's OFL licence; fonts/lib = the 400+ font library (LICENSES.txt, lib.json, tools/fonts_lib.py)
 templates/            template format docs (template JSON files from v0.3)
 tests/qa_suite.py     Playwright end-to-end suite (desktop and phone, EN and AR)
 .github/              issue templates, Pages deploy and CI workflows

@@ -1,0 +1,714 @@
+Shoof font library — licences
+
+Every font in this folder comes from the open Google Fonts collection (files from the Fontsource project, latin subset).
+Each family is under the SIL Open Font License 1.1 or the Apache License 2.0, as listed. Full licence texts are at the end.
+
+FAMILIES
+========
+Abel — OFL-1.1 — Copyright (c) 2011, Matthew Desmond (http://www.madtype.com | mattdesmond@gmail.com), with Reserved Font Name Abel.
+Abhaya Libre — OFL-1.1 — Copyright (c) 1996-2015 Pushpananda Ekanayake (pushpanandae@gmail.com) Copyright (c) 2015 Sol Matas (sol@sonnenshine.com.ar) Copyright (c) 2015 Mooniak (hello@mooniak.com) AbhayaLibre-Medium.ttf: Copyright (c) 1996-2015 Pushpananda Ekanayake (pushpanandae@gmail.com) Copyright (c) 2015 Sol Matas (sol@sonnenshine.com.ar) Copyright (c) 2015 Mooniak (hello@mooniak.com) AbhayaLibre-SemiBold.ttf: Copyright (c) 1996-2015 Pushpananda Ekanayake (pushpanandae@gmail.com) Copyright (c) 2015 Sol Matas (sol@sonnenshine.com.ar) Copyright (c) 2015 Mooniak (hello@mooniak.com) AbhayaLibre-Bold.ttf: Copyright (c) 1996-2015 Pushpananda Ekanayake (pushpanandae@gmail.com) Copyright (c) 2015 Sol Matas (sol@sonnenshine.com.ar) Copyright (c) 2015 Mooniak (hello@mooniak.com) AbhayaLibre-ExtraBold.ttf: Copyright (c) 1996-2015 Pushpananda Ekanayake (pushpanandae@gmail.com) Copyright (c) 2015 Sol Matas (sol@sonnenshine.com.ar) Copyright (c) 2015 Mooniak (hello@mooniak.com)
+Afacad — OFL-1.1 — Copyright 2023 The Afacad Project Authors (https://github.com/Dicotype/Afacad) Afacad-Italic[wght].ttf: Copyright 2023 The Afacad Project Authors (https://github.com/Dicotype/Afacad)
+Aguafina Script — OFL-1.1 — Copyright (c) 2007 Angel Koziupa (sudtipos@sudtipos.com), Copyright (c) 2007 Alejandro Paul (sudtipos@sudtipos.com), with Reserved Font Name "Aguafina Script"
+Aladin — OFL-1.1 — Copyright (c) 2009 Angel Koziupa (sudtipos@sudtipos.com), Copyright (c) 2009 Alejandro Paul (sudtipos@sudtipos.com), with Reserved Font Name "Aladin"
+Alata — OFL-1.1 — Copyright 2019 The Alata Project Authors (https://github.com/SorkinType/Alata)
+Albert Sans — OFL-1.1 — Copyright 2021 The Albert Sans Project Authors (https://github.com/usted/Albert-Sans) AlbertSans-Italic[wght].ttf: Copyright 2021 The Albert Sans Project Authors (https://github.com/usted/Albert-Sans)
+Alegreya — OFL-1.1 — Copyright 2011 The Alegreya Project Authors (https://github.com/huertatipografica/Alegreya) Alegreya-Italic[wght].ttf: Copyright 2011 The Alegreya Project Authors (https://github.com/huertatipografica/Alegreya)
+Alegreya SC — OFL-1.1 — Copyright 2011 The Alegreya Project Authors (https://github.com/huertatipografica/Alegreya) AlegreyaSC-Italic.ttf: Copyright 2011 The Alegreya Project Authors (https://github.com/huertatipografica/Alegreya) AlegreyaSC-Medium.ttf: Copyright 2011 The Alegreya Project Authors (https://github.com/huertatipografica/Alegreya) AlegreyaSC-MediumItalic.ttf: Copyright 2011 The Alegreya Project Authors (https://github.com/huertatipografica/Alegreya) AlegreyaSC-Bold.ttf: Copyright 2011 The Alegreya Project Authors (https://github.com/huertatipografica/Alegreya) AlegreyaSC-BoldItalic.ttf: Copyright 2011 The Alegreya Project Authors (https://github.com/huertatipografica/Alegreya) AlegreyaSC-ExtraBold.ttf: Copyright 2011 The Alegreya Project Authors (https://github.com/huertatipografica/Alegreya) AlegreyaSC-ExtraBoldItalic.ttf: Copyright 2011 The Alegreya Project Authors (https://github.com/huertatipografica/Alegreya) AlegreyaSC-Black.ttf: Copyright 2011 The Alegreya Project Authors (https://github.com/huertatipografica/Alegreya) AlegreyaSC-BlackItalic.ttf: Copyright 2011 The Alegreya Project Authors (https://github.com/huertatipografica/Alegreya)
+Alegreya Sans — OFL-1.1 — Copyright 2013 The Alegreya Sans Project Authors (https://github.com/huertatipografica/Alegreya-Sans) AlegreyaSans-ThinItalic.ttf: Copyright 2013 The Alegreya Sans Project Authors (https://github.com/huertatipografica/Alegreya-Sans) AlegreyaSans-Light.ttf: Copyright 2013 The Alegreya Sans Project Authors (https://github.com/huertatipografica/Alegreya-Sans) AlegreyaSans-LightItalic.ttf: Copyright 2013 The Alegreya Sans Project Authors (https://github.com/huertatipografica/Alegreya-Sans) AlegreyaSans-Regular.ttf: Copyright 2013 The Alegreya Sans Project Authors (https://github.com/huertatipografica/Alegreya-Sans) AlegreyaSans-Italic.ttf: Copyright 2013 The Alegreya Sans Project Authors (https://github.com/huertatipografica/Alegreya-Sans) AlegreyaSans-Medium.ttf: Copyright 2013 The Alegreya Sans Project Authors (https://github.com/huertatipografica/Alegreya-Sans) AlegreyaSans-MediumItalic.ttf: Copyright 2013 The Alegreya Sans Project Authors (https://github.com/huertatipografica/Alegreya-Sans) AlegreyaSans-Bold.ttf: Copyright 2013 The Alegreya Sans Project Authors (https://github.com/huertatipografica/Alegreya-Sans) AlegreyaSans-BoldItalic.ttf: Copyright 2013 The Alegreya Sans Project Authors (https://github.com/huertatipografica/Alegreya-Sans) AlegreyaSans-ExtraBold.ttf: Copyright 2013 The Alegreya Sans Project Authors (https://github.com/huertatipografica/Alegreya-Sans) AlegreyaSans-ExtraBoldItalic.ttf: Copyright 2013 The Alegreya Sans Project Authors (https://github.com/huertatipografica/Alegreya-Sans) AlegreyaSans-Black.ttf: Copyright 2013 The Alegreya Sans Project Authors (https://github.com/huertatipografica/Alegreya-Sans) AlegreyaSans-BlackItalic.ttf: Copyright 2013 The Alegreya Sans Project Authors (https://github.com/huertatipografica/Alegreya-Sans)
+Aleo — OFL-1.1 — Copyright 2013 The Aleo Project Authors (https://github.com/AlessioLaiso/aleo) Aleo-Italic[wght].ttf: Copyright 2013 The Aleo Project Authors (https://github.com/AlessioLaiso/aleo)
+Alex Brush — OFL-1.1 — Copyright 2011 The Alex Brush Project Authors (https://github.com/googlefonts/alex-brush)
+Allerta Stencil — OFL-1.1 — Copyright (c) 2009, Matt McInerney <matt@pixelspread.com> with Reserved Font Name Allerta.
+Allura — OFL-1.1 — Copyright 2010 The Allura Project Authors (https://github.com/googlefonts/allura)
+Almendra — OFL-1.1 — Copyright (c) 2011-2012, Ana Sanfelippo (anasanfe@gmail.com), with Reserved Font Name 'Almendra' Almendra-Italic.ttf: Copyright (c) 2011-2012, Ana Sanfelippo (anasanfe@gmail.com), with Reserved Font Name 'Almendra' Almendra-Bold.ttf: Copyright (c) 2011-2012, Ana Sanfelippo (anasanfe@gmail.com), with Reserved Font Name 'Almendra' Almendra-BoldItalic.ttf: Copyright (c) 2011-2012, Ana Sanfelippo (anasanfe@gmail.com), with Reserved Font Name 'Almendra'
+Anek Latin — OFL-1.1 — Copyright 2021 The Anek Project Authors (https://github.com/EkType/Anek)
+Annie Use Your Telescope — OFL-1.1 — Copyright (c) 2010, Kimberly Geswein (kimberlygeswein.com)
+Anonymous Pro — OFL-1.1 — Copyright (c) Mark Simonson 2009-2010. All rights reserved. AnonymousPro-Italic.ttf: Copyright (c) Mark Simonson 2009-2010. All rights reserved. AnonymousPro-Bold.ttf: Copyright (c) Mark Simonson 2009-2010. All rights reserved. AnonymousPro-BoldItalic.ttf: Copyright (c) Mark Simonson 2009-2010. All rights reserved.
+Antonio — OFL-1.1 — Copyright 2013 The Antonio Project Authors (https://github.com/googlefonts/antonioFont)
+Architects Daughter — OFL-1.1 — Copyright (c) 2010, Kimberly Geswein (kimberlygeswein.com)
+Archivo — OFL-1.1 — Copyright 2020 The Archivo Project Authors (https://github.com/Omnibus-Type/Archivo) Archivo-Italic[wdth,wght].ttf: Copyright 2020 The Archivo Project Authors (https://github.com/Omnibus-Type/Archivo)
+Archivo Narrow — OFL-1.1 — Copyright 2019 The Archivo Narrow Project Authors (https://github.com/Omnibus-Type/ArchivoNarrow) ArchivoNarrow-Italic[wght].ttf: Copyright 2019 The Archivo Narrow Project Authors (https://github.com/Omnibus-Type/ArchivoNarrow)
+Arimo — OFL-1.1 — Copyright 2020 The Arimo Project Authors (https://github.com/googlefonts/arimo) Arimo-Italic[wght].ttf: Copyright 2020 The Arimo Project Authors (https://github.com/googlefonts/arimo)
+Arizonia — OFL-1.1 — Copyright 2007-2021 The Arizonia Project Authors (https://github.com/googlefonts/arizonia)
+Arvo — OFL-1.1 — Copyright 2010 Anton Koovit. Arvo-Italic.ttf: Copyright 2010 Anton Koovit, Yassin Baggar. Arvo-Bold.ttf: Copyright (c) 2010 by Anton Koovit. Arvo-BoldItalic.ttf: Copyright 2010 Anton Koovit, Yassin Baggar.
+Asap — OFL-1.1 — Copyright 2018 The Asap Project Authors (https://github.com/Omnibus-Type/Asap) Asap-Italic[wdth,wght].ttf: Copyright 2018 The Asap Project Authors (https://github.com/Omnibus-Type/Asap)
+Asap Condensed — OFL-1.1 — Copyright 2018 The Asap Project Authors (https://github.com/Omnibus-Type/Asap) AsapCondensed-ExtraLightItalic.ttf: Copyright 2018 The Asap Project Authors (https://github.com/Omnibus-Type/Asap) AsapCondensed-Light.ttf: Copyright 2018 The Asap Project Authors (https://github.com/Omnibus-Type/Asap) AsapCondensed-LightItalic.ttf: Copyright 2018 The Asap Project Authors (https://github.com/Omnibus-Type/Asap) AsapCondensed-Regular.ttf: Copyright 2018 The Asap Project Authors (https://github.com/Omnibus-Type/Asap) AsapCondensed-Italic.ttf: Copyright 2018 The Asap Project Authors (https://github.com/Omnibus-Type/Asap) AsapCondensed-Medium.ttf: Copyright 2018 The Asap Project Authors (https://github.com/Omnibus-Type/Asap) AsapCondensed-MediumItalic.ttf: Copyright 2018 The Asap Project Authors (https://github.com/Omnibus-Type/Asap) AsapCondensed-SemiBold.ttf: Copyright 2018 The Asap Project Authors (https://github.com/Omnibus-Type/Asap) AsapCondensed-SemiBoldItalic.ttf: Copyright 2018 The Asap Project Authors (https://github.com/Omnibus-Type/Asap) AsapCondensed-Bold.ttf: Copyright 2018 The Asap Project Authors (https://github.com/Omnibus-Type/Asap) AsapCondensed-BoldItalic.ttf: Copyright 2018 The Asap Project Authors (https://github.com/Omnibus-Type/Asap) AsapCondensed-ExtraBold.ttf: Copyright 2018 The Asap Project Authors (https://github.com/Omnibus-Type/Asap) AsapCondensed-ExtraBoldItalic.ttf: Copyright 2018 The Asap Project Authors (https://github.com/Omnibus-Type/Asap) AsapCondensed-Black.ttf: Copyright 2018 The Asap Project Authors (https://github.com/Omnibus-Type/Asap) AsapCondensed-BlackItalic.ttf: Copyright 2018 The Asap Project Authors (https://github.com/Omnibus-Type/Asap)
+Assistant — OFL-1.1 — Copyright 2020 The Assistant Project Authors (https://github.com/hafontia/Assistant). Copyright 2010 The Source Sans Pro Authors (https://github.com/adobe-fonts/source-sans-pro), with Reserved Font Name 'Source'. Source is a trademark of Adobe Systems Incorporated in the United States and/or other countries.
+Athiti — OFL-1.1 — Copyright (c) 2015, Cadson Demak (info@cadsondemak.com) Athiti-Light.ttf: Copyright (c) 2015, Cadson Demak (info@cadsondemak.com) Athiti-Regular.ttf: Copyright (c) 2015, Cadson Demak (info@cadsondemak.com) Athiti-Medium.ttf: Copyright (c) 2015, Cadson Demak (info@cadsondemak.com) Athiti-SemiBold.ttf: Copyright (c) 2015, Cadson Demak (info@cadsondemak.com) Athiti-Bold.ttf: Copyright (c) 2015, Cadson Demak (info@cadsondemak.com)
+Audiowide — OFL-1.1 — Copyright (c) 2012 by Brian J. Bonislawsky DBA Astigmatic (AOETI) (astigma@astigmatic.com), with Reserved Font Name "Audiowide"
+Azeret Mono — OFL-1.1 — Copyright 2021 The Azeret Project Authors (https://github.com/displaay/azeret) AzeretMono-Italic[wght].ttf: Copyright 2021 The Azeret Project Authors (https://github.com/displaay/azeret)
+Bad Script — OFL-1.1 — Copyright 2011 The Bad Script Project Authors (https://github.com/alexeiva/badscript)
+Bagel Fat One — OFL-1.1 — Copyright 2022 The Bagel Fat Project Authors (https://github.com/JAMO-TYPEFACE/BagelFat)
+Bai Jamjuree — OFL-1.1 — Copyright 2018 Bai Jamjuree (https://github.com/cadsondemak/Bai-Jamjuree) BaiJamjuree-ExtraLightItalic.ttf: Copyright 2018 Bai Jamjuree (https://github.com/cadsondemak/Bai-Jamjuree) BaiJamjuree-Light.ttf: Copyright 2018 Bai Jamjuree (https://github.com/cadsondemak/Bai-Jamjuree) BaiJamjuree-LightItalic.ttf: Copyright 2018 Bai Jamjuree (https://github.com/cadsondemak/Bai-Jamjuree) BaiJamjuree-Regular.ttf: Copyright 2018 Bai Jamjuree (https://github.com/cadsondemak/Bai-Jamjuree) BaiJamjuree-Italic.ttf: Copyright 2018 Bai Jamjuree (https://github.com/cadsondemak/Bai-Jamjuree) BaiJamjuree-Medium.ttf: Copyright 2018 Bai Jamjuree (https://github.com/cadsondemak/Bai-Jamjuree) BaiJamjuree-MediumItalic.ttf: Copyright 2018 Bai Jamjuree (https://github.com/cadsondemak/Bai-Jamjuree) BaiJamjuree-SemiBold.ttf: Copyright 2018 Bai Jamjuree (https://github.com/cadsondemak/Bai-Jamjuree) BaiJamjuree-SemiBoldItalic.ttf: Copyright 2018 Bai Jamjuree (https://github.com/cadsondemak/Bai-Jamjuree) BaiJamjuree-Bold.ttf: Copyright 2018 Bai Jamjuree (https://github.com/cadsondemak/Bai-Jamjuree) BaiJamjuree-BoldItalic.ttf: Copyright 2018 Bai Jamjuree (https://github.com/cadsondemak/Bai-Jamjuree)
+Baloo 2 — OFL-1.1 — Copyright 2019 The Baloo 2 Project Authors (https://github.com/EkType/Baloo2)
+Barlow — OFL-1.1 — Copyright 2017 The Barlow Project Authors (https://github.com/jpt/barlow) Barlow-ThinItalic.ttf: Copyright 2017 The Barlow Project Authors (https://github.com/jpt/barlow) Barlow-ExtraLight.ttf: Copyright 2017 The Barlow Project Authors (https://github.com/jpt/barlow) Barlow-ExtraLightItalic.ttf: Copyright 2017 The Barlow Project Authors (https://github.com/jpt/barlow) Barlow-Light.ttf: Copyright 2017 The Barlow Project Authors (https://github.com/jpt/barlow) Barlow-LightItalic.ttf: Copyright 2017 The Barlow Project Authors (https://github.com/jpt/barlow) Barlow-Regular.ttf: Copyright 2017 The Barlow Project Authors (https://github.com/jpt/barlow) Barlow-Italic.ttf: Copyright 2017 The Barlow Project Authors (https://github.com/jpt/barlow) Barlow-Medium.ttf: Copyright 2017 The Barlow Project Authors (https://github.com/jpt/barlow) Barlow-MediumItalic.ttf: Copyright 2017 The Barlow Project Authors (https://github.com/jpt/barlow) Barlow-SemiBold.ttf: Copyright 2017 The Barlow Project Authors (https://github.com/jpt/barlow) Barlow-SemiBoldItalic.ttf: Copyright 2017 The Barlow Project Authors (https://github.com/jpt/barlow) Barlow-Bold.ttf: Copyright 2017 The Barlow Project Authors (https://github.com/jpt/barlow) Barlow-BoldItalic.ttf: Copyright 2017 The Barlow Project Authors (https://github.com/jpt/barlow) Barlow-ExtraBold.ttf: Copyright 2017 The Barlow Project Authors (https://github.com/jpt/barlow) Barlow-ExtraBoldItalic.ttf: Copyright 2017 The Barlow Project Authors (https://github.com/jpt/barlow) Barlow-Black.ttf: Copyright 2017 The Barlow Project Authors (https://github.com/jpt/barlow) Barlow-BlackItalic.ttf: Copyright 2017 The Barlow Project Authors (https://github.com/jpt/barlow)
+Barlow Condensed — OFL-1.1 — Copyright 2017 The Barlow Project Authors (https://github.com/jpt/barlow) BarlowCondensed-ThinItalic.ttf: Copyright 2017 The Barlow Project Authors (https://github.com/jpt/barlow) BarlowCondensed-ExtraLight.ttf: Copyright 2017 The Barlow Project Authors (https://github.com/jpt/barlow) BarlowCondensed-ExtraLightItalic.ttf: Copyright 2017 The Barlow Project Authors (https://github.com/jpt/barlow) BarlowCondensed-Light.ttf: Copyright 2017 The Barlow Project Authors (https://github.com/jpt/barlow) BarlowCondensed-LightItalic.ttf: Copyright 2017 The Barlow Project Authors (https://github.com/jpt/barlow) BarlowCondensed-Regular.ttf: Copyright 2017 The Barlow Project Authors (https://github.com/jpt/barlow) BarlowCondensed-Italic.ttf: Copyright 2017 The Barlow Project Authors (https://github.com/jpt/barlow) BarlowCondensed-Medium.ttf: Copyright 2017 The Barlow Project Authors (https://github.com/jpt/barlow) BarlowCondensed-MediumItalic.ttf: Copyright 2017 The Barlow Project Authors (https://github.com/jpt/barlow) BarlowCondensed-SemiBold.ttf: Copyright 2017 The Barlow Project Authors (https://github.com/jpt/barlow) BarlowCondensed-SemiBoldItalic.ttf: Copyright 2017 The Barlow Project Authors (https://github.com/jpt/barlow) BarlowCondensed-Bold.ttf: Copyright 2017 The Barlow Project Authors (https://github.com/jpt/barlow) BarlowCondensed-BoldItalic.ttf: Copyright 2017 The Barlow Project Authors (https://github.com/jpt/barlow) BarlowCondensed-ExtraBold.ttf: Copyright 2017 The Barlow Project Authors (https://github.com/jpt/barlow) BarlowCondensed-ExtraBoldItalic.ttf: Copyright 2017 The Barlow Project Authors (https://github.com/jpt/barlow) BarlowCondensed-Black.ttf: Copyright 2017 The Barlow Project Authors (https://github.com/jpt/barlow) BarlowCondensed-BlackItalic.ttf: Copyright 2017 The Barlow Project Authors (https://github.com/jpt/barlow)
+Barlow Semi Condensed — OFL-1.1 — Copyright 2017 The Barlow Project Authors (https://github.com/jpt/barlow) BarlowSemiCondensed-ThinItalic.ttf: Copyright 2017 The Barlow Project Authors (https://github.com/jpt/barlow) BarlowSemiCondensed-ExtraLight.ttf: Copyright 2017 The Barlow Project Authors (https://github.com/jpt/barlow) BarlowSemiCondensed-ExtraLightItalic.ttf: Copyright 2017 The Barlow Project Authors (https://github.com/jpt/barlow) BarlowSemiCondensed-Light.ttf: Copyright 2017 The Barlow Project Authors (https://github.com/jpt/barlow) BarlowSemiCondensed-LightItalic.ttf: Copyright 2017 The Barlow Project Authors (https://github.com/jpt/barlow) BarlowSemiCondensed-Regular.ttf: Copyright 2017 The Barlow Project Authors (https://github.com/jpt/barlow) BarlowSemiCondensed-Italic.ttf: Copyright 2017 The Barlow Project Authors (https://github.com/jpt/barlow) BarlowSemiCondensed-Medium.ttf: Copyright 2017 The Barlow Project Authors (https://github.com/jpt/barlow) BarlowSemiCondensed-MediumItalic.ttf: Copyright 2017 The Barlow Project Authors (https://github.com/jpt/barlow) BarlowSemiCondensed-SemiBold.ttf: Copyright 2017 The Barlow Project Authors (https://github.com/jpt/barlow) BarlowSemiCondensed-SemiBoldItalic.ttf: Copyright 2017 The Barlow Project Authors (https://github.com/jpt/barlow) BarlowSemiCondensed-Bold.ttf: Copyright 2017 The Barlow Project Authors (https://github.com/jpt/barlow) BarlowSemiCondensed-BoldItalic.ttf: Copyright 2017 The Barlow Project Authors (https://github.com/jpt/barlow) BarlowSemiCondensed-ExtraBold.ttf: Copyright 2017 The Barlow Project Authors (https://github.com/jpt/barlow) BarlowSemiCondensed-ExtraBoldItalic.ttf: Copyright 2017 The Barlow Project Authors (https://github.com/jpt/barlow) BarlowSemiCondensed-Black.ttf: Copyright 2017 The Barlow Project Authors (https://github.com/jpt/barlow) BarlowSemiCondensed-BlackItalic.ttf: Copyright 2017 The Barlow Project Authors (https://github.com/jpt/barlow)
+Be Vietnam Pro — OFL-1.1 — Copyright 2021 The Be Vietnam Pro Project Authors (https://github.com/bettergui/BeVietnamPro) BeVietnamPro-ThinItalic.ttf: Copyright 2021 The Be Vietnam Pro Project Authors (https://github.com/bettergui/BeVietnamPro) BeVietnamPro-ExtraLight.ttf: Copyright 2021 The Be Vietnam Pro Project Authors (https://github.com/bettergui/BeVietnamPro) BeVietnamPro-ExtraLightItalic.ttf: Copyright 2021 The Be Vietnam Pro Project Authors (https://github.com/bettergui/BeVietnamPro) BeVietnamPro-Light.ttf: Copyright 2021 The Be Vietnam Pro Project Authors (https://github.com/bettergui/BeVietnamPro) BeVietnamPro-LightItalic.ttf: Copyright 2021 The Be Vietnam Pro Project Authors (https://github.com/bettergui/BeVietnamPro) BeVietnamPro-Regular.ttf: Copyright 2021 The Be Vietnam Pro Project Authors (https://github.com/bettergui/BeVietnamPro) BeVietnamPro-Italic.ttf: Copyright 2021 The Be Vietnam Pro Project Authors (https://github.com/bettergui/BeVietnamPro) BeVietnamPro-Medium.ttf: Copyright 2021 The Be Vietnam Pro Project Authors (https://github.com/bettergui/BeVietnamPro) BeVietnamPro-MediumItalic.ttf: Copyright 2021 The Be Vietnam Pro Project Authors (https://github.com/bettergui/BeVietnamPro) BeVietnamPro-SemiBold.ttf: Copyright 2021 The Be Vietnam Pro Project Authors (https://github.com/bettergui/BeVietnamPro) BeVietnamPro-SemiBoldItalic.ttf: Copyright 2021 The Be Vietnam Pro Project Authors (https://github.com/bettergui/BeVietnamPro) BeVietnamPro-Bold.ttf: Copyright 2021 The Be Vietnam Pro Project Authors (https://github.com/bettergui/BeVietnamPro) BeVietnamPro-BoldItalic.ttf: Copyright 2021 The Be Vietnam Pro Project Authors (https://github.com/bettergui/BeVietnamPro) BeVietnamPro-ExtraBold.ttf: Copyright 2021 The Be Vietnam Pro Project Authors (https://github.com/bettergui/BeVietnamPro) BeVietnamPro-ExtraBoldItalic.ttf: Copyright 2021 The Be Vietnam Pro Project Authors (https://github.com/bettergui/BeVietnamPro) BeVietnamPro-Black.ttf: Copyright 2021 The Be Vietnam Pro Project Authors (https://github.com/bettergui/BeVietnamPro) BeVietnamPro-BlackItalic.ttf: Copyright 2021 The Be Vietnam Pro Project Authors (https://github.com/bettergui/BeVietnamPro)
+Bellefair — OFL-1.1 — Copyright 2015 The Bellefair Project Authors (https://github.com/shinntype/bellefair)
+Berkshire Swash — OFL-1.1 — Copyright (c) 2012 by Brian J. Bonislawsky DBA Astigmatic (AOETI) (astigma@astigmatic.com), with Reserved Font Name "Berkshire Swash"
+Besley — OFL-1.1 — Copyright 2020 The Besley Project Authors (https://github.com/indestructible-type) Besley-Italic[wght].ttf: Copyright 2020 The Besley Project Authors (https://github.com/indestructible-type)
+Big Shoulders Display — OFL-1.1 — Google Inc.
+Bilbo Swash Caps — OFL-1.1 — Copyright (c) 2011 TypeSETit, LLC (typesetit@att.net), with Reserved Font Names "Bilbo" and "Bilbo Swash Caps"
+Black Ops One — OFL-1.1 — Copyright 2022 The PinyonScript Project Authors (https://github.com/SorkinType/Black-Ops)
+Bodoni Moda — OFL-1.1 — Copyright 2020 The Bodoni Moda Project Authors (https://github.com/indestructible-type/Bodoni) BodoniModa-Italic[opsz,wght].ttf: Copyright 2020 The Bodoni Moda Project Authors (https://github.com/indestructible-type/Bodoni)
+Boogaloo — OFL-1.1 — Copyright (c) 2011, John Vargas Beltran (www.johnvargasbeltran.com|john.vargasbeltran@gmail.com), with Reserved Font Name "Boogaloo".
+Bowlby One — OFL-1.1 — Copyright (c) 2011 by vernon adams (vern@newtypography.co.uk), with Reserved Font Names "Bowlby" "Bowlby One" and "Bowlby One SC". This Font Software is licensed under the SIL Open Font License, Version 1.1. This license is available with a FAQ at: http://scripts.sil.org/OFL
+Bowlby One SC — OFL-1.1 — Copyright (c) 2011, vernon adams (vern@newtypography.co.uk), with Reserved Font Names "Bowlby"
+Bree Serif — OFL-1.1 — Copyright (c) 2011, TypeTogether (www.type-together.com), with Reserved Font Names "Bree" and "Bree Serif"
+Bricolage Grotesque — OFL-1.1 — Copyright 2022 The Bricolage Grotesque Project Authors (https://github.com/ateliertriay/bricolage)
+Brygada 1918 — OFL-1.1 — Copyright 2020 The Brygada 1918 Project Authors (https://github.com/kosmynkab/Brygada-1918) Brygada1918-Italic[wght].ttf: Copyright 2020 The Brygada 1918 Project Authors (https://github.com/kosmynkab/Brygada-1918)
+Bubblegum Sans — OFL-1.1 — Copyright (c) 2011 Angel Koziupa (sudtipos@sudtipos.com), Copyright (c) 2011 Alejandro Paul (sudtipos@sudtipos.com), with Reserved Font Name "Bubblegum Sans"
+Bungee Inline — OFL-1.1 — Copyright 2023 The Bungee Project Authors (https://github.com/djrrb/Bungee)
+Bungee Outline — OFL-1.1 — Copyright 2023 The Bungee Project Authors (https://github.com/djrrb/Bungee)
+Bungee Shade — OFL-1.1 — Copyright 2023 The Bungee Project Authors (https://github.com/djrrb/Bungee)
+Butcherman — OFL-1.1 — Copyright (c) 2011, Typomondo, with Reserved Font Name "Butcherman".
+Cabin — OFL-1.1 — Copyright 2018 The Cabin Project Authors (https://github.com/impallari/Cabin) Cabin-Italic[wdth,wght].ttf: Copyright 2018 The Cabin Project Authors (https://github.com/impallari/Cabin)
+Cabin Sketch — OFL-1.1 — Copyright 2011 The Cabin Project Authors (impallari@gmail.com), with Reserved Font Name "Cabin", "Cabin Sketch". CabinSketch-Bold.ttf: Copyright 2011 The Cabin Project Authors (impallari@gmail.com), with Reserved Font Name "Cabin", "Cabin Sketch".
+Caesar Dressing — OFL-1.1 — Copyright (c) 2011 by Open Window (dathanboardman@gmail.com) with Reseved Font Name "Caesar Dressing"
+Calistoga — OFL-1.1 — Copyright 2019 The Calistoga Project Authors (https://github.com/SorkinType/Calistoga)
+Calligraffitti — Apache-2.0 — Copyright (c) 2010 by Open Window. All rights reserved.
+Cardo — OFL-1.1 — Copyright (c) 2002-2011, David J. Perry (hospes02@scholarsfonts.net) Cardo-Italic.ttf: Copyright (c) 2002-2011, David J. Perry (hospes02@scholarsfonts.net) Cardo-Bold.ttf: Copyright (c) 2002-2011, David J. Perry (hospes02@scholarsfonts.net)
+Carter One — OFL-1.1 — Copyright (c) 2011 by vernon adams. All rights reserved.
+Castoro — OFL-1.1 — Copyright 2020 The Castoro Project Authors (https://github.com/TiroTypeworks/Castoro) Castoro-Italic.ttf: Copyright 2020 The Castoro Project Authors (https://github.com/TiroTypeworks/Castoro)
+Catamaran — OFL-1.1 — Copyright 2020 The Catamaran Project Authors (https://github.com/VanillaandCream/Catamaran-Tamil)
+Caudex — OFL-1.1 — Copyright (c) 2011 Hjort Nidudsson (nidud@users.sourceforge.net) Caudex-Italic.ttf: Copyright (c) 2011 Hjort Nidudsson (nidud@users.sourceforge.net) Caudex-Bold.ttf: Copyright (c) 2011 Hjort Nidudsson (nidud@users.sourceforge.net) Caudex-BoldItalic.ttf: Copyright (c) 2011 Hjort Nidudsson (nidud@users.sourceforge.net)
+Caveat Brush — OFL-1.1 — Copyright 2015 Google Inc. All Rights Reserved.
+Cedarville Cursive — OFL-1.1 — Copyright (c) 2010, Kimberly Geswein (kimberlygeswein.com kimberlygeswein@gmail.com)
+Chakra Petch — OFL-1.1 — Copyright 2018 The Chakra Petch Project Authors (https://github.com/m4rc1e/Chakra-Petch.git) ChakraPetch-LightItalic.ttf: Copyright 2018 The Chakra Petch Project Authors (https://github.com/m4rc1e/Chakra-Petch.git) ChakraPetch-Regular.ttf: Copyright 2018 The Chakra Petch Project Authors (https://github.com/m4rc1e/Chakra-Petch.git) ChakraPetch-Italic.ttf: Copyright 2018 The Chakra Petch Project Authors (https://github.com/m4rc1e/Chakra-Petch.git) ChakraPetch-Medium.ttf: Copyright 2018 The Chakra Petch Project Authors (https://github.com/m4rc1e/Chakra-Petch.git) ChakraPetch-MediumItalic.ttf: Copyright 2018 The Chakra Petch Project Authors (https://github.com/m4rc1e/Chakra-Petch.git) ChakraPetch-SemiBold.ttf: Copyright 2018 The Chakra Petch Project Authors (https://github.com/m4rc1e/Chakra-Petch.git) ChakraPetch-SemiBoldItalic.ttf: Copyright 2018 The Chakra Petch Project Authors (https://github.com/m4rc1e/Chakra-Petch.git) ChakraPetch-Bold.ttf: Copyright 2018 The Chakra Petch Project Authors (https://github.com/m4rc1e/Chakra-Petch.git) ChakraPetch-BoldItalic.ttf: Copyright 2018 The Chakra Petch Project Authors (https://github.com/m4rc1e/Chakra-Petch.git)
+Changa One — OFL-1.1 — Copyright (c) 2011, Eduardo Tunni (http://www.tipo.net.ar edu@tipo.net.ar), with Reserved Font Name "Changa" ChangaOne-Italic.ttf: Copyright (c) 2011, Eduardo Tunni (http://www.tipo.net.ar edu@tipo.net.ar), with Reserved Font Name "Changa"
+Chango — OFL-1.1 — Copyright (c) 2011 Fontstage (info@fontstage.com), with Reserved Font Name "Chango"
+Chelsea Market — OFL-1.1 — Copyright (c) 2011 by Font Diner, Inc DBA Tart Workshop (diner@fontdiner.com) with Reseved Font Name "Chelsea Market"
+Chewy — Apache-2.0 — Copyright (c) 2010 by Font Diner, Inc DBA Sideshow. All rights reserved.
+Chilanka — OFL-1.1 — Copyright 2020 The Chilanka Project Authors (https://gitlab.com/smc/fonts/chilanka)
+Chivo — OFL-1.1 — Copyright 2019 The Chivo Project Authors (https://github.com/Omnibus-Type/Chivo) Chivo-Italic[wght].ttf: Copyright 2019 The Chivo Project Authors (https://github.com/Omnibus-Type/Chivo)
+Chivo Mono — OFL-1.1 — Copyright 2018 The Chivo Project Authors (https://github.com/Omnibus-Type/Chivo) ChivoMono-Italic[wght].ttf: Copyright 2018 The Chivo Project Authors (https://github.com/Omnibus-Type/Chivo)
+Cinzel — OFL-1.1 — Copyright 2020 The Cinzel Project Authors (https://github.com/NDISCOVER/Cinzel)
+Cinzel Decorative — OFL-1.1 — Copyright 2012 Natanael Gama (info@ndiscovered.com), with Reserved Font Name 'Cinzel' CinzelDecorative-Bold.ttf: Copyright 2012 Natanael Gama (info@ndiscovered.com), with Reserved Font Name 'Cinzel' CinzelDecorative-Black.ttf: Copyright 2012 Natanael Gama (info@ndiscovered.com), with Reserved Font Name 'Cinzel'
+Clicker Script — OFL-1.1 — Copyright (c) 2012 by Brian J. Bonislawsky and Jim Lyles for Astigmatic (AOETI) (astigma@astigmatic.com), with Reserved Font Name "Clicker Script"
+Climate Crisis — OFL-1.1 — Copyright 2020 The Climate Crisis Project Authors (https://github.com/dancoull/ClimateCrisis)
+Coiny — OFL-1.1 — Copyright 2015 Marcelo Magalhaes (marcelommp@gmail.com @marcelommp)
+Comfortaa — OFL-1.1 — Copyright 2011 The Comfortaa Project Authors (https://github.com/alexeiva/comfortaa), with Reserved Font Name "Comfortaa".
+Comic Neue — OFL-1.1 — Copyright 2014 The Comic Neue Project Authors (https://github.com/crozynski/comicneue) ComicNeue-LightItalic.ttf: Copyright 2014 The Comic Neue Project Authors (https://github.com/crozynski/comicneue) ComicNeue-Regular.ttf: Copyright 2014 The Comic Neue Project Authors (https://github.com/crozynski/comicneue) ComicNeue-Italic.ttf: Copyright 2014 The Comic Neue Project Authors (https://github.com/crozynski/comicneue) ComicNeue-Bold.ttf: Copyright 2014 The Comic Neue Project Authors (https://github.com/crozynski/comicneue) ComicNeue-BoldItalic.ttf: Copyright 2014 The Comic Neue Project Authors (https://github.com/crozynski/comicneue)
+Coming Soon — Apache-2.0 — Copyright (c) 2010 by Open Window. All rights reserved.
+Cookie — OFL-1.1 — Copyright (c) 2011 by Ania Kruk (hello@aniakruk.com), with Reserved Font Name Cookie.
+Cormorant — OFL-1.1 — Copyright 2015 The Cormorant Project Authors (github.com/CatharsisFonts/Cormorant) Cormorant-Italic[wght].ttf: Copyright 2015 The Cormorant Project Authors (github.com/CatharsisFonts/Cormorant)
+Cormorant Infant — OFL-1.1 — Copyright 2015 The Cormorant Project Authors (github.com/CatharsisFonts/Cormorant) CormorantInfant-Italic[wght].ttf: Copyright 2015 The Cormorant Project Authors (github.com/CatharsisFonts/Cormorant)
+Cormorant SC — OFL-1.1 — Copyright 2015 The Cormorant Project Authors (github.com/CatharsisFonts/Cormorant) CormorantSC-Regular.ttf: Copyright 2015 The Cormorant Project Authors (github.com/CatharsisFonts/Cormorant) CormorantSC-Medium.ttf: Copyright 2015 The Cormorant Project Authors (github.com/CatharsisFonts/Cormorant) CormorantSC-SemiBold.ttf: Copyright 2015 The Cormorant Project Authors (github.com/CatharsisFonts/Cormorant) CormorantSC-Bold.ttf: Copyright 2015 The Cormorant Project Authors (github.com/CatharsisFonts/Cormorant)
+Cormorant Upright — OFL-1.1 — Copyright 2015 The Cormorant Project Authors (github.com/CatharsisFonts/Cormorant) CormorantUpright-Regular.ttf: Copyright 2015 The Cormorant Project Authors (github.com/CatharsisFonts/Cormorant) CormorantUpright-Medium.ttf: Copyright 2015 The Cormorant Project Authors (github.com/CatharsisFonts/Cormorant) CormorantUpright-SemiBold.ttf: Copyright 2015 The Cormorant Project Authors (github.com/CatharsisFonts/Cormorant) CormorantUpright-Bold.ttf: Copyright 2015 The Cormorant Project Authors (github.com/CatharsisFonts/Cormorant)
+Courgette — OFL-1.1 — Copyright (c) 2012, Sorkin Type Co (www.sorkintype.com eben@eyebytes.com) with Reserved Font Name "Courgette".
+Courier Prime — OFL-1.1 — Copyright 2015 The Courier Prime Project Authors (https://github.com/quoteunquoteapps/CourierPrime). CourierPrime-Italic.ttf: Copyright 2015 The Courier Prime Project Authors (https://github.com/quoteunquoteapps/CourierPrime). CourierPrime-Bold.ttf: Copyright 2015 The Courier Prime Project Authors (https://github.com/quoteunquoteapps/CourierPrime). CourierPrime-BoldItalic.ttf: Copyright 2015 The Courier Prime Project Authors (https://github.com/quoteunquoteapps/CourierPrime).
+Cousine — OFL-1.1 — Copyright 2026 The Cousine Project Authors (https://github.com/googlefonts/cousine) Cousine-Italic.ttf: Copyright 2026 The Cousine Project Authors (https://github.com/googlefonts/cousine) Cousine-Bold.ttf: Copyright 2026 The Cousine Project Authors (https://github.com/googlefonts/cousine) Cousine-BoldItalic.ttf: Copyright 2026 The Cousine Project Authors (https://github.com/googlefonts/cousine)
+Covered By Your Grace — OFL-1.1 — Copyright (c) 2010, Kimberly Geswein (kimberlygeswein.com)
+Creepster — OFL-1.1 — Copyright (c) 2011, Font Diner, Inc (diner@fontdiner.com), with Reserved Font Names "Creepster"
+Crete Round — OFL-1.1 — Copyright (c) 2011, TypeTogether (www.type-together.com info@type-together.com), with Reserved Font Names "Crete" and "Crete Round" CreteRound-Italic.ttf: Copyright (c) 2011, TypeTogether (www.type-together.com info@type-together.com), with Reserved Font Names "Crete" and "Crete Round"
+Crimson Pro — OFL-1.1 — Copyright 2018 The Crimson Pro Project Authors (https://github.com/Fonthausen/CrimsonPro) CrimsonPro-Italic[wght].ttf: Copyright 2018 The Crimson Pro Project Authors (https://github.com/Fonthausen/CrimsonPro)
+Crimson Text — OFL-1.1 — Copyright 2010 The Crimson Text Project Authors (https://github.com/googlefonts/Crimson) CrimsonText-Italic.ttf: Copyright 2010 The Crimson Text Project Authors (https://github.com/googlefonts/Crimson) CrimsonText-SemiBold.ttf: Copyright 2010 The Crimson Text Project Authors (https://github.com/googlefonts/Crimson) CrimsonText-SemiBoldItalic.ttf: Copyright 2010 The Crimson Text Project Authors (https://github.com/googlefonts/Crimson) CrimsonText-Bold.ttf: Copyright 2010 The Crimson Text Project Authors (https://github.com/googlefonts/Crimson) CrimsonText-BoldItalic.ttf: Copyright 2010 The Crimson Text Project Authors (https://github.com/googlefonts/Crimson)
+Cutive Mono — OFL-1.1 — Copyright 2012 The Cutive Project Authors (https://github.com/googlefonts/cutivemono)
+DM Mono — OFL-1.1 — Copyright 2020 The DM Mono Project Authors (https://www.github.com/googlefonts/dm-mono) DMMono-LightItalic.ttf: Copyright 2020 The DM Mono Project Authors (https://www.github.com/googlefonts/dm-mono) DMMono-Regular.ttf: Copyright 2020 The DM Mono Project Authors (https://www.github.com/googlefonts/dm-mono) DMMono-Italic.ttf: Copyright 2020 The DM Mono Project Authors (https://www.github.com/googlefonts/dm-mono) DMMono-Medium.ttf: Copyright 2020 The DM Mono Project Authors (https://www.github.com/googlefonts/dm-mono) DMMono-MediumItalic.ttf: Copyright 2020 The DM Mono Project Authors (https://www.github.com/googlefonts/dm-mono)
+DM Serif Text — OFL-1.1 — Copyright 2014 - 2017 Adobe Systems Incorporated (http://www.adobe.com/), with Reserved Font Name 'Source'. Copyright 2019 Google LLC. DMSerifText-Italic.ttf: Copyright 2014 - 2017 Adobe Systems Incorporated (http://www.adobe.com/), with Reserved Font Name 'Source'. Copyright 2019 Google LLC.
+Damion — OFL-1.1 — Copyright 2014 The Damion Project Authors (https://github.com/googlefonts/damionFont)
+Darumadrop One — OFL-1.1 — Copyright 2020 The Darumadrop Project Authors (https://github.com/ManiackersDesign/darumadrop), all rights reserved.
+Dawning of a New Day — OFL-1.1 — Copyright (c) 2010, Kimberly Geswein (kimberlygeswein.com kimberlygeswein@gmail.com)
+Days One — OFL-1.1 — Copyright (c) 2009 by Alexander Kalachev, Alexey Maslov, Jovanny Lemonad (lemonad@jovanny.ru). All rights reserved.
+Dela Gothic One — OFL-1.1 — Copyright 2020 The Dela Gothic Project Authors (https://github.com/syakuzen/DelaGothic)
+Delicious Handrawn — OFL-1.1 — Copyright 2022 The Delicious Handrawn Project Authors (https://github.com/alphArtype/Delicious-Handrawn)
+Didact Gothic — OFL-1.1 — Copyright 2016 The Didact Gothic Project Authors (il.basso.buffo@gmail.com)
+Domine — OFL-1.1 — Copyright 2020 The Domine Project Authors (https://github.com/googlefonts/domine)
+Dosis — OFL-1.1 — Copyright 2011 The Dosis Project Authors (https://github.com/googlefonts/dosis-vf)
+DynaPuff — OFL-1.1 — Copyright 2021 The DynaPuff Project Authors (https://github.com/googlefonts/dynapuff)
+EB Garamond — OFL-1.1 — Copyright 2017 The EB Garamond Project Authors (https://github.com/octaviopardo/EBGaramond12) EBGaramond-Italic[wght].ttf: Copyright 2017 The EB Garamond Project Authors (https://github.com/octaviopardo/EBGaramond12)
+Eater — OFL-1.1 — Copyright (c) 2011, Vernon Adams DBA Typomondo (vern@newtypography.co.uk), with Reserved Font Name "Eater"
+Economica — OFL-1.1 — Copyright (c) 2012, Vicente Lamonaca (produccion.taller@gmail.com www.tipografia-montevideo.info www.tipotype.com) Economica-Italic.ttf: Copyright (c) 2012, Vicente Lamonaca (produccion.taller@gmail.com www.tipografia-montevideo.info www.tipotype.com) Economica-Bold.ttf: Copyright (c) 2012, Vicente Lamonaca (produccion.taller@gmail.com www.tipografia-montevideo.info www.tipotype.com) Economica-BoldItalic.ttf: Copyright (c) 2012, Vicente Lamonaca (produccion.taller@gmail.com www.tipografia-montevideo.info www.tipotype.com)
+Emilys Candy — OFL-1.1 — Copyright (c) 2012 by Font Diner, Inc DBA Neapolitan (diner@fontdiner.com) with Reseved Font Name "Emilys Candy"
+Encode Sans — OFL-1.1 — Copyright 2020 The Encode Project Authors (https://github.com/thundernixon/Encode-Sans), with Reserved Font Name 'Encode Sans'.
+Epilogue — OFL-1.1 — Copyright 2020 The Epilogue Project Authors (https://github.com/Etcetera-Type-Co/Epilogue) Epilogue-Italic[wght].ttf: Copyright 2020 The Epilogue Project Authors (https://github.com/Etcetera-Type-Co/Epilogue)
+Euphoria Script — OFL-1.1 — Copyright (c) 2012 Sabrina Mariela Lopez (typesenses@live.com.ar), with Reserved Font Name "Euphoria Script"
+Ewert — OFL-1.1 — Copyright (c) 2011, Johan Kallas (johankallas@gmail.com), Copyright (c) 2011 Mihkel Virkus (mihkelvirkus@gmail.com) with Reserved Font Name Ewert.
+Exo — OFL-1.1 — Copyright 2017 The Exo Project Authors (https://github.com/NDISCOVER/Exo-1.0) Exo-Italic[wght].ttf: Copyright 2017 The Exo Project Authors (https://github.com/NDISCOVER/Exo-1.0)
+Exo 2 — OFL-1.1 — Copyright 2013 The Exo 2 Project Authors (https://github.com/googlefonts/Exo-2.0) Exo2-Italic[wght].ttf: Copyright 2013 The Exo 2 Project Authors (https://github.com/googlefonts/Exo-2.0)
+Familjen Grotesk — OFL-1.1 — Copyright 2021 The Familjen Grotesk Project Authors (https://github.com/Familjen-Sthlm/Familjen-Grotesk) FamiljenGrotesk-Italic[wght].ttf: Copyright 2021 The Familjen Grotesk Project Authors (https://github.com/Familjen-Sthlm/Familjen-Grotesk)
+Fascinate — OFL-1.1 — Copyright (c) 2011 by Brian J. Bonislawsky DBA Astigmatic (AOETI) (astigma@astigmatic.com), with Reserved Font Name "Fascinate"
+Faster One — OFL-1.1 — Copyright 2012 The Faster Project Authors (https://github.com/etunni/faster), with Reserved Font Name 'Faster'
+Federo — OFL-1.1 — Copyright (c) 2011 by Olexa M. Volochay | Cyreal.org. All rights reserved.
+Figtree — OFL-1.1 — Copyright 2022 The Figtree Project Authors (https://github.com/erikdkennedy/figtree) Figtree-Italic[wght].ttf: Copyright 2022 The Figtree Project Authors (https://github.com/erikdkennedy/figtree)
+Fira Code — OFL-1.1 — Copyright 2014-2020 The Fira Code Project Authors (https://github.com/tonsky/FiraCode)
+Fira Sans — OFL-1.1 — Google Inc.
+Fira Sans Condensed — OFL-1.1 — Google Inc.
+Fjalla One — OFL-1.1 — Copyright 2012 The Fjalla Project Authors (https://github.com/SorkinType/FjallaOne)
+Fjord One — OFL-1.1 — Copyright (c) 2011, Sorkin Type Co (www.sorkintype.com) with Reserved Font Names "Fjord" and "Fjord One" This Font Software is licensed under the SIL Open Font License, Version 1.1. This license is copied below, and is also available with a FAQ at: http://scripts.sil.org/OFL
+Fondamento — OFL-1.1 — Copyright (c) 2011 by Brian J. Bonislawsky DBA Astigmatic (AOETI) (astigma@astigmatic.com), with Reserved Font Name "Fondamento" Fondamento-Italic.ttf: Copyright (c) 2011 by Brian J. Bonislawsky DBA Astigmatic (AOETI) (astigma@astigmatic.com), with Reserved Font Name "Fondamento Italic"
+Forum — OFL-1.1 — Copyright (c) 2011, Denis Masharov <denis.masharov@gmail.com>. This Font Software is licensed under the SIL Open Font License, Version 1.1. This license is available with a FAQ at: http://scripts.sil.org/OFL
+Fragment Mono — OFL-1.1 — Copyright 2022 The Fragment-Mono Project Authors (https://github.com/weiweihuanghuang/fragment-mono) FragmentMono-Italic.ttf: Copyright 2022 The Fragment-Mono Project Authors (https://github.com/weiweihuanghuang/fragment-mono)
+Frank Ruhl Libre — OFL-1.1 — Copyright 2015 The Frank Ruhl Libre Project Authors (https://github.com/fontef/frankruhllibre)
+Fraunces — OFL-1.1 — Copyright 2020 The Fraunces Project Authors (github.com/undercasetype/Fraunces) Fraunces-Italic[SOFT,WONK,opsz,wght].ttf: Copyright 2020 The Fraunces Project Authors (github.com/undercasetype/Fraunces)
+Freckle Face — OFL-1.1 — Copyright (c) 2012 by Brian J. Bonislawsky DBA Astigmatic (AOETI) (astigma@astigmatic.com), with Reserved Font Name "Freckle Face"
+Fredericka the Great — OFL-1.1 — Copyright (c) 2011 by Font Diner, Inc DBA Tart Workshop (diner@fontdiner.com) with Reseved Font Name "Fredericka the Great"
+Fredoka One — OFL-1.1 — Copyright (c) 2011 Milena B Brandao (milenabbrandao@gmail.com), with Reserved Font Name "Fredoka"
+Fugaz One — OFL-1.1 — Copyright (c) 2011 by LatinoType Limitada (info@latinotype.com), with Reserved Font Names "Fugaz" and "Fugaz One"
+Gabarito — OFL-1.1 — Copyright 2023 The Gabarito Project Authors (https://github.com/naipefoundry/gabarito)
+Gaegu — OFL-1.1 — Copyright 2018 The Gaegu Project Authors Gaegu-Regular.ttf: Copyright 2018 The Gaegu Project Authors Gaegu-Bold.ttf: Copyright 2018 The Gaegu Project Authors
+Gelasio — OFL-1.1 — Copyright 2022 The Gelasio Project Authors (https://github.com/SorkinType/Gelasio) Gelasio-Italic[wght].ttf: Copyright 2022 The Gelasio Project Authors (https://github.com/SorkinType/Gelasio)
+Geologica — OFL-1.1 — Copyright 2020 The Geologica Project Authors (https://github.com/googlefonts/geologica)
+Germania One — OFL-1.1 — Copyright (c) 2011 by John Vargas Beltran (john.vargasbeltran@gmail.com), with Reserved Font Name "Germania One"
+Gilda Display — OFL-1.1 — Copyright 2012 The Gilda Display Project Authors (https://github.com/etunni/gilda-display) with Reserved Font Name 'Gilda'.
+Gloock — OFL-1.1 — Copyright 2022 The Gloock Project Authors (https://github.com/duartp/gloock)
+Gloria Hallelujah — OFL-1.1 — Copyright (c) 2010, Kimberly Geswein (kimberlygeswein.com kimberlygeswein@gmail.com)
+Gochi Hand — OFL-1.1 — Copyright (c) 2011, HT Fonts (www.htfonts.com info@htfonts.com), with Reserved Font Names "Gochi" and "Gochi Hand"
+Golos Text — OFL-1.1 — Copyright 2019 The Golos Text Project Authors (https://github.com/googlefonts/golos-text)
+Grandstander — OFL-1.1 — Copyright 2020 The Grandstander Project Authors (https://github.com/Etcetera-Type-Co/Grandstander) Grandstander-Italic[wght].ttf: Copyright 2020 The Grandstander Project Authors (https://github.com/Etcetera-Type-Co/Grandstander)
+Griffy — OFL-1.1 — Copyright (c) 2012 by Font Diner, Inc DBA Neapolitan (diner@fontdiner.com) with Reseved Font Name "Griffy"
+Gruppo — OFL-1.1 — Copyright 2010 The Gruppo Project Authors (https://github.com/googlefonts/GruppoFont)
+Hahmlet — OFL-1.1 — Copyright 2020 The Hahmlet Project Authors (https://github.com/hyper-type/hahmlet)
+Handlee — OFL-1.1 — Copyright (c) 2011, Admix Designs (http://www.admixdesigns.com joe@admixdesigns.com) with Reserved Font Name Handlee.
+Hanken Grotesk — OFL-1.1 — Copyright 2021 The Hanken Grotesk Project Authors (https://github.com/marcologous/hanken-grotesk) HankenGrotesk-Italic[wght].ttf: Copyright 2021 The Hanken Grotesk Project Authors (https://github.com/marcologous/hanken-grotesk)
+Heebo — OFL-1.1 — Copyright 2014 The Heebo Project Authors (https://github.com/OdedEzer/heebo)
+Henny Penny — OFL-1.1 — Copyright (c) 2012, Brownfox (gayaneh.b@gmail.com), with Reserved Font Name "Henny Penny"
+Herr Von Muellerhoff — OFL-1.1 — Copyright (c) 2004 Alejandro Paul (sudtipos@sudtipos.com), with Reserved Font Name "Herr Von Mullerhoff"
+Hind — OFL-1.1 — Copyright (c) 2014 Indian Type Foundry (info@indiantypefoundry.com) Hind-Regular.ttf: Copyright (c) 2014 Indian Type Foundry (info@indiantypefoundry.com) Hind-Medium.ttf: Copyright (c) 2014 Indian Type Foundry (info@indiantypefoundry.com) Hind-SemiBold.ttf: Copyright (c) 2014 Indian Type Foundry (info@indiantypefoundry.com) Hind-Bold.ttf: Copyright (c) 2014 Indian Type Foundry (info@indiantypefoundry.com)
+Homemade Apple — Apache-2.0 — Copyright (c) 2010 by Font Diner, Inc. All rights reserved.
+IBM Plex Mono — OFL-1.1 — Copyright 2017 IBM Corp. All rights reserved. IBMPlexMono-ThinItalic.ttf: Copyright 2017 IBM Corp. All rights reserved. IBMPlexMono-ExtraLight.ttf: Copyright 2017 IBM Corp. All rights reserved. IBMPlexMono-ExtraLightItalic.ttf: Copyright 2017 IBM Corp. All rights reserved. IBMPlexMono-Light.ttf: Copyright 2017 IBM Corp. All rights reserved. IBMPlexMono-LightItalic.ttf: Copyright 2017 IBM Corp. All rights reserved. IBMPlexMono-Regular.ttf: Copyright 2017 IBM Corp. All rights reserved. IBMPlexMono-Italic.ttf: Copyright 2017 IBM Corp. All rights reserved. IBMPlexMono-Medium.ttf: Copyright 2017 IBM Corp. All rights reserved. IBMPlexMono-MediumItalic.ttf: Copyright 2017 IBM Corp. All rights reserved. IBMPlexMono-SemiBold.ttf: Copyright 2017 IBM Corp. All rights reserved. IBMPlexMono-SemiBoldItalic.ttf: Copyright 2017 IBM Corp. All rights reserved. IBMPlexMono-Bold.ttf: Copyright 2017 IBM Corp. All rights reserved. IBMPlexMono-BoldItalic.ttf: Copyright 2017 IBM Corp. All rights reserved.
+IBM Plex Sans — OFL-1.1 — Copyright 2019 IBM Corp. All rights reserved. IBMPlexSans-Italic[wdth,wght].ttf: Copyright 2019 IBM Corp. All rights reserved.
+IBM Plex Serif — OFL-1.1 — Copyright 2020 IBM Corp. All rights reserved. IBMPlexSerif-ThinItalic.ttf: Copyright 2020 IBM Corp. All rights reserved. IBMPlexSerif-ExtraLight.ttf: Copyright 2020 IBM Corp. All rights reserved. IBMPlexSerif-ExtraLightItalic.ttf: Copyright 2020 IBM Corp. All rights reserved. IBMPlexSerif-Light.ttf: Copyright 2020 IBM Corp. All rights reserved. IBMPlexSerif-LightItalic.ttf: Copyright 2020 IBM Corp. All rights reserved. IBMPlexSerif-Regular.ttf: Copyright 2020 IBM Corp. All rights reserved. IBMPlexSerif-Italic.ttf: Copyright 2020 IBM Corp. All rights reserved. IBMPlexSerif-Medium.ttf: Copyright 2020 IBM Corp. All rights reserved. IBMPlexSerif-MediumItalic.ttf: Copyright 2020 IBM Corp. All rights reserved. IBMPlexSerif-SemiBold.ttf: Copyright 2020 IBM Corp. All rights reserved. IBMPlexSerif-SemiBoldItalic.ttf: Copyright 2020 IBM Corp. All rights reserved. IBMPlexSerif-Bold.ttf: Copyright 2020 IBM Corp. All rights reserved. IBMPlexSerif-BoldItalic.ttf: Copyright 2020 IBM Corp. All rights reserved.
+IM Fell English — OFL-1.1 — Google Inc.
+IM Fell English SC — OFL-1.1 — Google Inc.
+Inconsolata — OFL-1.1 — Copyright 2006 The Inconsolata Project Authors (https://github.com/cyrealtype/Inconsolata)
+Indie Flower — OFL-1.1 — Copyright 2010 The Indie Flower Authors (kimberlygeswein.com)
+Instrument Sans — OFL-1.1 — Copyright 2022 The Instrument Sans Project Authors (https://github.com/Instrument/instrument-sans) InstrumentSans-Italic[wdth,wght].ttf: Copyright 2022 The Instrument Sans Project Authors (https://github.com/Instrument/instrument-sans)
+Instrument Serif — OFL-1.1 — Copyright 2022 The Instrument Serif Project Authors (https://github.com/Instrument/instrument-serif) InstrumentSerif-Italic.ttf: Copyright 2022 The Instrument Serif Project Authors (https://github.com/Instrument/instrument-serif)
+Inter Tight — OFL-1.1 — Copyright 2022 The Inter Project Authors (https://github.com/rsms/inter-tight) InterTight-Italic[wght].ttf: Copyright 2022 The Inter Project Authors (https://github.com/rsms/inter-tight)
+Italiana — OFL-1.1 — Copyright (c) 2011 by Santiago Orozco (hi@typemade.mx) with reserved name Italiana
+Italianno — OFL-1.1 — Copyright 2009 The Italianno Project Authors (https://github.com/googlefonts/italianno)
+Itim — OFL-1.1 — Copyright (c) 2015, Cadson Demak (info@cadsondemak.com), Copyright (c) 2014, Pablo Impallari (www.impallari.com|impallari@gmail.com)
+Josefin Sans — OFL-1.1 — Copyright 2010 The Josefin Sans Project Authors (https://github.com/ThomasJockin/JosefinSansFont-master), with Reserved Font Name "Josefin Sans". JosefinSans-Italic[wght].ttf: Copyright 2010 The Josefin Sans Project Authors (https://github.com/ThomasJockin/JosefinSansFont-master), with Reserved Font Name "Josefin Sans".
+Josefin Slab — OFL-1.1 — Copyright 2020 The Josefin Slab Project Authors (https://github.com/googlefonts/josefinslab/), with Reserved Font Name Josefin. JosefinSlab-Italic[wght].ttf: Copyright 2020 The Josefin Slab Project Authors (https://github.com/googlefonts/josefinslab/), with Reserved Font Name Josefin.
+Jost — OFL-1.1 — Copyright 2020 The Jost Project Authors (https://github.com/indestructible-type/Jost) Jost-Italic[wght].ttf: Copyright 2020 The Jost Project Authors (https://github.com/indestructible-type/Jost)
+Julius Sans One — OFL-1.1 — Copyright (c) 2012, LatinoType (luciano@latinotype.com), with Reserved Font Names 'Julius'
+Just Another Hand — Apache-2.0 — Copyright (c) 2010 by Brian J. Bonislawsky DBA Astigmatic (AOETI). All rights reserved. Available under the Apache 2.0 licence. http://www.apache.org/licenses/LICENSE-2.0.html
+K2D — OFL-1.1 — Copyright 2018 The K2D Project Authors (https://github.com/cadsondemak/K2D) K2D-ThinItalic.ttf: Copyright 2018 The K2D Project Authors (https://github.com/cadsondemak/K2D) K2D-ExtraLight.ttf: Copyright 2018 The K2D Project Authors (https://github.com/cadsondemak/K2D) K2D-ExtraLightItalic.ttf: Copyright 2018 The K2D Project Authors (https://github.com/cadsondemak/K2D) K2D-Light.ttf: Copyright 2018 The K2D Project Authors (https://github.com/cadsondemak/K2D) K2D-LightItalic.ttf: Copyright 2018 The K2D Project Authors (https://github.com/cadsondemak/K2D) K2D-Regular.ttf: Copyright 2018 The K2D Project Authors (https://github.com/cadsondemak/K2D) K2D-Italic.ttf: Copyright 2018 The K2D Project Authors (https://github.com/cadsondemak/K2D) K2D-Medium.ttf: Copyright 2018 The K2D Project Authors (https://github.com/cadsondemak/K2D) K2D-MediumItalic.ttf: Copyright 2018 The K2D Project Authors (https://github.com/cadsondemak/K2D) K2D-SemiBold.ttf: Copyright 2018 The K2D Project Authors (https://github.com/cadsondemak/K2D) K2D-SemiBoldItalic.ttf: Copyright 2018 The K2D Project Authors (https://github.com/cadsondemak/K2D) K2D-Bold.ttf: Copyright 2018 The K2D Project Authors (https://github.com/cadsondemak/K2D) K2D-BoldItalic.ttf: Copyright 2018 The K2D Project Authors (https://github.com/cadsondemak/K2D) K2D-ExtraBold.ttf: Copyright 2018 The K2D Project Authors (https://github.com/cadsondemak/K2D) K2D-ExtraBoldItalic.ttf: Copyright 2018 The K2D Project Authors (https://github.com/cadsondemak/K2D)
+Kalam — OFL-1.1 — Copyright (c) 2014 Indian Type Foundry (info@indiantypefoundry.com) Kalam-Regular.ttf: Copyright (c) 2014 Indian Type Foundry (info@indiantypefoundry.com) Kalam-Bold.ttf: Copyright (c) 2014 Indian Type Foundry (info@indiantypefoundry.com)
+Kalnia — OFL-1.1 — Copyright 2022 The Kalnia Project Authors (https://github.com/fridamedrano/Kalnia-Typeface.git)
+Kanit — OFL-1.1 — Copyright 2020 The Kanit Project Authors (https://github.com/cadsondemak/kanit) Kanit-ThinItalic.ttf: Copyright 2020 The Kanit Project Authors (https://github.com/cadsondemak/kanit) Kanit-ExtraLight.ttf: Copyright 2020 The Kanit Project Authors (https://github.com/cadsondemak/kanit) Kanit-ExtraLightItalic.ttf: Copyright 2020 The Kanit Project Authors (https://github.com/cadsondemak/kanit) Kanit-Light.ttf: Copyright 2020 The Kanit Project Authors (https://github.com/cadsondemak/kanit) Kanit-LightItalic.ttf: Copyright 2020 The Kanit Project Authors (https://github.com/cadsondemak/kanit) Kanit-Regular.ttf: Copyright 2020 The Kanit Project Authors (https://github.com/cadsondemak/kanit) Kanit-Italic.ttf: Copyright 2020 The Kanit Project Authors (https://github.com/cadsondemak/kanit) Kanit-Medium.ttf: Copyright 2020 The Kanit Project Authors (https://github.com/cadsondemak/kanit) Kanit-MediumItalic.ttf: Copyright 2020 The Kanit Project Authors (https://github.com/cadsondemak/kanit) Kanit-SemiBold.ttf: Copyright 2020 The Kanit Project Authors (https://github.com/cadsondemak/kanit) Kanit-SemiBoldItalic.ttf: Copyright 2020 The Kanit Project Authors (https://github.com/cadsondemak/kanit) Kanit-Bold.ttf: Copyright 2020 The Kanit Project Authors (https://github.com/cadsondemak/kanit) Kanit-BoldItalic.ttf: Copyright 2020 The Kanit Project Authors (https://github.com/cadsondemak/kanit) Kanit-ExtraBold.ttf: Copyright 2020 The Kanit Project Authors (https://github.com/cadsondemak/kanit) Kanit-ExtraBoldItalic.ttf: Copyright 2020 The Kanit Project Authors (https://github.com/cadsondemak/kanit) Kanit-Black.ttf: Copyright 2020 The Kanit Project Authors (https://github.com/cadsondemak/kanit) Kanit-BlackItalic.ttf: Copyright 2020 The Kanit Project Authors (https://github.com/cadsondemak/kanit)
+Karla — OFL-1.1 — Copyright 2019 The Karla Project Authors (https://github.com/googlefonts/karla) Karla-Italic[wght].ttf: Copyright 2019 The Karla Project Authors (https://github.com/googlefonts/karla)
+Kaushan Script — OFL-1.1 — Copyright (c) 2011, Pablo Impallari (www.impallari.com|impallari@gmail.com), Copyright (c) 2011, Igino Marini. (www.ikern.com|mail@iginomarini.com), with Reserved Font Name Kaushan Script.
+Khand — OFL-1.1 — Copyright (c) 2014 Indian Type Foundry (info@indiantypefoundry.com) Khand-Regular.ttf: Copyright (c) 2014 Indian Type Foundry (info@indiantypefoundry.com) Khand-Medium.ttf: Copyright (c) 2014 Indian Type Foundry (info@indiantypefoundry.com) Khand-SemiBold.ttf: Copyright (c) 2014 Indian Type Foundry (info@indiantypefoundry.com) Khand-Bold.ttf: Copyright (c) 2014 Indian Type Foundry (info@indiantypefoundry.com)
+Knewave — OFL-1.1 — Copyright (c) 2011 by Tyler Finck. All rights reserved.
+Kode Mono — OFL-1.1 — Copyright 2023 The Kode Mono Project Authors (https://github.com/isaozler/kode-mono)
+Kranky — Apache-2.0 — Copyright (c) 2010 by Font Diner, Inc DBA Sideshow. All rights reserved.
+Kristi — OFL-1.1 — Copyright (c) 2010, Birgit Pulk (birgitpulk@gmail.com). All rights reserved. Licenced under SIL OFL v1.1
+Krona One — OFL-1.1 — Copyright (c) 2011, Sorkin Type Co (www.sorkintype.com) with Reserved Font Name "Krona".
+Krub — OFL-1.1 — Copyright 2018 The Krub Project Authors (https://github.com/cadsondemak/Krub) Krub-ExtraLightItalic.ttf: Copyright 2018 The Krub Project Authors (https://github.com/cadsondemak/Krub) Krub-Light.ttf: Copyright 2018 The Krub Project Authors (https://github.com/cadsondemak/Krub) Krub-LightItalic.ttf: Copyright 2018 The Krub Project Authors (https://github.com/cadsondemak/Krub) Krub-Regular.ttf: Copyright 2018 The Krub Project Authors (https://github.com/cadsondemak/Krub) Krub-Italic.ttf: Copyright 2018 The Krub Project Authors (https://github.com/cadsondemak/Krub) Krub-Medium.ttf: Copyright 2018 The Krub Project Authors (https://github.com/cadsondemak/Krub) Krub-MediumItalic.ttf: Copyright 2018 The Krub Project Authors (https://github.com/cadsondemak/Krub) Krub-SemiBold.ttf: Copyright 2018 The Krub Project Authors (https://github.com/cadsondemak/Krub) Krub-SemiBoldItalic.ttf: Copyright 2018 The Krub Project Authors (https://github.com/cadsondemak/Krub) Krub-Bold.ttf: Copyright 2018 The Krub Project Authors (https://github.com/cadsondemak/Krub) Krub-BoldItalic.ttf: Copyright 2018 The Krub Project Authors (https://github.com/cadsondemak/Krub)
+Kumar One — OFL-1.1 — Copyright (c) 2016 Indian Type Foundry (info@indiantypefoundry.com)
+La Belle Aurore — OFL-1.1 — Copyright (c) 2010, Kimberly Geswein (kimberlygeswein.com kimberlygeswein@gmail.com)
+League Gothic — OFL-1.1 — Copyright 2020 The League Gothic Project Authors (https://github.com/theleagueof/league-gothic)
+League Spartan — OFL-1.1 — Copyright 2020 The League Spartan Project Authors (https://github.com/theleagueof/league-spartan)
+Leckerli One — OFL-1.1 — Copyright (c) 2011 Gesine Todt (www.gesine-todt.de hallo@gesine-todt.de), with Reserved Font Names "Leckerli"
+Lemon — OFL-1.1 — Copyright 2011 The Lemon Project Authors (https://github.com/etunni/lemon) with Reserved Font Name "Lemon"
+Lexend — OFL-1.1 — Copyright 2019 The Lexend Project Authors (https://github.com/googlefonts/lexend)
+Lexend Deca — OFL-1.1 — Copyright 2019 The Lexend Project Authors (https://github.com/googlefonts/lexend)
+Lexend Giga — OFL-1.1 — Copyright 2019 The Lexend Project Authors (https://github.com/googlefonts/lexend)
+Libre Bodoni — OFL-1.1 — Copyright 2012 The Libre Bodoni Project Authors (https://github.com/googlefonts/Libre-Bodoni/) LibreBodoni-Italic[wght].ttf: Copyright 2012 The Libre Bodoni Project Authors (https://github.com/googlefonts/Libre-Bodoni/)
+Libre Caslon Display — OFL-1.1 — Copyright 2012 The Libre Caslon Display Authors (https://github.com/impallari/Libre-Caslon-Display)
+Libre Caslon Text — OFL-1.1 — Copyright 2012 The Libre Caslon Text Project Authors (https://github.com/impallari/Libre-Caslon-Text) LibreCaslonText-Italic.ttf: Copyright 2012 The Libre Caslon Text Project Authors (https://github.com/impallari/Libre-Caslon-Text) LibreCaslonText-Bold.ttf: Copyright 2012 The Libre Caslon Text Project Authors (https://github.com/impallari/Libre-Caslon-Text)
+Libre Franklin — OFL-1.1 — Copyright 2020 The Libre Franklin Project Authors (https://github.com/googlefonts/Libre-Franklin) LibreFranklin-Italic[wght].ttf: Copyright 2020 The Libre Franklin Project Authors (https://github.com/googlefonts/Libre-Franklin)
+Lilita One — OFL-1.1 — Copyright (c) 2011 Juan Montoreano (juan@remolacha.biz), with Reserved Font Names "Lilita One"
+Limelight — OFL-1.1 — Copyright (c) 2010 by Sorkin Type Co (eben@eyebytes.com) with Reserved Font Name Limelight. This Font Software is licensed under the SIL Open Font License, Version 1.1. This license is available with a FAQ at: http://scripts.sil.org/OFL
+Literata — OFL-1.1 — Copyright 2017 The Literata Project Authors (https://github.com/googlefonts/literata) Literata-Italic[opsz,wght].ttf: Copyright 2017 The Literata Project Authors (https://github.com/googlefonts/literata)
+Lobster Two — OFL-1.1 — Copyright (c) 2011 by Pablo Impallari (www.impallari.com impallari@gmail.com). All rights reserved. LobsterTwo-Italic.ttf: Copyright (c) 2011 by Pablo Impallari (www.impallari.com impallari@gmail.com). All rights reserved. LobsterTwo-Bold.ttf: Copyright (c) 2011 by Pablo Impallari (www.impallari.com impallari@gmail.com). All rights reserved. LobsterTwo-BoldItalic.ttf: Copyright (c) 2011 by Pablo Impallari (www.impallari.com impallari@gmail.com). All rights reserved.
+Londrina Outline — OFL-1.1 — Copyright 2011 The Londrina Outline Authors (https://github.com/marcelommp/Londrina-Typeface), with Reserved Font Name "Londrina Outline"
+Londrina Shadow — OFL-1.1 — Copyright 2011 The Londrina Shadow Authors (https://github.com/marcelommp/Londrina-Typeface), with Reserved Font Name "Londrina Shadow"
+Londrina Sketch — OFL-1.1 — Copyright 2011 The Londrina Sketch Authors (https://github.com/marcelommp/Londrina-Typeface), with Reserved Font Name "Londrina Sketch"
+Londrina Solid — OFL-1.1 — Copyright 2011 The Londrina Solid Authors (https://github.com/marcelommp/Londrina-Typeface), with Reserved Font Name "Londrina Solid" LondrinaSolid-Light.ttf: Copyright 2011 The Londrina Solid Authors (https://github.com/marcelommp/Londrina-Typeface), with Reserved Font Name "Londrina Solid" LondrinaSolid-Regular.ttf: Copyright 2011 The Londrina Solid Authors (https://github.com/marcelommp/Londrina-Typeface), with Reserved Font Name "Londrina Solid" LondrinaSolid-Black.ttf: Copyright 2011 The Londrina Solid Authors (https://github.com/marcelommp/Londrina-Typeface), with Reserved Font Name "Londrina Solid"
+Love Ya Like A Sister — OFL-1.1 — Copyright (c) 2011 by Kimberly Geswein (kimberlygeswein@gmail.com). All rights reserved.
+Lovers Quarrel — OFL-1.1 — Copyright 2004 The Lovers Quarrel Project Authors (https://github.com/googlefonts/lovers-quarrel)
+Luckiest Guy — Apache-2.0 — Copyright (c) 2010 by Brian J. Bonislawsky DBA Astigmatic (AOETI). All rights reserved. Available under the Apache 2.0 licence. http://www.apache.org/licenses/LICENSE-2.0.html
+Lustria — OFL-1.1 — Copyright (c) 2011, Matthew Desmond (http://www.madtype.com | mattdesmond@gmail.com), with Reserved Font Name Lustria
+M PLUS Rounded 1c — OFL-1.1 — Copyright 2016 The Rounded M+ Project Authors. MPLUSRounded1c-Light.ttf: Copyright 2016 The Rounded M+ Project Authors. MPLUSRounded1c-Regular.ttf: Copyright 2016 The Rounded M+ Project Authors. MPLUSRounded1c-Medium.ttf: Copyright 2016 The Rounded M+ Project Authors. MPLUSRounded1c-Bold.ttf: Copyright 2016 The Rounded M+ Project Authors. MPLUSRounded1c-ExtraBold.ttf: Copyright 2016 The Rounded M+ Project Authors. MPLUSRounded1c-Black.ttf: Copyright 2016 The Rounded M+ Project Authors.
+Macondo — OFL-1.1 — Copyright (c) 1997 - 2011, John Vargas Beltran. (www.johnvargasbeltran.com|john.vargasbeltran@gmail.com), with Reserved Font Name "Macondo"
+Major Mono Display — OFL-1.1 — Copyright 2018 The Major Mono Project Authors (https://github.com/googlefonts/majormono)
+Mali — OFL-1.1 — Copyright 2018 The Mali Project Authors (https://github.com/cadsondemak/Mali) Mali-ExtraLightItalic.ttf: Copyright 2018 The Mali Project Authors (https://github.com/cadsondemak/Mali) Mali-Light.ttf: Copyright 2018 The Mali Project Authors (https://github.com/cadsondemak/Mali) Mali-LightItalic.ttf: Copyright 2018 The Mali Project Authors (https://github.com/cadsondemak/Mali) Mali-Regular.ttf: Copyright 2018 The Mali Project Authors (https://github.com/cadsondemak/Mali) Mali-Italic.ttf: Copyright 2018 The Mali Project Authors (https://github.com/cadsondemak/Mali) Mali-Medium.ttf: Copyright 2018 The Mali Project Authors (https://github.com/cadsondemak/Mali) Mali-MediumItalic.ttf: Copyright 2018 The Mali Project Authors (https://github.com/cadsondemak/Mali) Mali-SemiBold.ttf: Copyright 2018 The Mali Project Authors (https://github.com/cadsondemak/Mali) Mali-SemiBoldItalic.ttf: Copyright 2018 The Mali Project Authors (https://github.com/cadsondemak/Mali) Mali-Bold.ttf: Copyright 2018 The Mali Project Authors (https://github.com/cadsondemak/Mali) Mali-BoldItalic.ttf: Copyright 2018 The Mali Project Authors (https://github.com/cadsondemak/Mali)
+Manrope — OFL-1.1 — Copyright 2019 The Manrope Project Authors (https://github.com/sharanda/manrope)
+Marcellus — OFL-1.1 — Copyright (c) 2012 by Brian J. Bonislawsky DBA Astigmatic (AOETI) (astigma@astigmatic.com), with Reserved Font Name "Marcellus"
+Marcellus SC — OFL-1.1 — Copyright (c) 2012 by Brian J. Bonislawsky DBA Astigmatic (AOETI) (astigma@astigmatic.com), with Reserved Font Name "Marcellus"
+Marck Script — OFL-1.1 — Copyright (c) 2011, Denis Masharov <denis.masharov@gmail.com>, Marck Fogel, with Reserved Font Names "Marck Script".
+Martian Mono — OFL-1.1 — Copyright 2020 The Martian Mono Project Authors (https://github.com/evilmartians/mono)
+Maven Pro — OFL-1.1 — Copyright 2011 The Maven Pro Project Authors (https://github.com/m4rc1e/mavenproFont), with Reserved Font Name "Maven Pro".
+Meddon — OFL-1.1 — Copyright (c) 2011 by Vernon Adams (vern@newtypography.co.uk) with Reserved Font Name 'Meddon'. All rights reserved.
+MedievalSharp — OFL-1.1 — Copyright (c) 2011, Wojciech 'wmk69' Kalinowski (wmk69@o2.pl)
+Merienda — OFL-1.1 — Copyright 2017 The Merienda Project Authors (https://github.com/etunni/merienda)
+Metal Mania — OFL-1.1 — Copyright (c) 2012 by Open Window (dathanboardman@gmail.com) with Reseved Font Name "Metal Mania"
+Michroma — OFL-1.1 — Copyright 2011 The Michroma Project Authors (https://github.com/googlefonts/Michroma-font)
+Mitr — OFL-1.1 — Copyright (c) 2015, Cadson Demak (info@cadsondemak.com) Mitr-Light.ttf: Copyright (c) 2015, Cadson Demak (info@cadsondemak.com) Mitr-Regular.ttf: Copyright (c) 2015, Cadson Demak (info@cadsondemak.com) Mitr-Medium.ttf: Copyright (c) 2015, Cadson Demak (info@cadsondemak.com) Mitr-SemiBold.ttf: Copyright (c) 2015, Cadson Demak (info@cadsondemak.com) Mitr-Bold.ttf: Copyright (c) 2015, Cadson Demak (info@cadsondemak.com)
+Mochiy Pop One — OFL-1.1 — Copyright 2020 The MochiyPop Project Authors (https://github.com/fontdasu/Mochiypop)
+Modak — OFL-1.1 — Copyright (c) 2015 Ek Type (www.ektype.in)
+Monoton — OFL-1.1 — Copyright (c) 2011, Vernon Adams (vern@newtypography.co.uk) with Reserved Font Name 'Monoton'. All rights reserved.
+Monsieur La Doulaise — OFL-1.1 — Copyright (c) 2006 Alejandro Paul (sudtipos@sudtipos.com), with Reserved Font Name "MonsieurLaDoulaise"
+Mountains of Christmas — Apache-2.0 — Copyright (c) 2010 2011, Font Diner, Inc DBA Tart Workshop (diner@fontdiner.com) with Reserved Font Name "Mountains of Christmas" MountainsofChristmas-Bold.ttf: Copyright (c) 2010 2011, Font Diner, Inc DBA Tart Workshop (diner@fontdiner.com) with Reserved Font Name "Mountains of Christmas"
+Mr Dafoe — OFL-1.1 — Copyright (c) 2004 Alejandro Paul (sudtipos@sudtipos.com), with Reserved Font Name "Mr Dafoe"
+Mr De Haviland — OFL-1.1 — Copyright (c) 2006 Alejandro Paul (sudtipos@sudtipos.com), with Reserved Font Name "Mr De Haviland"
+Mrs Saint Delafield — OFL-1.1 — Copyright (c) 2004 Alejandro Paul (sudtipos@sudtipos.com), with Reserved Font Name "Mrs Saint Delafield"
+Mukta — OFL-1.1 — Copyright (c) 2014, Girish Dalvi, Ek Type. All rights reserved. Mukta-Light.ttf: Copyright (c) 2014, Girish Dalvi, Ek Type. All rights reserved. Mukta-Regular.ttf: Copyright (c) 2014, Girish Dalvi, Ek Type. All rights reserved. Mukta-Medium.ttf: Copyright (c) 2014, Girish Dalvi, Ek Type. All rights reserved. Mukta-SemiBold.ttf: Copyright (c) 2014, Girish Dalvi, Ek Type. All rights reserved. Mukta-Bold.ttf: Copyright (c) 2014, Girish Dalvi, Ek Type. All rights reserved. Mukta-ExtraBold.ttf: Copyright (c) 2014, Girish Dalvi, Ek Type. All rights reserved.
+Mulish — OFL-1.1 — Copyright 2016 The Mulish Project Authors (https://github.com/googlefonts/mulish) Mulish-Italic[wght].ttf: Copyright 2016 The Mulish Project Authors (https://github.com/googlefonts/mulish)
+Mystery Quest — OFL-1.1 — Copyright (c) 2012 by Font Diner, Inc DBA Sideshow (diner@fontdiner.com) with Reseved Font Name "Mystery Quest"
+Neucha — OFL-1.1 — Copyright (c) 2005-2010 by Jovanny Lemonad (lemonad@jovanny.ru). All rights reserved.
+New Rocker — OFL-1.1 — Copyright (c) 2012, Pablo Impallari (www.impallari.com|impallari@gmail.com), Copyright (c) 2012, Brenda Gallo (gbrenda1987@gmail.com), Copyright (c) 2012, Rodrigo Fuenzalida (www.rfuenzalida.com|hello@rfuenzalida.com), with Reserved Font Name 'New Rocker'
+Newsreader — OFL-1.1 — Copyright 2020 The Newsreader Project Authors (http://github.com/productiontype/Newsreader) Newsreader-Italic[opsz,wght].ttf: Copyright 2020 The Newsreader Project Authors (http://github.com/productiontype/Newsreader)
+Niconne — OFL-1.1 — Copyright (c) 2011 by vernon adams (vern@newtypography.co.uk), with Reserved Font Name Niconne.
+Niramit — OFL-1.1 — Copyright 2018 The Niramit Project Authors (https://github.com/cadsondemak/Niramit) Niramit-ExtraLightItalic.ttf: Copyright 2018 The Niramit Project Authors (https://github.com/cadsondemak/Niramit) Niramit-Light.ttf: Copyright 2018 The Niramit Project Authors (https://github.com/cadsondemak/Niramit) Niramit-LightItalic.ttf: Copyright 2018 The Niramit Project Authors (https://github.com/cadsondemak/Niramit) Niramit-Regular.ttf: Copyright 2018 The Niramit Project Authors (https://github.com/cadsondemak/Niramit) Niramit-Italic.ttf: Copyright 2018 The Niramit Project Authors (https://github.com/cadsondemak/Niramit) Niramit-Medium.ttf: Copyright 2018 The Niramit Project Authors (https://github.com/cadsondemak/Niramit) Niramit-MediumItalic.ttf: Copyright 2018 The Niramit Project Authors (https://github.com/cadsondemak/Niramit) Niramit-SemiBold.ttf: Copyright 2018 The Niramit Project Authors (https://github.com/cadsondemak/Niramit) Niramit-SemiBoldItalic.ttf: Copyright 2018 The Niramit Project Authors (https://github.com/cadsondemak/Niramit) Niramit-Bold.ttf: Copyright 2018 The Niramit Project Authors (https://github.com/cadsondemak/Niramit) Niramit-BoldItalic.ttf: Copyright 2018 The Niramit Project Authors (https://github.com/cadsondemak/Niramit)
+Norican — OFL-1.1 — Copyright 2011 The Norican Project Authors (https://github.com/googlefonts/NoricanFont)
+Nosifer — OFL-1.1 — Copyright (c) 2011, Vernon Adams DBA Typomondo (vern@newtypography.co.uk), with Reserved Font Name "Nosifer"
+Nothing You Could Do — OFL-1.1 — Copyright (c) 2010, Kimberly Geswein (kimberlygeswein.com kimberlygeswein@gmail.com). This Font Software is licensed under the SIL Open Font License, Version 1.1. This license available with a FAQ at: http://scripts.sil.org/OFL
+Noticia Text — OFL-1.1 — Copyright (c) 2011 JM Sole (info@jmsole.cl), with Reserved Font Name "Noticia Text". NoticiaText-Italic.ttf: Copyright (c) 2011 JM Sole (info@jmsole.cl), with Reserved Font Name "Noticia Text". NoticiaText-Bold.ttf: Copyright (c) 2011 JM Sole (info@jmsole.cl), with Reserved Font Name "Noticia Text". NoticiaText-BoldItalic.ttf: Copyright (c) 2011 JM Sole (info@jmsole.cl), with Reserved Font Name "Noticia Text".
+Noto Sans — OFL-1.1 — Copyright 2022 The Noto Project Authors (https://github.com/notofonts/latin-greek-cyrillic) NotoSans-Italic[wdth,wght].ttf: Copyright 2022 The Noto Project Authors (https://github.com/notofonts/latin-greek-cyrillic)
+Noto Serif — OFL-1.1 — Copyright 2022 The Noto Project Authors (https://github.com/notofonts/latin-greek-cyrillic) NotoSerif-Italic[wdth,wght].ttf: Copyright 2022 The Noto Project Authors (https://github.com/notofonts/latin-greek-cyrillic)
+Noto Serif Display — OFL-1.1 — Copyright 2016 Google Inc. All Rights Reserved. NotoSerifDisplay-Italic[wdth,wght].ttf: Copyright 2016 Google Inc. All Rights Reserved.
+Nova Mono — OFL-1.1 — Copyright (c) 2011, Wojciech 'wmk69' Kalinowski (wmk69@o2.pl)
+Nunito Sans — OFL-1.1 — Copyright 2016 The Nunito Sans Project Authors (https://github.com/Fonthausen/NunitoSans) NunitoSans-Italic[YTLC,opsz,wdth,wght].ttf: Copyright 2016 The Nunito Sans Project Authors (https://github.com/Fonthausen/NunitoSans)
+Old Standard TT — OFL-1.1 — Copyright 2011 The Old Standard Project Authors (amkryukov@gmail.com) OldStandard-Italic.ttf: Copyright 2011 The Old Standard Project Authors (amkryukov@gmail.com) OldStandard-Bold.ttf: Copyright 2011 The Old Standard Project Authors (amkryukov@gmail.com)
+Oleo Script — OFL-1.1 — Copyright (c) 2012, Soytutype (contact@soytutype.com.ar|soytutype@gmail.com), with reserved fontname 'Oleo' OleoScript-Bold.ttf: Copyright (c) 2012, Soytutype (contact@soytutype.com.ar|soytutype@gmail.com), with reserved fontname 'Oleo'
+Oleo Script Swash Caps — OFL-1.1 — Copyright (c) 2012, Soytutype (contact@soytutype.com.ar|soytutype@gmail.com), with reserved fontname 'Oleo' OleoScriptSwashCaps-Bold.ttf: Copyright (c) 2012, Soytutype (contact@soytutype.com.ar|soytutype@gmail.com), with reserved fontname 'Oleo'
+Onest — OFL-1.1 — Copyright 2021 The Onest Project Authors (https://github.com/simpals/onest)
+Orbitron — OFL-1.1 — Copyright 2018 The Orbitron Project Authors (https://github.com/theleagueof/orbitron)
+Outfit — OFL-1.1 — Copyright 2021 The Outfit Project Authors (https://github.com/Outfitio/Outfit-Fonts)
+Over the Rainbow — OFL-1.1 — Copyright (c) 2010, Kimberly Geswein (kimberlygeswein.com kimberlygeswein@gmail.com)
+Overpass — OFL-1.1 — Copyright 2021 The Overpass Project Authors (https://github.com/RedHatOfficial/Overpass) Overpass-Italic[wght].ttf: Copyright 2021 The Overpass Project Authors (https://github.com/RedHatOfficial/Overpass)
+Overpass Mono — OFL-1.1 — Copyright 2021 The Overpass Project Authors (https://github.com/RedHatOfficial/Overpass)
+Oxanium — OFL-1.1 — Copyright 2019 The Oxanium Project Authors (https://github.com/sevmeyer/oxanium)
+Oxygen — OFL-1.1 — Copyright (c) 2012, Vernon Adams (vern@newtypography.co.uk), with Reserved Font Names 'Oxygen' Oxygen-Regular.ttf: Copyright (c) 2012, Vernon Adams (vern@newtypography.co.uk), with Reserved Font Names 'Oxygen' Oxygen-Bold.ttf: Copyright (c) 2012, Vernon Adams (vern@newtypography.co.uk), with Reserved Font Names 'Oxygen'
+PT Sans — OFL-1.1 — Copyright © 2009 ParaType Ltd. All rights reserved. PT_Sans-Web-Italic.ttf: Copyright © 2009 ParaType Ltd. All rights reserved. PT_Sans-Web-Bold.ttf: Copyright © 2009 ParaType Ltd. All rights reserved. PT_Sans-Web-BoldItalic.ttf: Copyright © 2009 ParaType Ltd. All rights reserved.
+PT Serif — OFL-1.1 — Copyright © 2010 ParaType Ltd. All rights reserved. PT_Serif-Web-Italic.ttf: Copyright © 2010 ParaType Ltd. All rights reserved. PT_Serif-Web-Bold.ttf: Copyright © 2010 ParaType Ltd. All rights reserved. PT_Serif-Web-BoldItalic.ttf: Copyright © 2010 ParaType Ltd. All rights reserved.
+Parisienne — OFL-1.1 — Copyright (c) 2012 by Brian J. Bonislawsky DBA Astigmatic (AOETI) (astigma@astigmatic.com), with Reserved Font Name "Parisienne"
+Passion One — OFL-1.1 — Copyright (c) 2011 Fontstage (info@fontstage.com), with Reserved Font Name "Passion" PassionOne-Bold.ttf: Copyright (c) 2011 Fontstage (info@fontstage.com), with Reserved Font Name "Passion" PassionOne-Black.ttf: Copyright (c) 2011 Fontstage (info@fontstage.com), with Reserved Font Name "Passion"
+Pathway Gothic One — OFL-1.1 — Copyright 2013 The Pathway Gothic Project Authors (https://github.com/etunni/pathway-gothic), with Reserved Font Name 'Pathway'
+Patrick Hand — OFL-1.1 — Copyright (c) 2010-2012 Patrick Wagesreiter (mail@patrickwagesreiter.at)
+Paytone One — OFL-1.1 — Copyright 2011 The Paytone Project Authors (https://github.com/googlefonts/paytoneFont)
+Permanent Marker — Apache-2.0 — Copyright (c) 2010 by Font Diner, Inc. All rights reserved.
+Petit Formal Script — OFL-1.1 — Copyright (c) 2011, Pablo Impallari (www.impallari.com|impallari@gmail.com), Copyright (c) 2011, Brenda Gallo. (gbrenda1987@gmail.com), Copyright (c) 2011, Rodrigo Fuenzalida (www.rfuenzalida.com|hello@rfuenzalida.com), with Reserved Font Name Petit Formal Script.
+Petrona — OFL-1.1 — Copyright 2019 The Petrona Project Authors (https://github.com/RingoSeeber/Petrona) Petrona-Italic[wght].ttf: Copyright 2019 The Petrona Project Authors (https://github.com/RingoSeeber/Petrona)
+Pinyon Script — OFL-1.1 — Copyright 2022 The PinyonScript Project Authors (https://github.com/SorkinType/Pinyon)
+Pirata One — OFL-1.1 — Copyright (c) 2012, Rodrigo Fuenzalida (hello@rfuenzalida.com), Nicolas Massi (www.taip.com.ar / abc.taip.com.ar / nmassi@gmail.com), with Reserved Font Name 'Pirata'
+Pixelify Sans — OFL-1.1 — Copyright 2021 The Pixelify Sans Project Authors (https://github.com/eifetx/Pixelify-Sans)
+Playball — OFL-1.1 — Copyright 2011 The Playball Project Authors (https://github.com/googlefonts/play-ball)
+Playfair — OFL-1.1 — Copyright 2005 The Playfair Project Authors (https://github.com/clauseggers/Playfair) Playfair-Italic[opsz,wdth,wght].ttf: Copyright 2005 The Playfair Project Authors (https://github.com/googlefonts/Playfair)
+Playfair Display SC — OFL-1.1 — Copyright 2017 The Playfair Display Project Authors (https://github.com/clauseggers/Playfair-Display), with Reserved Font Name "Playfair Display". PlayfairDisplaySC-Italic.ttf: Copyright 2017 The Playfair Display Project Authors (https://github.com/clauseggers/Playfair-Display), with Reserved Font Name "Playfair Display". PlayfairDisplaySC-Bold.ttf: Copyright 2017 The Playfair Display Project Authors (https://github.com/clauseggers/Playfair-Display), with Reserved Font Name "Playfair Display". PlayfairDisplaySC-BoldItalic.ttf: Copyright 2017 The Playfair Display Project Authors (https://github.com/clauseggers/Playfair-Display), with Reserved Font Name "Playfair Display". PlayfairDisplaySC-Black.ttf: Copyright 2017 The Playfair Display Project Authors (https://github.com/clauseggers/Playfair-Display), with Reserved Font Name "Playfair Display". PlayfairDisplaySC-BlackItalic.ttf: Copyright 2017 The Playfair Display Project Authors (https://github.com/clauseggers/Playfair-Display), with Reserved Font Name "Playfair Display".
+Plus Jakarta Sans — OFL-1.1 — Copyright 2020 The Plus Jakarta Sans Project Authors (https://github.com/tokotype/PlusJakartaSans) PlusJakartaSans-Italic[wght].ttf: Copyright 2020 The Plus Jakarta Sans Project Authors (https://github.com/tokotype/PlusJakartaSans)
+Poiret One — OFL-1.1 — Copyright 2011 The Poiret One Project Authors (https://github.com/alexeiva/poiretone)
+Poller One — OFL-1.1 — Copyright (c) 2011, Sorkin Type Co (www.sorkintype.com eben@eyebytes.com) with Reserved Font Names "Poller" and "Poller One".
+Potta One — OFL-1.1 — Copyright 2020 The Potta Project Authors (https://github.com/go108go/Potta), all rights reserved.
+Prata — OFL-1.1 — Copyright 2011 The Prata Project Authors (contact@cyreal.org)
+Press Start 2P — OFL-1.1 — Copyright 2012 The Press Start 2P Project Authors (cody@zone38.net), with Reserved Font Name "Press Start 2P"
+Pridi — OFL-1.1 — Copyright (c) 2015, Cadson Demak (info@cadsondemak.com) Pridi-Light.ttf: Copyright (c) 2015, Cadson Demak (info@cadsondemak.com) Pridi-Regular.ttf: Copyright (c) 2015, Cadson Demak (info@cadsondemak.com) Pridi-Medium.ttf: Copyright (c) 2015, Cadson Demak (info@cadsondemak.com) Pridi-SemiBold.ttf: Copyright (c) 2015, Cadson Demak (info@cadsondemak.com) Pridi-Bold.ttf: Copyright (c) 2015, Cadson Demak (info@cadsondemak.com)
+Prompt — OFL-1.1 — Copyright (c) 2015, Cadson Demak (info@cadsondemak.com) Prompt-ThinItalic.ttf: Copyright (c) 2015, Cadson Demak (info@cadsondemak.com) Prompt-ExtraLight.ttf: Copyright (c) 2015, Cadson Demak (info@cadsondemak.com) Prompt-ExtraLightItalic.ttf: Copyright (c) 2015, Cadson Demak (info@cadsondemak.com) Prompt-Light.ttf: Copyright (c) 2015, Cadson Demak (info@cadsondemak.com) Prompt-LightItalic.ttf: Copyright (c) 2015, Cadson Demak (info@cadsondemak.com) Prompt-Regular.ttf: Copyright (c) 2015, Cadson Demak (info@cadsondemak.com) Prompt-Italic.ttf: Copyright (c) 2015, Cadson Demak (info@cadsondemak.com) Prompt-Medium.ttf: Copyright (c) 2015, Cadson Demak (info@cadsondemak.com) Prompt-MediumItalic.ttf: Copyright (c) 2015, Cadson Demak (info@cadsondemak.com) Prompt-SemiBold.ttf: Copyright (c) 2015, Cadson Demak (info@cadsondemak.com) Prompt-SemiBoldItalic.ttf: Copyright (c) 2015, Cadson Demak (info@cadsondemak.com) Prompt-Bold.ttf: Copyright (c) 2015, Cadson Demak (info@cadsondemak.com) Prompt-BoldItalic.ttf: Copyright (c) 2015, Cadson Demak (info@cadsondemak.com) Prompt-ExtraBold.ttf: Copyright (c) 2015, Cadson Demak (info@cadsondemak.com) Prompt-ExtraBoldItalic.ttf: Copyright (c) 2015, Cadson Demak (info@cadsondemak.com) Prompt-Black.ttf: Copyright (c) 2015, Cadson Demak (info@cadsondemak.com) Prompt-BlackItalic.ttf: Copyright (c) 2015, Cadson Demak (info@cadsondemak.com)
+Public Sans — OFL-1.1 — Copyright 2015 The Public Sans Project Authors (https://github.com/uswds/public-sans) PublicSans-Italic[wght].ttf: Copyright 2015 The Public Sans Project Authors (https://github.com/uswds/public-sans)
+Quattrocento — OFL-1.1 — Copyright (c) 2011, Pablo Impallari (www.impallari.com|impallari@gmail.com), Copyright (c) 2011, Igino Marini. (www.ikern.com|mail@iginomarini.com), Copyright (c) 2011, Brenda Gallo. (gbrenda1987@gmail.com), with Reserved Font Name Quattrocento. Quattrocento-Bold.ttf: Copyright (c) 2011, Pablo Impallari (www.impallari.com|impallari@gmail.com), Copyright (c) 2011, Igino Marini. (www.ikern.com|mail@iginomarini.com), Copyright (c) 2011, Brenda Gallo. (gbrenda1987@gmail.com), with Reserved Font Name Quattrocento.
+Quattrocento Sans — OFL-1.1 — Copyright (c) 2011, Pablo Impallari (www.impallari.com|impallari@gmail.com), Copyright (c) 2011, Igino Marini. (www.ikern.com|mail@iginomarini.com), Copyright (c) 2011, Brenda Gallo. (gbrenda1987@gmail.com), with Reserved Font Name Quattrocento Sans. QuattrocentoSans-Italic.ttf: Copyright (c) 2011, Pablo Impallari (www.impallari.com|impallari@gmail.com), Copyright (c) 2011, Igino Marini. (www.ikern.com|mail@iginomarini.com), Copyright (c) 2011, Brenda Gallo. (gbrenda1987@gmail.com), with Reserved Font Name Quattrocento Sans. QuattrocentoSans-Bold.ttf: Copyright (c) 2011, Pablo Impallari (www.impallari.com|impallari@gmail.com), Copyright (c) 2011, Igino Marini. (www.ikern.com|mail@iginomarini.com), Copyright (c) 2011, Brenda Gallo. (gbrenda1987@gmail.com), with Reserved Font Name Quattrocento Sans. QuattrocentoSans-BoldItalic.ttf: Copyright (c) 2011, Pablo Impallari (www.impallari.com|impallari@gmail.com), Copyright (c) 2011, Igino Marini. (www.ikern.com|mail@iginomarini.com), Copyright (c) 2011, Brenda Gallo. (gbrenda1987@gmail.com), with Reserved Font Name Quattrocento Sans.
+Questrial — OFL-1.1 — Copyright 2011 The Questrial Project Authors (https://github.com/googlefonts/questrial)
+Quicksand — OFL-1.1 — Copyright 2019 The Quicksand Project Authors (https://github.com/andrew-paglinawan/QuicksandFamily.git), with Reserved Font Name "Quicksand"
+Qwigley — OFL-1.1 — Copyright 2011 The Qwigley Project Authors (https://github.com/googlefonts/qwigley)
+Racing Sans One — OFL-1.1 — Copyright (c) 2012, Pablo Impallari (www.impallari.com|impallari@gmail.com) and Rodrigo Fuenzalida (www.rfuenzalida.com), with Reserved Font Name Racing Sans.
+Rajdhani — OFL-1.1 — Copyright (c) 2014 Indian Type Foundry (info@indiantypefoundry.com) Rajdhani-Regular.ttf: Copyright (c) 2014 Indian Type Foundry (info@indiantypefoundry.com) Rajdhani-Medium.ttf: Copyright (c) 2014 Indian Type Foundry (info@indiantypefoundry.com) Rajdhani-SemiBold.ttf: Copyright (c) 2014 Indian Type Foundry (info@indiantypefoundry.com) Rajdhani-Bold.ttf: Copyright (c) 2014 Indian Type Foundry (info@indiantypefoundry.com)
+Raleway Dots — OFL-1.1 — Copyright (c) 2010 - 2012, Matt McInerney (matt@pixelspread.com), Pablo Impallari(impallari@gmail.com), Rodrigo Fuenzalida (hello@rfuenzalida.com) and Brenda Gallo(gbrenda1987@gmail.com), with Reserved Font Name "Raleway"
+Rammetto One — OFL-1.1 — Copyright 2011 The Rammetto Project Authors (https://github.com/googlefonts/RammettoFont), with Reserved Font Name Rammetto.
+Readex Pro — OFL-1.1 — Copyright 2019 The Readex Pro Project Authors (https://github.com/ThomasJockin/readexpro)
+Red Hat Display — OFL-1.1 — Copyright 2024 The Red Hat Project Authors (https://github.com/RedHatOfficial/RedHatFont) RedHatDisplay-Italic[wght].ttf: Copyright 2024 The Red Hat Project Authors (https://github.com/RedHatOfficial/RedHatFont)
+Red Hat Mono — OFL-1.1 — Copyright 2024 The Red Hat Project Authors (https://github.com/RedHatOfficial/RedHatFont) RedHatMono-Italic[wght].ttf: Copyright 2024 The Red Hat Project Authors (https://github.com/RedHatOfficial/RedHatFont)
+Red Hat Text — OFL-1.1 — Copyright 2024 The Red Hat Project Authors (https://github.com/RedHatOfficial/RedHatFont) RedHatText-Italic[wght].ttf: Copyright 2024 The Red Hat Project Authors (https://github.com/RedHatOfficial/RedHatFont)
+Reenie Beanie — OFL-1.1 — Copyright (c) 2010 Typeco (james@typeco.com). All rights reserved.
+Reggae One — OFL-1.1 — Copyright 2020 The Reggae Project Authors (https://github.com/fontworks-fonts/Reggae/), all rights reserved.
+Ribeye — OFL-1.1 — Copyright (c) 2011 by Brian J. Bonislawsky DBA Astigmatic (AOETI) (astigma@astigmatic.com), with Reserved Font Name "Ribeye"
+Ribeye Marrow — OFL-1.1 — Copyright (c) 2011 by Brian J. Bonislawsky DBA Astigmatic (AOETI) (astigma@astigmatic.com), with Reserved Font Name "Ribeye Marrow"
+Roboto Condensed — OFL-1.1 — Copyright 2011 Google Inc. All Rights Reserved. RobotoCondensed-Italic[wght].ttf: Copyright 2011 Google Inc. All Rights Reserved.
+Roboto Mono — OFL-1.1 — Copyright 2015 The Roboto Mono Project Authors (https://github.com/googlefonts/robotomono) RobotoMono-Italic[wght].ttf: Copyright 2015 The Roboto Mono Project Authors (https://github.com/googlefonts/robotomono)
+Roboto Slab — Apache-2.0 — Copyright 2018 The Roboto Slab Project Authors (https://github.com/googlefonts/robotoslab)
+Rochester — Apache-2.0 — Copyright (c) 2010 by Font Diner, Inc DBA Sideshow. All rights reserved. Available under the Apache 2.0 licence. http://www.apache.org/licenses/LICENSE-2.0.html
+Rock Salt — Apache-2.0 — Copyright (c) 2010 by Font Diner, Inc DBA Sideshow. All rights reserved.
+RocknRoll One — OFL-1.1 — Copyright 2020 The RocknRoll Project Authors (https://github.com/fontworks-fonts/RocknRoll)
+Rokkitt — OFL-1.1 — Copyright 2016 The Rokkit Project Authors (https://github.com/googlefonts/RokkittFont) Rokkitt-Italic[wght].ttf: Copyright 2016 The Rokkit Project Authors (https://github.com/googlefonts/RokkittFont)
+Rouge Script — OFL-1.1 — Copyright (c) 2011 Typesenses (typesenses@live.com.ar), with Reserved Font Name "Rouge Script"
+Rozha One — OFL-1.1 — Copyright (c) 2014 Indian Type Foundry (info@indiantypefoundry.com)
+Rubik — OFL-1.1 — Copyright 2015 The Rubik Project Authors (https://github.com/googlefonts/rubik) Rubik-Italic[wght].ttf: Copyright 2015 The Rubik Project Authors (https://github.com/googlefonts/rubik)
+Rubik Bubbles — OFL-1.1 — Copyright 2020 The Rubik Filtered Project Authors (https://github.com/NaN-xyz/Rubik-Filtered)
+Rubik Glitch — OFL-1.1 — Copyright 2020 The Rubik Filtered Project Authors (https://github.com/NaN-xyz/Rubik-Filtered)
+Rubik Mono One — OFL-1.1 — Copyright 2015 The Rubik Project Authors (mail@hubertfischer.com)
+Rubik Wet Paint — OFL-1.1 — Copyright 2020 The Rubik Filtered Project Authors (https://github.com/NaN-xyz/Rubik-Filtered)
+Rufina — OFL-1.1 — Copyright (c) 2011-2012, Martin Sommaruga (martin@estudiotrama.com), with Reserved Font Name 'Rufina' Rufina-Bold.ttf: Copyright (c) 2011-2012, Martin Sommaruga (martin@estudiotrama.com), with Reserved Font Name 'Rufina'
+Russo One — OFL-1.1 — Copyright (c) 2011-2012, Jovanny Lemonad (lemonad@jovanny.ru), with Reserved Font Name "Russo"
+Ruthie — OFL-1.1 — Copyright 2014 The Ruthie Project Authors (https://github.com/googlefonts/ruthie)
+Rye — OFL-1.1 — Copyright (c) 2012, Sorkin Type Co (eben@eyebytes.com) with Reserved Font Name 'Rye'
+Saira — OFL-1.1 — Copyright 2020 The Saira Project Authors (https://github.com/Omnibus-Type/Saira) Saira-Italic[wdth,wght].ttf: Copyright 2020 The Saira Project Authors (https://github.com/Omnibus-Type/Saira)
+Saira Condensed — OFL-1.1 — Copyright 2016 The Saira Project Authors (omnibus.type@gmail.com), with reserved font name "Saira". SairaCondensed-ExtraLight.ttf: Copyright 2016 The Saira Project Authors (omnibus.type@gmail.com), with reserved font name "Saira". SairaCondensed-Light.ttf: Copyright 2016 The Saira Project Authors (omnibus.type@gmail.com), with reserved font name "Saira". SairaCondensed-Regular.ttf: Copyright 2016 The Saira Project Authors (omnibus.type@gmail.com), with reserved font name "Saira". SairaCondensed-Medium.ttf: Copyright 2016 The Saira Project Authors (omnibus.type@gmail.com), with reserved font name "Saira". SairaCondensed-SemiBold.ttf: Copyright 2016 The Saira Project Authors (omnibus.type@gmail.com), with reserved font name "Saira". SairaCondensed-Bold.ttf: Copyright 2016 The Saira Project Authors (omnibus.type@gmail.com), with reserved font name "Saira". SairaCondensed-ExtraBold.ttf: Copyright 2016 The Saira Project Authors (omnibus.type@gmail.com), with reserved font name "Saira". SairaCondensed-Black.ttf: Copyright 2016 The Saira Project Authors (omnibus.type@gmail.com), with reserved font name "Saira".
+Saira Stencil One — OFL-1.1 — Copyright 2019 The Saira Stencil Project Authors (https://github.com/Omnibus-Type/Saira)
+Sancreek — OFL-1.1 — Copyright (c) 2011 by vernon adams (vern@newtypography.co.uk), with Reserved Font Names "Sancreek"
+Sarabun — OFL-1.1 — Copyright 2018 The Sarabun Project Authors (https://github.com/cadsondemak/Sarabun) Sarabun-ThinItalic.ttf: Copyright 2018 The Sarabun Project Authors (https://github.com/cadsondemak/Sarabun) Sarabun-ExtraLight.ttf: Copyright 2018 The Sarabun Project Authors (https://github.com/cadsondemak/Sarabun) Sarabun-ExtraLightItalic.ttf: Copyright 2018 The Sarabun Project Authors (https://github.com/cadsondemak/Sarabun) Sarabun-Light.ttf: Copyright 2018 The Sarabun Project Authors (https://github.com/cadsondemak/Sarabun) Sarabun-LightItalic.ttf: Copyright 2018 The Sarabun Project Authors (https://github.com/cadsondemak/Sarabun) Sarabun-Regular.ttf: Copyright 2018 The Sarabun Project Authors (https://github.com/cadsondemak/Sarabun) Sarabun-Italic.ttf: Copyright 2018 The Sarabun Project Authors (https://github.com/cadsondemak/Sarabun) Sarabun-Medium.ttf: Copyright 2018 The Sarabun Project Authors (https://github.com/cadsondemak/Sarabun) Sarabun-MediumItalic.ttf: Copyright 2018 The Sarabun Project Authors (https://github.com/cadsondemak/Sarabun) Sarabun-SemiBold.ttf: Copyright 2018 The Sarabun Project Authors (https://github.com/cadsondemak/Sarabun) Sarabun-SemiBoldItalic.ttf: Copyright 2018 The Sarabun Project Authors (https://github.com/cadsondemak/Sarabun) Sarabun-Bold.ttf: Copyright 2018 The Sarabun Project Authors (https://github.com/cadsondemak/Sarabun) Sarabun-BoldItalic.ttf: Copyright 2018 The Sarabun Project Authors (https://github.com/cadsondemak/Sarabun) Sarabun-ExtraBold.ttf: Copyright 2018 The Sarabun Project Authors (https://github.com/cadsondemak/Sarabun) Sarabun-ExtraBoldItalic.ttf: Copyright 2018 The Sarabun Project Authors (https://github.com/cadsondemak/Sarabun)
+Satisfy — Apache-2.0 — Copyright (c) 2011 by Font Diner, Inc. All rights reserved.
+Schibsted Grotesk — OFL-1.1 — Copyright 2023 The Schibsted-Grotesk Project Authors (https://github.com/schibsted/schibsted-grotesk) SchibstedGrotesk-Italic[wght].ttf: Copyright 2023 The Schibsted-Grotesk Project Authors (https://github.com/schibsted/schibsted-grotesk)
+Schoolbell — Apache-2.0 — Copyright (c) 2010 by Font Diner, Inc. All rights reserved.
+Seaweed Script — OFL-1.1 — Copyright (c) 2012 by Font Diner, Inc DBA Neapolitan (diner@fontdiner.com) with Reseved Font Name "Seaweed Script"
+Share Tech Mono — OFL-1.1 — Copyright (c) 2012, Carrois Type Design, Ralph du Carrois (www.carrois.com post@carrois.com), with Reserved Font Name 'Share'
+Shippori Mincho — OFL-1.1 — Copyright 2021 The Shippori Mincho Project Authors (https://github.com/fontdasu/ShipporiMincho) ShipporiMincho-Medium.ttf: Copyright 2021 The Shippori Mincho Project Authors (https://github.com/fontdasu/ShipporiMincho) ShipporiMincho-SemiBold.ttf: Copyright 2021 The Shippori Mincho Project Authors (https://github.com/fontdasu/ShipporiMincho) ShipporiMincho-Bold.ttf: Copyright 2021 The Shippori Mincho Project Authors (https://github.com/fontdasu/ShipporiMincho) ShipporiMincho-ExtraBold.ttf: Copyright 2021 The Shippori Mincho Project Authors (https://github.com/fontdasu/ShipporiMincho)
+Short Stack — OFL-1.1 — Copyright (c) 2011, Sorkin Type Co (www.sorkintype.com) with Reserved Font Names "Short Stack" and "Short Stack One".
+Shrikhand — OFL-1.1 — Copyright (c) 2015 Jonny Pinhorn (jonpinhorn.typedesign@gmail.com)
+Sigmar — OFL-1.1 — Copyright 2011 The Sigmar One Project Authors (https://github.com/googlefonts/sigmarone)
+Sigmar One — OFL-1.1 — Copyright 2011 The Sigmar One Project Authors (contact@sansoxygen.com)
+Signika — OFL-1.1 — Copyright 2018 The Signika Project Authors (https://github.com/googlefonts/Signika).
+Silkscreen — OFL-1.1 — Copyright 2001 The Silkscreen Project Authors (https://github.com/googlefonts/silkscreen) Silkscreen-Bold.ttf: Copyright 2001 The Silkscreen Project Authors (https://github.com/googlefonts/silkscreen)
+Six Caps — OFL-1.1 — Copyright (c) 2010 by vernon adams (vern@newtypography.co.uk) with Reserved Font Names 'Six Caps'. All rights reserved.
+Slabo 27px — OFL-1.1 — Copyright (c) 2013, Tiro Typeworks Ltd (www.tiro.com).
+Slackey — Apache-2.0 — Copyright (c) 2010 by Font Diner, Inc DBA Sideshow. All rights reserved.
+Smokum — Apache-2.0 — Copyright (c) 2011 by Brian J. Bonislawsky DBA Astigmatic (AOETI). All rights reserved. Available under the Apache 2.0 licence. http://www.apache.org/licenses/LICENSE-2.0.html
+Sniglet — OFL-1.1 — Copyright (c) 2008, Haley Fiege (haley@kingdomofawesome.com), Copyright (c) 2012, Brenda Gallo (gbrenda1987@gmail.com) Copyright (c) 2013, Pablo Impallari (www.impallari.com|impallari@gmail.com), with no Reserved Font Name. Sniglet-ExtraBold.ttf: Copyright (c) 2008, Haley Fiege (haley@kingdomofawesome.com), Copyright (c) 2012, Brenda Gallo (gbrenda1987@gmail.com) Copyright (c) 2013, Pablo Impallari (www.impallari.com|impallari@gmail.com), with no Reserved Font Name.
+Sometype Mono — OFL-1.1 — Copyright 2018 The Sometype Mono Project Authors (https://github.com/googlefonts/sometype-mono) SometypeMono-Italic[wght].ttf: Copyright 2018 The Sometype Mono Project Authors (https://github.com/googlefonts/sometype-mono)
+Sora — OFL-1.1 — Copyright 2019 The Sora Project Authors (https://github.com/sora-xor/sora-font)
+Sorts Mill Goudy — OFL-1.1 — Copyright (c) 2010, Barry Schwartz (chemoelectric@chemoelectric.org) SortsMillGoudy-Italic.ttf: Copyright (c) 2010, Barry Schwartz (chemoelectric@chemoelectric.org)
+Source Code Pro — OFL-1.1 — Google Inc.
+Source Sans 3 — OFL-1.1 — Google Inc.
+Source Serif 4 — OFL-1.1 — Google Inc.
+Special Elite — Apache-2.0 — Copyright (c) 2010 by Brian J. Bonislawsky DBA Astigmatic (AOETI). All rights reserved. Available under the Apache 2.0 licence. http://www.apache.org/licenses/LICENSE-2.0.html
+Spectral — OFL-1.1 — Copyright 2017 The Spectral Project Authors (https://github.com/productiontype/Spectral) Spectral-ExtraLightItalic.ttf: Copyright 2017 The Spectral Project Authors (https://github.com/productiontype/Spectral) Spectral-Light.ttf: Copyright 2017 The Spectral Project Authors (https://github.com/productiontype/Spectral) Spectral-LightItalic.ttf: Copyright 2017 The Spectral Project Authors (https://github.com/productiontype/Spectral) Spectral-Regular.ttf: Copyright 2017 The Spectral Project Authors (https://github.com/productiontype/Spectral) Spectral-Italic.ttf: Copyright 2017 The Spectral Project Authors (https://github.com/productiontype/Spectral) Spectral-Medium.ttf: Copyright 2017 The Spectral Project Authors (https://github.com/productiontype/Spectral) Spectral-MediumItalic.ttf: Copyright 2017 The Spectral Project Authors (https://github.com/productiontype/Spectral) Spectral-SemiBold.ttf: Copyright 2017 The Spectral Project Authors (https://github.com/productiontype/Spectral) Spectral-SemiBoldItalic.ttf: Copyright 2017 The Spectral Project Authors (https://github.com/productiontype/Spectral) Spectral-Bold.ttf: Copyright 2017 The Spectral Project Authors (https://github.com/productiontype/Spectral) Spectral-BoldItalic.ttf: Copyright 2017 The Spectral Project Authors (https://github.com/productiontype/Spectral) Spectral-ExtraBold.ttf: Copyright 2017 The Spectral Project Authors (https://github.com/productiontype/Spectral) Spectral-ExtraBoldItalic.ttf: Copyright 2017 The Spectral Project Authors (https://github.com/productiontype/Spectral)
+Spicy Rice — OFL-1.1 — Copyright (c) 2011 by Brian J. Bonislawsky DBA Astigmatic (AOETI) (astigma@astigmatic.com), with Reserved Font Name "Spicy Rice"
+Spline Sans — OFL-1.1 — Copyright 2021 The Spline Sans Project Authors (https://github.com/SorkinType/SplineSans)
+Spline Sans Mono — OFL-1.1 — Copyright 2022 The Spline Sans Mono Project Authors (https://github.com/SorkinType/SplineSansMono) SplineSansMono-Italic[wght].ttf: Copyright 2022 The Spline Sans Mono Project Authors (https://github.com/SorkinType/SplineSansMono)
+Squada One — OFL-1.1 — Copyright (c) 2011, Admix Designs (http://www.admixdesigns.com joe@admixdesigns.com) with Reserved Font Name Squada.
+Sriracha — OFL-1.1 — Copyright (c) 2015, Cadson Demak (info@cadsondemak.com), Copyright (c) 2014, Pablo Impallari (www.impallari.com|impallari@gmail.com)
+Staatliches — OFL-1.1 — Copyright 2018 The Staatliches Project Authors (https://github.com/googlefonts/staatliches)
+Stardos Stencil — OFL-1.1 — Copyright (c) 2011, Vernon Adams (vern@newtypography.co.uk) with Reserved Font Names 'Stardos'. All rights reserved. StardosStencil-Bold.ttf: Copyright (c) 2011, Vernon Adams (vern@newtypography.co.uk) with Reserved Font Names 'Stardos'. All rights reserved.
+Sue Ellen Francisco — OFL-1.1 — Copyright (c) 2010, Kimberly Geswein (kimberlygeswein.com kimberlygeswein@gmail.com)
+Syncopate — Apache-2.0 — Copyright (c) 2010 by Brian J. Bonislawsky DBA Astigmatic (AOETI). All rights reserved. Available under the Apache 2.0 licence. http://www.apache.org/licenses/LICENSE-2.0.html Syncopate-Bold.ttf: Copyright (c) 2010 by Brian J. Bonislawsky DBA Astigmatic (AOETI). All rights reserved. Available under the Apache 2.0 licence. http://www.apache.org/licenses/LICENSE-2.0.html
+Syne — OFL-1.1 — Copyright 2019 The Syne Project Authors (https://gitlab.com/bonjour-monde/fonderie/syne-typeface)
+Syne Mono — OFL-1.1 — Copyright 2019 The Syne Project Authors (https://gitlab.com/bonjour-monde/fonderie/syne-typeface)
+Tangerine — OFL-1.1 — Copyright (c) 2010 by Toshi Omagari. All rights reserved. Tangerine-Bold.ttf: Copyright (c) 2010 by Toshi Omagari. All rights reserved.
+Taviraj — OFL-1.1 — Copyright (c) 2015, Cadson Demak (info@cadsondemak.com) Taviraj-ThinItalic.ttf: Copyright (c) 2015, Cadson Demak (info@cadsondemak.com) Taviraj-ExtraLight.ttf: Copyright (c) 2015, Cadson Demak (info@cadsondemak.com) Taviraj-ExtraLightItalic.ttf: Copyright (c) 2015, Cadson Demak (info@cadsondemak.com) Taviraj-Light.ttf: Copyright (c) 2015, Cadson Demak (info@cadsondemak.com) Taviraj-LightItalic.ttf: Copyright (c) 2015, Cadson Demak (info@cadsondemak.com) Taviraj-Regular.ttf: Copyright (c) 2015, Cadson Demak (info@cadsondemak.com) Taviraj-Italic.ttf: Copyright (c) 2015, Cadson Demak (info@cadsondemak.com) Taviraj-Medium.ttf: Copyright (c) 2015, Cadson Demak (info@cadsondemak.com) Taviraj-MediumItalic.ttf: Copyright (c) 2015, Cadson Demak (info@cadsondemak.com) Taviraj-SemiBold.ttf: Copyright (c) 2015, Cadson Demak (info@cadsondemak.com) Taviraj-SemiBoldItalic.ttf: Copyright (c) 2015, Cadson Demak (info@cadsondemak.com) Taviraj-Bold.ttf: Copyright (c) 2015, Cadson Demak (info@cadsondemak.com) Taviraj-BoldItalic.ttf: Copyright (c) 2015, Cadson Demak (info@cadsondemak.com) Taviraj-ExtraBold.ttf: Copyright (c) 2015, Cadson Demak (info@cadsondemak.com) Taviraj-ExtraBoldItalic.ttf: Copyright (c) 2015, Cadson Demak (info@cadsondemak.com) Taviraj-Black.ttf: Copyright (c) 2015, Cadson Demak (info@cadsondemak.com) Taviraj-BlackItalic.ttf: Copyright (c) 2015, Cadson Demak (info@cadsondemak.com)
+Teko — OFL-1.1 — Copyright 2023 The Teko Project Authors (https://www.github.com/googlefonts/teko)
+Tenor Sans — OFL-1.1 — Copyright (c) 2010, 2011, Denis Masharov <denis.masharov@gmail.com>. This Font Software is licensed under the SIL Open Font License, Version 1.1. This license is available with a FAQ at: http://scripts.sil.org/OFL
+Tilt Neon — OFL-1.1 — Copyright 2019 The Tilt Project Authors (https://github.com/googlefonts/Tilt-Fonts)
+Tilt Warp — OFL-1.1 — Copyright 2019 The Tilt Project Authors (https://github.com/googlefonts/Tilt-Fonts)
+Tinos — OFL-1.1 — Copyright 2026 The Tinos Project Authors (https://github.com/googlefonts/tinos) Tinos-Italic.ttf: Copyright 2026 The Tinos Project Authors (https://github.com/googlefonts/tinos) Tinos-Bold.ttf: Copyright 2026 The Tinos Project Authors (https://github.com/googlefonts/tinos) Tinos-BoldItalic.ttf: Copyright 2026 The Tinos Project Authors (https://github.com/googlefonts/tinos)
+Titan One — OFL-1.1 — Copyright (c) 2011 Rodrigo Fuenzalida (hello@rfuenzalida.com), with Reserved Font Name "Titan One"
+Titillium Web — OFL-1.1 — Copyright (c) 2009-2011 by Accademia di Belle Arti di Urbino and students of MA course of Visual design. Some rights reserved. TitilliumWeb-ExtraLightItalic.ttf: Copyright (c) 2009-2011 by Accademia di Belle Arti di Urbino and students of MA course of Visual design. Some rights reserved. TitilliumWeb-Light.ttf: Copyright (c) 2009-2011 by Accademia di Belle Arti di Urbino and students of MA course of Visual design. Some rights reserved. TitilliumWeb-LightItalic.ttf: Copyright (c) 2009-2011 by Accademia di Belle Arti di Urbino and students of MA course of Visual design. Some rights reserved. TitilliumWeb-Regular.ttf: Copyright (c) 2009-2011 by Accademia di Belle Arti di Urbino and students of MA course of Visual design. Some rights reserved. TitilliumWeb-Italic.ttf: Copyright (c) 2009-2011 by Accademia di Belle Arti di Urbino and students of MA course of Visual design. Some rights reserved. TitilliumWeb-SemiBold.ttf: Copyright (c) 2009-2011 by Accademia di Belle Arti di Urbino and students of MA course of Visual design. Some rights reserved. TitilliumWeb-SemiBoldItalic.ttf: Copyright (c) 2009-2011 by Accademia di Belle Arti di Urbino and students of MA course of Visual design. Some rights reserved. TitilliumWeb-Bold.ttf: Copyright (c) 2009-2011 by Accademia di Belle Arti di Urbino and students of MA course of Visual design. Some rights reserved. TitilliumWeb-BoldItalic.ttf: Copyright (c) 2009-2011 by Accademia di Belle Arti di Urbino and students of MA course of Visual design. Some rights reserved. TitilliumWeb-Black.ttf: Copyright (c) 2009-2011 by Accademia di Belle Arti di Urbino and students of MA course of Visual design. Some rights reserved.
+Train One — OFL-1.1 — Copyright 2020 The Train Project Authors (https://github.com/fontworks-fonts/Train/)
+Trirong — OFL-1.1 — Copyright (c) 2015, Cadson Demak (info@cadsondemak.com) Trirong-ThinItalic.ttf: Copyright (c) 2015, Cadson Demak (info@cadsondemak.com) Trirong-ExtraLight.ttf: Copyright (c) 2015, Cadson Demak (info@cadsondemak.com) Trirong-ExtraLightItalic.ttf: Copyright (c) 2015, Cadson Demak (info@cadsondemak.com) Trirong-Light.ttf: Copyright (c) 2015, Cadson Demak (info@cadsondemak.com) Trirong-LightItalic.ttf: Copyright (c) 2015, Cadson Demak (info@cadsondemak.com) Trirong-Regular.ttf: Copyright (c) 2015, Cadson Demak (info@cadsondemak.com) Trirong-Italic.ttf: Copyright (c) 2015, Cadson Demak (info@cadsondemak.com) Trirong-Medium.ttf: Copyright (c) 2015, Cadson Demak (info@cadsondemak.com) Trirong-MediumItalic.ttf: Copyright (c) 2015, Cadson Demak (info@cadsondemak.com) Trirong-SemiBold.ttf: Copyright (c) 2015, Cadson Demak (info@cadsondemak.com) Trirong-SemiBoldItalic.ttf: Copyright (c) 2015, Cadson Demak (info@cadsondemak.com) Trirong-Bold.ttf: Copyright (c) 2015, Cadson Demak (info@cadsondemak.com) Trirong-BoldItalic.ttf: Copyright (c) 2015, Cadson Demak (info@cadsondemak.com) Trirong-ExtraBold.ttf: Copyright (c) 2015, Cadson Demak (info@cadsondemak.com) Trirong-ExtraBoldItalic.ttf: Copyright (c) 2015, Cadson Demak (info@cadsondemak.com) Trirong-Black.ttf: Copyright (c) 2015, Cadson Demak (info@cadsondemak.com) Trirong-BlackItalic.ttf: Copyright (c) 2015, Cadson Demak (info@cadsondemak.com)
+Ultra — Apache-2.0 — Copyright (c) 2010 by Brian J. Bonislawsky DBA Astigmatic (AOETI). All rights reserved. Available under the Apache 2.0 licence. http://www.apache.org/licenses/LICENSE-2.0.html
+Unbounded — OFL-1.1 — Copyright 2022 The Unbounded Project Authors (https://github.com/googlefonts/unbounded)
+Uncial Antiqua — OFL-1.1 — Copyright (c) 2011 by Brian J. Bonislawsky DBA Astigmatic (AOETI) (astigma@astigmatic.com), with Reserved Font Name "Uncial Antiqua"
+Unna — OFL-1.1 — Copyright 2016 The Unna Project Authors (omnibus.type@gmail.com) Unna-Italic.ttf: Copyright 2016 The Unna Project Authors (omnibus.type@gmail.com) Unna-Bold.ttf: Copyright 2016 The Unna Project Authors (omnibus.type@gmail.com) Unna-BoldItalic.ttf: Copyright 2016 The Unna Project Authors (omnibus.type@gmail.com)
+Urbanist — OFL-1.1 — Copyright 2021 The Urbanist Project Authors (https://github.com/coreyhu/Urbanist) Urbanist-Italic[wght].ttf: Copyright 2021 The Urbanist Project Authors (https://github.com/coreyhu/Urbanist)
+VT323 — OFL-1.1 — Copyright 2011, The VT323 Project Authors (peter.hull@oikoi.com)
+Varela Round — OFL-1.1 — Copyright 2023 The Varela Round Project Authors (https://github.com/alefalefalef/Varela-Round-Hebrew/), with Reserved Font Names Varela and Varela Round.
+Vast Shadow — OFL-1.1 — Copyright (c) 2010 by Sorkin Type Co (eben@eyebytes.com) with Reserved Font Name Vast and Vast Shadow. This Font Software is licensed under the SIL Open Font License, Version 1.1. This license is copied below, and is also available with a FAQ at: http://scripts.sil.org/OFL
+Viga — OFL-1.1 — Copyright (c) 2011 Fontstage (info@fontstage.com), with Reserved Font Name "Viga"
+Vollkorn — OFL-1.1 — Copyright 2018 The Vollkorn Project Authors (https://github.com/FAlthausen/Vollkorn-Typeface) Vollkorn-Italic[wght].ttf: Copyright 2018 The Vollkorn Project Authors (https://github.com/FAlthausen/Vollkorn-Typeface)
+Waiting for the Sunrise — OFL-1.1 — Copyright (c) 2010, Kimberly Geswein (kimberlygeswein.com kimberlygeswein@gmail.com)
+Wix Madefor Display — OFL-1.1 — Copyright 2021 The Wix Madefor Project Authors (https://github.com/wix/wixmadefor/)
+Xanh Mono — OFL-1.1 — Copyright 2020 The XanhMono Project Authors (https://github.com/yellow-type-foundry/xanhmono) XanhMono-Italic.ttf: Copyright 2020 The XanhMono Project Authors (https://github.com/yellow-type-foundry/xanhmono)
+Yanone Kaffeesatz — OFL-1.1 — Copyright 2010 The Yanone Kaffeesatz Project Authors (https://github.com/yanone/kaffeesatz)
+Yellowtail — Apache-2.0 — Copyright (c) 2011 by Brian J. Bonislawsky DBA Astigmatic (AOETI). All rights reserved. Available under the Apache 2.0 licence. http://www.apache.org/licenses/LICENSE-2.0.html
+Yeseva One — OFL-1.1 — Copyright 2012 The Yeseva One Project Authors (lemonad@jovanny.ru), with Reserved Font Name "Yeseva".
+Yesteryear — OFL-1.1 — Copyright (c) 2011 by Brian J. Bonislawsky DBA Astigmatic (AOETI) (astigma@astigmatic.com), with Reserved Font Name "Yesteryear"
+Young Serif — OFL-1.1 — Copyright 2023 The Young Serif Project Authors (https://github.com/noirblancrouge/YoungSerif)
+Yusei Magic — OFL-1.1 — Copyright 2020 The Yusei Magic Project Authors (https://github.com/tanukifont/YuseiMagic)
+Zen Antique — OFL-1.1 — Copyright 2021 The Zen Antique Project Authors (https://github.com/googlefonts/zen-antique)
+Zen Dots — OFL-1.1 — Copyright 2021 The Dots Project Authors (https://github.com/googlefonts/zen-dots)
+Zeyada — OFL-1.1 — Copyright (c) 2010, Kimberly Geswein (kimberlygeswein.com kimberlygeswein@gmail.com)
+Zilla Slab — OFL-1.1 — Copyright 2017, The Mozilla Foundation ZillaSlab-LightItalic.ttf: Copyright 2017, The Mozilla Foundation ZillaSlab-Regular.ttf: Copyright 2017, The Mozilla Foundation ZillaSlab-Italic.ttf: Copyright 2017, The Mozilla Foundation ZillaSlab-Medium.ttf: Copyright 2017, The Mozilla Foundation ZillaSlab-MediumItalic.ttf: Copyright 2017, The Mozilla Foundation ZillaSlab-SemiBold.ttf: Copyright 2017, The Mozilla Foundation ZillaSlab-SemiBoldItalic.ttf: Copyright 2017, The Mozilla Foundation ZillaSlab-Bold.ttf: Copyright 2017, The Mozilla Foundation ZillaSlab-BoldItalic.ttf: Copyright 2017, The Mozilla Foundation
+
+
+SIL OPEN FONT LICENSE 1.1
+=========================
+
+This Font Software is licensed under the SIL Open Font License, Version 1.1.
+This license is copied below, and is also available with a FAQ at:
+http://scripts.sil.org/OFL
+
+
+-----------------------------------------------------------
+SIL OPEN FONT LICENSE Version 1.1 - 26 February 2007
+-----------------------------------------------------------
+
+PREAMBLE
+The goals of the Open Font License (OFL) are to stimulate worldwide
+development of collaborative font projects, to support the font creation
+efforts of academic and linguistic communities, and to provide a free and
+open framework in which fonts may be shared and improved in partnership
+with others.
+
+The OFL allows the licensed fonts to be used, studied, modified and
+redistributed freely as long as they are not sold by themselves. The
+fonts, including any derivative works, can be bundled, embedded,
+redistributed and/or sold with any software provided that any reserved
+names are not used by derivative works. The fonts and derivatives,
+however, cannot be released under any other type of license. The
+requirement for fonts to remain under this license does not apply
+to any document created using the fonts or their derivatives.
+
+DEFINITIONS
+"Font Software" refers to the set of files released by the Copyright
+Holder(s) under this license and clearly marked as such. This may
+include source files, build scripts and documentation.
+
+"Reserved Font Name" refers to any names specified as such after the
+copyright statement(s).
+
+"Original Version" refers to the collection of Font Software components as
+distributed by the Copyright Holder(s).
+
+"Modified Version" refers to any derivative made by adding to, deleting,
+or substituting -- in part or in whole -- any of the components of the
+Original Version, by changing formats or by porting the Font Software to a
+new environment.
+
+"Author" refers to any designer, engineer, programmer, technical
+writer or other person who contributed to the Font Software.
+
+PERMISSION & CONDITIONS
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of the Font Software, to use, study, copy, merge, embed, modify,
+redistribute, and sell modified and unmodified copies of the Font
+Software, subject to the following conditions:
+
+1) Neither the Font Software nor any of its individual components,
+in Original or Modified Versions, may be sold by itself.
+
+2) Original or Modified Versions of the Font Software may be bundled,
+redistributed and/or sold with any software, provided that each copy
+contains the above copyright notice and this license. These can be
+included either as stand-alone text files, human-readable headers or
+in the appropriate machine-readable metadata fields within text or
+binary files as long as those fields can be easily viewed by the user.
+
+3) No Modified Version of the Font Software may use the Reserved Font
+Name(s) unless explicit written permission is granted by the corresponding
+Copyright Holder. This restriction only applies to the primary font name as
+presented to the users.
+
+4) The name(s) of the Copyright Holder(s) or the Author(s) of the Font
+Software shall not be used to promote, endorse or advertise any
+Modified Version, except to acknowledge the contribution(s) of the
+Copyright Holder(s) and the Author(s) or with their explicit written
+permission.
+
+5) The Font Software, modified or unmodified, in part or in whole,
+must be distributed entirely under this license, and must not be
+distributed under any other license. The requirement for fonts to
+remain under this license does not apply to any document created
+using the Font Software.
+
+TERMINATION
+This license becomes null and void if any of the above conditions are
+not met.
+
+DISCLAIMER
+THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO ANY WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT
+OF COPYRIGHT, PATENT, TRADEMARK, OR OTHER RIGHT. IN NO EVENT SHALL THE
+COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+INCLUDING ANY GENERAL, SPECIAL, INDIRECT, INCIDENTAL, OR CONSEQUENTIAL
+DAMAGES, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM
+OTHER DEALINGS IN THE FONT SOFTWARE.
+
+
+
+APACHE LICENSE 2.0
+==================
+
+Apache License
+                           Version 2.0, January 2004
+                        http://www.apache.org/licenses/
+
+   TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
+
+   1. Definitions.
+
+      "License" shall mean the terms and conditions for use, reproduction,
+      and distribution as defined by Sections 1 through 9 of this document.
+
+      "Licensor" shall mean the copyright owner or entity authorized by
+      the copyright owner that is granting the License.
+
+      "Legal Entity" shall mean the union of the acting entity and all
+      other entities that control, are controlled by, or are under common
+      control with that entity. For the purposes of this definition,
+      "control" means (i) the power, direct or indirect, to cause the
+      direction or management of such entity, whether by contract or
+      otherwise, or (ii) ownership of fifty percent (50%) or more of the
+      outstanding shares, or (iii) beneficial ownership of such entity.
+
+      "You" (or "Your") shall mean an individual or Legal Entity
+      exercising permissions granted by this License.
+
+      "Source" form shall mean the preferred form for making modifications,
+      including but not limited to software source code, documentation
+      source, and configuration files.
+
+      "Object" form shall mean any form resulting from mechanical
+      transformation or translation of a Source form, including but
+      not limited to compiled object code, generated documentation,
+      and conversions to other media types.
+
+      "Work" shall mean the work of authorship, whether in Source or
+      Object form, made available under the License, as indicated by a
+      copyright notice that is included in or attached to the work
+      (an example is provided in the Appendix below).
+
+      "Derivative Works" shall mean any work, whether in Source or Object
+      form, that is based on (or derived from) the Work and for which the
+      editorial revisions, annotations, elaborations, or other modifications
+      represent, as a whole, an original work of authorship. For the purposes
+      of this License, Derivative Works shall not include works that remain
+      separable from, or merely link (or bind by name) to the interfaces of,
+      the Work and Derivative Works thereof.
+
+      "Contribution" shall mean any work of authorship, including
+      the original version of the Work and any modifications or additions
+      to that Work or Derivative Works thereof, that is intentionally
+      submitted to Licensor for inclusion in the Work by the copyright owner
+      or by an individual or Legal Entity authorized to submit on behalf of
+      the copyright owner. For the purposes of this definition, "submitted"
+      means any form of electronic, verbal, or written communication sent
+      to the Licensor or its representatives, including but not limited to
+      communication on electronic mailing lists, source code control systems,
+      and issue tracking systems that are managed by, or on behalf of, the
+      Licensor for the purpose of discussing and improving the Work, but
+      excluding communication that is conspicuously marked or otherwise
+      designated in writing by the copyright owner as "Not a Contribution."
+
+      "Contributor" shall mean Licensor and any individual or Legal Entity
+      on behalf of whom a Contribution has been received by Licensor and
+      subsequently incorporated within the Work.
+
+   2. Grant of Copyright License. Subject to the terms and conditions of
+      this License, each Contributor hereby grants to You a perpetual,
+      worldwide, non-exclusive, no-charge, royalty-free, irrevocable
+      copyright license to reproduce, prepare Derivative Works of,
+      publicly display, publicly perform, sublicense, and distribute the
+      Work and such Derivative Works in Source or Object form.
+
+   3. Grant of Patent License. Subject to the terms and conditions of
+      this License, each Contributor hereby grants to You a perpetual,
+      worldwide, non-exclusive, no-charge, royalty-free, irrevocable
+      (except as stated in this section) patent license to make, have made,
+      use, offer to sell, sell, import, and otherwise transfer the Work,
+      where such license applies only to those patent claims licensable
+      by such Contributor that are necessarily infringed by their
+      Contribution(s) alone or by combination of their Contribution(s)
+      with the Work to which such Contribution(s) was submitted. If You
+      institute patent litigation against any entity (including a
+      cross-claim or counterclaim in a lawsuit) alleging that the Work
+      or a Contribution incorporated within the Work constitutes direct
+      or contributory patent infringement, then any patent licenses
+      granted to You under this License for that Work shall terminate
+      as of the date such litigation is filed.
+
+   4. Redistribution. You may reproduce and distribute copies of the
+      Work or Derivative Works thereof in any medium, with or without
+      modifications, and in Source or Object form, provided that You
+      meet the following conditions:
+
+      (a) You must give any other recipients of the Work or
+          Derivative Works a copy of this License; and
+
+      (b) You must cause any modified files to carry prominent notices
+          stating that You changed the files; and
+
+      (c) You must retain, in the Source form of any Derivative Works
+          that You distribute, all copyright, patent, trademark, and
+          attribution notices from the Source form of the Work,
+          excluding those notices that do not pertain to any part of
+          the Derivative Works; and
+
+      (d) If the Work includes a "NOTICE" text file as part of its
+          distribution, then any Derivative Works that You distribute must
+          include a readable copy of the attribution notices contained
+          within such NOTICE file, excluding those notices that do not
+          pertain to any part of the Derivative Works, in at least one
+          of the following places: within a NOTICE text file distributed
+          as part of the Derivative Works; within the Source form or
+          documentation, if provided along with the Derivative Works; or,
+          within a display generated by the Derivative Works, if and
+          wherever such third-party notices normally appear. The contents
+          of the NOTICE file are for informational purposes only and
+          do not modify the License. You may add Your own attribution
+          notices within Derivative Works that You distribute, alongside
+          or as an addendum to the NOTICE text from the Work, provided
+          that such additional attribution notices cannot be construed
+          as modifying the License.
+
+      You may add Your own copyright statement to Your modifications and
+      may provide additional or different license terms and conditions
+      for use, reproduction, or distribution of Your modifications, or
+      for any such Derivative Works as a whole, provided Your use,
+      reproduction, and distribution of the Work otherwise complies with
+      the conditions stated in this License.
+
+   5. Submission of Contributions. Unless You explicitly state otherwise,
+      any Contribution intentionally submitted for inclusion in the Work
+      by You to the Licensor shall be under the terms and conditions of
+      this License, without any additional terms or conditions.
+      Notwithstanding the above, nothing herein shall supersede or modify
+      the terms of any separate license agreement you may have executed
+      with Licensor regarding such Contributions.
+
+   6. Trademarks. This License does not grant permission to use the trade
+      names, trademarks, service marks, or product names of the Licensor,
+      except as required for reasonable and customary use in describing the
+      origin of the Work and reproducing the content of the NOTICE file.
+
+   7. Disclaimer of Warranty. Unless required by applicable law or
+      agreed to in writing, Licensor provides the Work (and each
+      Contributor provides its Contributions) on an "AS IS" BASIS,
+      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+      implied, including, without limitation, any warranties or conditions
+      of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A
+      PARTICULAR PURPOSE. You are solely responsible for determining the
+      appropriateness of using or redistributing the Work and assume any
+      risks associated with Your exercise of permissions under this License.
+
+   8. Limitation of Liability. In no event and under no legal theory,
+      whether in tort (including negligence), contract, or otherwise,
+      unless required by applicable law (such as deliberate and grossly
+      negligent acts) or agreed to in writing, shall any Contributor be
+      liable to You for damages, including any direct, indirect, special,
+      incidental, or consequential damages of any character arising as a
+      result of this License or out of the use or inability to use the
+      Work (including but not limited to damages for loss of goodwill,
+      work stoppage, computer failure or malfunction, or any and all
+      other commercial damages or losses), even if such Contributor
+      has been advised of the possibility of such damages.
+
+   9. Accepting Warranty or Additional Liability. While redistributing
+      the Work or Derivative Works thereof, You may choose to offer,
+      and charge a fee for, acceptance of support, warranty, indemnity,
+      or other liability obligations and/or rights consistent with this
+      License. However, in accepting such obligations, You may act only
+      on Your own behalf and on Your sole responsibility, not on behalf
+      of any other Contributor, and only if You agree to indemnify,
+      defend, and hold each Contributor harmless for any liability
+      incurred by, or claims asserted against, such Contributor by reason
+      of your accepting any such warranty or additional liability.
+
+   END OF TERMS AND CONDITIONS
+
+   APPENDIX: How to apply the Apache License to your work.
+
+      To apply the Apache License to your work, attach the following
+      boilerplate notice, with the fields enclosed by brackets "[]"
+      replaced with your own identifying information. (Don't include
+      the brackets!)  The text should be enclosed in the appropriate
+      comment syntax for the file format. We also recommend that a
+      file or class name and description of purpose be included on the
+      same "printed page" as the copyright notice for easier
+      identification within third-party archives.
+
+   Copyright 2018 The Roboto Slab Project Authors (https://github.com/googlefonts/robotoslab)
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.

@@ -1,0 +1,3824 @@
+[
+{
+"name": "Abel",
+"cat": "sans",
+"tags": "condensed clean minimal",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Abhaya Libre",
+"cat": "serif",
+"tags": "classic elegant",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Afacad",
+"cat": "sans",
+"tags": "clean modern",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Aguafina Script",
+"cat": "script",
+"tags": "script elegant",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Aladin",
+"cat": "display",
+"tags": "fantasy arabian storybook",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Alata",
+"cat": "sans",
+"tags": "geometric modern",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Albert Sans",
+"cat": "sans",
+"tags": "modern geometric clean",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Alegreya",
+"cat": "serif",
+"tags": "classic literary warm",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Alegreya SC",
+"cat": "serif",
+"tags": "classic formal",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Alegreya Sans",
+"cat": "sans",
+"tags": "warm friendly literary",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Aleo",
+"cat": "serif",
+"tags": "slab friendly modern",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Alex Brush",
+"cat": "script",
+"tags": "script elegant wedding",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Allerta Stencil",
+"cat": "sans",
+"tags": "stencil modern",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Allura",
+"cat": "script",
+"tags": "script elegant wedding formal",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Almendra",
+"cat": "serif",
+"tags": "fantasy medieval storybook",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Anek Latin",
+"cat": "sans",
+"tags": "modern condensed",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Annie Use Your Telescope",
+"cat": "script",
+"tags": "handwritten quirky",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Anonymous Pro",
+"cat": "mono",
+"tags": "tech code",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Antonio",
+"cat": "sans",
+"tags": "condensed bold headline",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Architects Daughter",
+"cat": "script",
+"tags": "handwritten architect notes",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Archivo",
+"cat": "sans",
+"tags": "modern bold clean",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Archivo Narrow",
+"cat": "sans",
+"tags": "condensed clean",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Arimo",
+"cat": "sans",
+"tags": "clean neutral",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Arizonia",
+"cat": "script",
+"tags": "brush script elegant",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Arvo",
+"cat": "serif",
+"tags": "sturdy slab modern",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Asap",
+"cat": "sans",
+"tags": "clean friendly",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Asap Condensed",
+"cat": "sans",
+"tags": "condensed clean",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Assistant",
+"cat": "sans",
+"tags": "clean neutral",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Athiti",
+"cat": "sans",
+"tags": "friendly clean",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Audiowide",
+"cat": "display",
+"tags": "futuristic tech gaming",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Azeret Mono",
+"cat": "mono",
+"tags": "code tech",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Bad Script",
+"cat": "script",
+"tags": "handwritten script casual",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Bagel Fat One",
+"cat": "display",
+"tags": "bubbly bold playful",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Bai Jamjuree",
+"cat": "sans",
+"tags": "tech modern",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Baloo 2",
+"cat": "display",
+"tags": "rounded friendly playful kids",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Barlow",
+"cat": "sans",
+"tags": "clean modern tech",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Barlow Condensed",
+"cat": "sans",
+"tags": "condensed bold sport",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Barlow Semi Condensed",
+"cat": "sans",
+"tags": "condensed clean",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Be Vietnam Pro",
+"cat": "sans",
+"tags": "modern clean friendly",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Bellefair",
+"cat": "serif",
+"tags": "elegant fashion luxury",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Berkshire Swash",
+"cat": "display",
+"tags": "swash friendly retro",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Besley",
+"cat": "serif",
+"tags": "slab vintage bold",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Big Shoulders Display",
+"cat": "display",
+"tags": "condensed bold industrial poster",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Bilbo Swash Caps",
+"cat": "script",
+"tags": "script swash elegant",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Black Ops One",
+"cat": "display",
+"tags": "stencil military bold gaming",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Bodoni Moda",
+"cat": "serif",
+"tags": "elegant fashion luxury editorial",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Boogaloo",
+"cat": "display",
+"tags": "retro playful comic",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Bowlby One",
+"cat": "display",
+"tags": "bold heavy poster retro",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Bowlby One SC",
+"cat": "display",
+"tags": "bold heavy poster",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Bree Serif",
+"cat": "serif",
+"tags": "friendly warm",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Bricolage Grotesque",
+"cat": "sans",
+"tags": "modern quirky bold",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Brygada 1918",
+"cat": "serif",
+"tags": "classic vintage",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Bubblegum Sans",
+"cat": "display",
+"tags": "playful kids bubbly",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Bungee Inline",
+"cat": "display",
+"tags": "inline bold signage",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Bungee Outline",
+"cat": "display",
+"tags": "outline bold signage",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Bungee Shade",
+"cat": "display",
+"tags": "shadow bold signage",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Butcherman",
+"cat": "display",
+"tags": "horror halloween",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Cabin",
+"cat": "sans",
+"tags": "friendly clean",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Cabin Sketch",
+"cat": "display",
+"tags": "sketch chalk school",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Caesar Dressing",
+"cat": "display",
+"tags": "greek roman themed",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Calistoga",
+"cat": "display",
+"tags": "retro friendly bold",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Calligraffitti",
+"cat": "script",
+"tags": "calligraphy handwritten",
+"w": [
+400
+],
+"license": "Apache-2.0"
+},
+{
+"name": "Cardo",
+"cat": "serif",
+"tags": "classic book literary",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Carter One",
+"cat": "display",
+"tags": "retro bold friendly",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Castoro",
+"cat": "serif",
+"tags": "classic warm book",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Catamaran",
+"cat": "sans",
+"tags": "clean modern",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Caudex",
+"cat": "serif",
+"tags": "classic medieval",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Caveat Brush",
+"cat": "script",
+"tags": "brush handwritten casual",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Cedarville Cursive",
+"cat": "script",
+"tags": "handwritten cursive personal",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Chakra Petch",
+"cat": "sans",
+"tags": "tech futuristic gaming",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Changa One",
+"cat": "display",
+"tags": "bold condensed poster",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Chango",
+"cat": "display",
+"tags": "bold chunky playful",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Chelsea Market",
+"cat": "display",
+"tags": "playful casual",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Chewy",
+"cat": "display",
+"tags": "playful kids comic chunky",
+"w": [
+400
+],
+"license": "Apache-2.0"
+},
+{
+"name": "Chilanka",
+"cat": "script",
+"tags": "handwritten friendly",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Chivo",
+"cat": "sans",
+"tags": "bold editorial news",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Chivo Mono",
+"cat": "mono",
+"tags": "code editorial",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Cinzel",
+"cat": "serif",
+"tags": "luxury classic roman formal cinematic",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Cinzel Decorative",
+"cat": "display",
+"tags": "luxury ornate roman fantasy",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Clicker Script",
+"cat": "script",
+"tags": "script elegant wedding",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Climate Crisis",
+"cat": "display",
+"tags": "bold heavy modern",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Coiny",
+"cat": "display",
+"tags": "rounded bold playful",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Comfortaa",
+"cat": "display",
+"tags": "rounded friendly soft",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Comic Neue",
+"cat": "script",
+"tags": "comic casual friendly kids",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Coming Soon",
+"cat": "script",
+"tags": "handwritten kids",
+"w": [
+400
+],
+"license": "Apache-2.0"
+},
+{
+"name": "Cookie",
+"cat": "script",
+"tags": "script retro friendly wedding",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Cormorant",
+"cat": "serif",
+"tags": "elegant luxury fashion classic",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Cormorant Infant",
+"cat": "serif",
+"tags": "elegant luxury",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Cormorant SC",
+"cat": "serif",
+"tags": "elegant luxury formal",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Cormorant Upright",
+"cat": "serif",
+"tags": "elegant luxury wedding",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Courgette",
+"cat": "script",
+"tags": "script friendly casual",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Courier Prime",
+"cat": "mono",
+"tags": "typewriter vintage script-writing",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Cousine",
+"cat": "mono",
+"tags": "code clean",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Covered By Your Grace",
+"cat": "script",
+"tags": "handwritten casual marker",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Creepster",
+"cat": "display",
+"tags": "horror halloween spooky",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Crete Round",
+"cat": "serif",
+"tags": "friendly slab warm",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Crimson Pro",
+"cat": "serif",
+"tags": "classic book editorial",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Crimson Text",
+"cat": "serif",
+"tags": "classic book literary",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Cutive Mono",
+"cat": "mono",
+"tags": "typewriter vintage",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "DM Mono",
+"cat": "mono",
+"tags": "tech code minimal",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "DM Serif Text",
+"cat": "serif",
+"tags": "elegant editorial",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Damion",
+"cat": "script",
+"tags": "script casual retro",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Darumadrop One",
+"cat": "display",
+"tags": "cute playful kids",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Dawning of a New Day",
+"cat": "script",
+"tags": "handwritten cursive",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Days One",
+"cat": "sans",
+"tags": "bold wide tech",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Dela Gothic One",
+"cat": "display",
+"tags": "bold heavy poster",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Delicious Handrawn",
+"cat": "script",
+"tags": "handwritten marker",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Didact Gothic",
+"cat": "sans",
+"tags": "clean minimal",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Domine",
+"cat": "serif",
+"tags": "news editorial sturdy",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Dosis",
+"cat": "sans",
+"tags": "rounded condensed friendly",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "DynaPuff",
+"cat": "display",
+"tags": "bubbly playful kids",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "EB Garamond",
+"cat": "serif",
+"tags": "classic elegant book literary",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Eater",
+"cat": "display",
+"tags": "horror halloween",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Economica",
+"cat": "sans",
+"tags": "condensed elegant",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Emilys Candy",
+"cat": "display",
+"tags": "cute storybook kids",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Encode Sans",
+"cat": "sans",
+"tags": "clean modern",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Epilogue",
+"cat": "sans",
+"tags": "modern editorial bold",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Euphoria Script",
+"cat": "script",
+"tags": "script elegant thin",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Ewert",
+"cat": "display",
+"tags": "western vintage ornate",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Exo",
+"cat": "sans",
+"tags": "tech futuristic",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Exo 2",
+"cat": "sans",
+"tags": "tech futuristic sport",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Familjen Grotesk",
+"cat": "sans",
+"tags": "modern editorial",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Fascinate",
+"cat": "display",
+"tags": "retro art-deco showtime",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Faster One",
+"cat": "display",
+"tags": "sport speed racing",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Federo",
+"cat": "display",
+"tags": "art-deco elegant retro",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Figtree",
+"cat": "sans",
+"tags": "modern friendly clean",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Fira Code",
+"cat": "mono",
+"tags": "tech code",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Fira Sans",
+"cat": "sans",
+"tags": "clean tech",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Fira Sans Condensed",
+"cat": "sans",
+"tags": "condensed clean",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Fjalla One",
+"cat": "sans",
+"tags": "condensed bold headline",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Fjord One",
+"cat": "serif",
+"tags": "clean editorial",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Fondamento",
+"cat": "script",
+"tags": "calligraphy medieval",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Forum",
+"cat": "display",
+"tags": "elegant classic roman",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Fragment Mono",
+"cat": "mono",
+"tags": "code clean",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Frank Ruhl Libre",
+"cat": "serif",
+"tags": "classic editorial",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Fraunces",
+"cat": "serif",
+"tags": "quirky warm vintage editorial",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Freckle Face",
+"cat": "display",
+"tags": "playful kids spooky",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Fredericka the Great",
+"cat": "display",
+"tags": "chalk vintage school",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Fredoka One",
+"cat": "display",
+"tags": "rounded playful kids bold",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Fugaz One",
+"cat": "display",
+"tags": "retro bold sport",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Gabarito",
+"cat": "sans",
+"tags": "friendly bold modern",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Gaegu",
+"cat": "script",
+"tags": "handwritten cute kids",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Gelasio",
+"cat": "serif",
+"tags": "classic editorial",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Geologica",
+"cat": "sans",
+"tags": "modern tech",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Germania One",
+"cat": "display",
+"tags": "gothic bold german",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Gilda Display",
+"cat": "serif",
+"tags": "elegant luxury fashion",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Gloock",
+"cat": "serif",
+"tags": "bold editorial elegant",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Gloria Hallelujah",
+"cat": "script",
+"tags": "handwritten comic kids",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Gochi Hand",
+"cat": "script",
+"tags": "handwritten kids playful",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Golos Text",
+"cat": "sans",
+"tags": "clean modern",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Grandstander",
+"cat": "display",
+"tags": "playful kids friendly",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Griffy",
+"cat": "display",
+"tags": "storybook fantasy playful",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Gruppo",
+"cat": "display",
+"tags": "elegant thin art-deco",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Hahmlet",
+"cat": "serif",
+"tags": "modern editorial",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Handlee",
+"cat": "script",
+"tags": "handwritten friendly",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Hanken Grotesk",
+"cat": "sans",
+"tags": "clean modern neutral",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Heebo",
+"cat": "sans",
+"tags": "clean modern neutral",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Henny Penny",
+"cat": "display",
+"tags": "playful storybook kids",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Herr Von Muellerhoff",
+"cat": "script",
+"tags": "signature elegant",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Hind",
+"cat": "sans",
+"tags": "clean neutral",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Homemade Apple",
+"cat": "script",
+"tags": "handwritten personal vintage",
+"w": [
+400
+],
+"license": "Apache-2.0"
+},
+{
+"name": "IBM Plex Mono",
+"cat": "mono",
+"tags": "tech code",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "IBM Plex Sans",
+"cat": "sans",
+"tags": "tech corporate clean",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "IBM Plex Serif",
+"cat": "serif",
+"tags": "tech editorial",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "IM Fell English",
+"cat": "serif",
+"tags": "vintage antique book",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "IM Fell English SC",
+"cat": "serif",
+"tags": "vintage antique formal",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Inconsolata",
+"cat": "mono",
+"tags": "tech code",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Indie Flower",
+"cat": "script",
+"tags": "handwritten casual notes",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Instrument Sans",
+"cat": "sans",
+"tags": "modern editorial clean",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Instrument Serif",
+"cat": "serif",
+"tags": "elegant editorial modern",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Inter Tight",
+"cat": "sans",
+"tags": "modern clean tight",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Italiana",
+"cat": "serif",
+"tags": "elegant fashion luxury thin",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Italianno",
+"cat": "script",
+"tags": "script elegant wedding",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Itim",
+"cat": "script",
+"tags": "handwritten friendly",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Josefin Sans",
+"cat": "sans",
+"tags": "elegant geometric vintage art-deco",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Josefin Slab",
+"cat": "serif",
+"tags": "elegant vintage thin",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Jost",
+"cat": "sans",
+"tags": "geometric modern elegant minimal",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Julius Sans One",
+"cat": "sans",
+"tags": "elegant thin fashion luxury",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Just Another Hand",
+"cat": "script",
+"tags": "handwritten condensed",
+"w": [
+400
+],
+"license": "Apache-2.0"
+},
+{
+"name": "K2D",
+"cat": "sans",
+"tags": "modern clean",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Kalam",
+"cat": "script",
+"tags": "handwritten casual notes",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Kalnia",
+"cat": "serif",
+"tags": "elegant fashion modern",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Kanit",
+"cat": "sans",
+"tags": "bold modern tech",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Karla",
+"cat": "sans",
+"tags": "quirky clean friendly",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Kaushan Script",
+"cat": "script",
+"tags": "brush energetic casual",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Khand",
+"cat": "sans",
+"tags": "condensed tech",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Knewave",
+"cat": "display",
+"tags": "brush surf bold",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Kode Mono",
+"cat": "mono",
+"tags": "code tech",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Kranky",
+"cat": "display",
+"tags": "playful quirky kids",
+"w": [
+400
+],
+"license": "Apache-2.0"
+},
+{
+"name": "Kristi",
+"cat": "script",
+"tags": "handwritten thin signature",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Krona One",
+"cat": "sans",
+"tags": "wide bold modern",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Krub",
+"cat": "sans",
+"tags": "clean modern",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Kumar One",
+"cat": "display",
+"tags": "bold retro",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "La Belle Aurore",
+"cat": "script",
+"tags": "handwritten romantic personal",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "League Gothic",
+"cat": "sans",
+"tags": "condensed bold headline poster",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "League Spartan",
+"cat": "sans",
+"tags": "bold geometric modern",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Leckerli One",
+"cat": "display",
+"tags": "retro playful bold",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Lemon",
+"cat": "display",
+"tags": "retro bold playful",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Lexend",
+"cat": "sans",
+"tags": "clean friendly readable",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Lexend Deca",
+"cat": "sans",
+"tags": "clean readable",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Lexend Giga",
+"cat": "sans",
+"tags": "wide modern bold",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Libre Bodoni",
+"cat": "serif",
+"tags": "elegant fashion luxury editorial",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Libre Caslon Display",
+"cat": "serif",
+"tags": "elegant classic luxury",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Libre Caslon Text",
+"cat": "serif",
+"tags": "classic book formal",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Libre Franklin",
+"cat": "sans",
+"tags": "classic editorial news",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Lilita One",
+"cat": "display",
+"tags": "bold friendly rounded playful",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Limelight",
+"cat": "display",
+"tags": "art-deco retro cinema",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Literata",
+"cat": "serif",
+"tags": "book editorial classic",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Lobster Two",
+"cat": "display",
+"tags": "retro script friendly",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Londrina Outline",
+"cat": "display",
+"tags": "outline playful",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Londrina Shadow",
+"cat": "display",
+"tags": "shadow playful",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Londrina Sketch",
+"cat": "display",
+"tags": "sketch playful",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Londrina Solid",
+"cat": "display",
+"tags": "playful bold poster",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Love Ya Like A Sister",
+"cat": "display",
+"tags": "playful handwritten bold",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Lovers Quarrel",
+"cat": "script",
+"tags": "script romantic wedding",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Luckiest Guy",
+"cat": "display",
+"tags": "comic playful bold kids",
+"w": [
+400
+],
+"license": "Apache-2.0"
+},
+{
+"name": "Lustria",
+"cat": "serif",
+"tags": "elegant classic",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "M PLUS Rounded 1c",
+"cat": "sans",
+"tags": "rounded friendly soft kids",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Macondo",
+"cat": "display",
+"tags": "fantasy storybook",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Major Mono Display",
+"cat": "mono",
+"tags": "quirky tech fashion",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Mali",
+"cat": "script",
+"tags": "handwritten cute friendly",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Manrope",
+"cat": "sans",
+"tags": "modern minimal tech",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Marcellus",
+"cat": "serif",
+"tags": "elegant classic roman luxury",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Marcellus SC",
+"cat": "serif",
+"tags": "elegant classic roman",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Marck Script",
+"cat": "script",
+"tags": "script casual friendly",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Martian Mono",
+"cat": "mono",
+"tags": "code tech wide",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Maven Pro",
+"cat": "sans",
+"tags": "modern rounded tech",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Meddon",
+"cat": "script",
+"tags": "signature vintage",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "MedievalSharp",
+"cat": "display",
+"tags": "medieval fantasy gothic",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Merienda",
+"cat": "script",
+"tags": "friendly script casual",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Metal Mania",
+"cat": "display",
+"tags": "metal horror rock",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Michroma",
+"cat": "sans",
+"tags": "futuristic tech wide",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Mitr",
+"cat": "sans",
+"tags": "rounded friendly",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Mochiy Pop One",
+"cat": "display",
+"tags": "cute bold playful",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Modak",
+"cat": "display",
+"tags": "bubbly bold playful",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Monoton",
+"cat": "display",
+"tags": "retro neon disco 80s",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Monsieur La Doulaise",
+"cat": "script",
+"tags": "signature formal ornate",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Mountains of Christmas",
+"cat": "display",
+"tags": "christmas holiday playful",
+"w": [
+400,
+700
+],
+"license": "Apache-2.0"
+},
+{
+"name": "Mr Dafoe",
+"cat": "script",
+"tags": "brush retro script bold",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Mr De Haviland",
+"cat": "script",
+"tags": "signature elegant",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Mrs Saint Delafield",
+"cat": "script",
+"tags": "signature elegant",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Mukta",
+"cat": "sans",
+"tags": "clean neutral",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Mulish",
+"cat": "sans",
+"tags": "clean minimal modern",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Mystery Quest",
+"cat": "display",
+"tags": "playful spooky storybook",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Neucha",
+"cat": "script",
+"tags": "handwritten casual",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "New Rocker",
+"cat": "display",
+"tags": "rock metal gothic",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Newsreader",
+"cat": "serif",
+"tags": "editorial news classic",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Niconne",
+"cat": "script",
+"tags": "script friendly romantic",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Niramit",
+"cat": "sans",
+"tags": "clean friendly",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Norican",
+"cat": "script",
+"tags": "script casual",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Nosifer",
+"cat": "display",
+"tags": "horror halloween blood",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Nothing You Could Do",
+"cat": "script",
+"tags": "handwritten personal",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Noticia Text",
+"cat": "serif",
+"tags": "news editorial",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Noto Sans",
+"cat": "sans",
+"tags": "clean neutral",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Noto Serif",
+"cat": "serif",
+"tags": "classic editorial",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Noto Serif Display",
+"cat": "serif",
+"tags": "elegant editorial luxury",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Nova Mono",
+"cat": "mono",
+"tags": "quirky retro",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Nunito Sans",
+"cat": "sans",
+"tags": "clean friendly",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Old Standard TT",
+"cat": "serif",
+"tags": "classic vintage book",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Oleo Script",
+"cat": "display",
+"tags": "retro script diner",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Oleo Script Swash Caps",
+"cat": "display",
+"tags": "retro script diner",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Onest",
+"cat": "sans",
+"tags": "modern clean",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Orbitron",
+"cat": "display",
+"tags": "futuristic tech sci-fi gaming",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Outfit",
+"cat": "sans",
+"tags": "modern friendly geometric",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Over the Rainbow",
+"cat": "script",
+"tags": "handwritten kids",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Overpass",
+"cat": "sans",
+"tags": "clean tech",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Overpass Mono",
+"cat": "mono",
+"tags": "code tech",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Oxanium",
+"cat": "display",
+"tags": "futuristic tech gaming",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Oxygen",
+"cat": "sans",
+"tags": "clean neutral",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "PT Sans",
+"cat": "sans",
+"tags": "clean neutral",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "PT Serif",
+"cat": "serif",
+"tags": "classic editorial",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Parisienne",
+"cat": "script",
+"tags": "script elegant wedding romantic",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Passion One",
+"cat": "display",
+"tags": "bold poster headline",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Pathway Gothic One",
+"cat": "sans",
+"tags": "condensed tall headline",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Patrick Hand",
+"cat": "script",
+"tags": "handwritten casual friendly notes",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Paytone One",
+"cat": "sans",
+"tags": "bold friendly rounded",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Permanent Marker",
+"cat": "script",
+"tags": "marker bold casual",
+"w": [
+400
+],
+"license": "Apache-2.0"
+},
+{
+"name": "Petit Formal Script",
+"cat": "script",
+"tags": "script formal wedding",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Petrona",
+"cat": "serif",
+"tags": "warm editorial",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Pinyon Script",
+"cat": "script",
+"tags": "script formal wedding luxury",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Pirata One",
+"cat": "display",
+"tags": "gothic blackletter pirate",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Pixelify Sans",
+"cat": "display",
+"tags": "pixel retro gaming",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Playball",
+"cat": "script",
+"tags": "sport script retro",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Playfair",
+"cat": "serif",
+"tags": "elegant editorial luxury",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Playfair Display SC",
+"cat": "serif",
+"tags": "elegant luxury formal",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Plus Jakarta Sans",
+"cat": "sans",
+"tags": "modern friendly startup",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Poiret One",
+"cat": "display",
+"tags": "elegant art-deco fashion thin",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Poller One",
+"cat": "display",
+"tags": "bold retro",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Potta One",
+"cat": "display",
+"tags": "brush bold playful",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Prata",
+"cat": "serif",
+"tags": "elegant luxury fashion",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Press Start 2P",
+"cat": "display",
+"tags": "pixel retro gaming 8-bit",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Pridi",
+"cat": "serif",
+"tags": "slab friendly",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Prompt",
+"cat": "sans",
+"tags": "modern friendly",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Public Sans",
+"cat": "sans",
+"tags": "clean neutral corporate",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Quattrocento",
+"cat": "serif",
+"tags": "classic elegant roman",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Quattrocento Sans",
+"cat": "sans",
+"tags": "classic clean",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Questrial",
+"cat": "sans",
+"tags": "clean minimal modern",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Quicksand",
+"cat": "sans",
+"tags": "rounded friendly soft kids",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Qwigley",
+"cat": "script",
+"tags": "script thin signature",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Racing Sans One",
+"cat": "display",
+"tags": "sport speed racing",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Rajdhani",
+"cat": "sans",
+"tags": "tech condensed gaming",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Raleway Dots",
+"cat": "display",
+"tags": "dotted playful",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Rammetto One",
+"cat": "display",
+"tags": "bold retro chunky",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Readex Pro",
+"cat": "sans",
+"tags": "clean modern",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Red Hat Display",
+"cat": "sans",
+"tags": "modern tech bold",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Red Hat Mono",
+"cat": "mono",
+"tags": "code tech",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Red Hat Text",
+"cat": "sans",
+"tags": "clean modern",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Reenie Beanie",
+"cat": "script",
+"tags": "handwritten scribble notes",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Reggae One",
+"cat": "display",
+"tags": "bold rough music",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Ribeye",
+"cat": "display",
+"tags": "retro playful western",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Ribeye Marrow",
+"cat": "display",
+"tags": "retro outline playful",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Roboto Condensed",
+"cat": "sans",
+"tags": "clean condensed modern",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Roboto Mono",
+"cat": "mono",
+"tags": "tech code",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Roboto Slab",
+"cat": "serif",
+"tags": "clean modern sturdy",
+"w": [
+400,
+700
+],
+"license": "Apache-2.0"
+},
+{
+"name": "Rochester",
+"cat": "script",
+"tags": "script vintage formal",
+"w": [
+400
+],
+"license": "Apache-2.0"
+},
+{
+"name": "Rock Salt",
+"cat": "script",
+"tags": "marker rough grunge",
+"w": [
+400
+],
+"license": "Apache-2.0"
+},
+{
+"name": "RocknRoll One",
+"cat": "display",
+"tags": "bold playful rock",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Rokkitt",
+"cat": "serif",
+"tags": "slab sturdy vintage",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Rouge Script",
+"cat": "script",
+"tags": "script elegant romantic",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Rozha One",
+"cat": "serif",
+"tags": "bold elegant fashion",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Rubik",
+"cat": "sans",
+"tags": "friendly rounded modern",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Rubik Bubbles",
+"cat": "display",
+"tags": "playful bubbly kids",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Rubik Glitch",
+"cat": "display",
+"tags": "glitch tech gaming",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Rubik Mono One",
+"cat": "display",
+"tags": "bold heavy poster",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Rubik Wet Paint",
+"cat": "display",
+"tags": "horror drip paint",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Rufina",
+"cat": "serif",
+"tags": "elegant fashion",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Russo One",
+"cat": "sans",
+"tags": "bold sport tech gaming",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Ruthie",
+"cat": "script",
+"tags": "script thin elegant",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Rye",
+"cat": "display",
+"tags": "western vintage saloon",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Saira",
+"cat": "sans",
+"tags": "tech sport modern",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Saira Condensed",
+"cat": "sans",
+"tags": "condensed sport tech",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Saira Stencil One",
+"cat": "display",
+"tags": "stencil modern tech",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Sancreek",
+"cat": "display",
+"tags": "western vintage saloon",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Sarabun",
+"cat": "sans",
+"tags": "clean neutral",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Satisfy",
+"cat": "script",
+"tags": "brush script casual elegant",
+"w": [
+400
+],
+"license": "Apache-2.0"
+},
+{
+"name": "Schibsted Grotesk",
+"cat": "sans",
+"tags": "modern editorial",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Schoolbell",
+"cat": "script",
+"tags": "handwritten school kids",
+"w": [
+400
+],
+"license": "Apache-2.0"
+},
+{
+"name": "Seaweed Script",
+"cat": "script",
+"tags": "script playful",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Share Tech Mono",
+"cat": "mono",
+"tags": "tech futuristic",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Shippori Mincho",
+"cat": "serif",
+"tags": "elegant classic minimal",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Short Stack",
+"cat": "script",
+"tags": "handwritten kids comic",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Shrikhand",
+"cat": "display",
+"tags": "bold retro script 70s",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Sigmar",
+"cat": "display",
+"tags": "bold chunky playful",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Sigmar One",
+"cat": "display",
+"tags": "bold chunky playful",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Signika",
+"cat": "sans",
+"tags": "friendly clean",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Silkscreen",
+"cat": "display",
+"tags": "pixel retro gaming",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Six Caps",
+"cat": "sans",
+"tags": "condensed tall poster",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Slabo 27px",
+"cat": "serif",
+"tags": "clean slab",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Slackey",
+"cat": "display",
+"tags": "playful comic kids",
+"w": [
+400
+],
+"license": "Apache-2.0"
+},
+{
+"name": "Smokum",
+"cat": "display",
+"tags": "western vintage",
+"w": [
+400
+],
+"license": "Apache-2.0"
+},
+{
+"name": "Sniglet",
+"cat": "display",
+"tags": "rounded playful kids",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Sometype Mono",
+"cat": "mono",
+"tags": "code quirky",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Sora",
+"cat": "sans",
+"tags": "modern tech geometric",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Sorts Mill Goudy",
+"cat": "serif",
+"tags": "classic elegant book",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Source Code Pro",
+"cat": "mono",
+"tags": "tech code",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Source Sans 3",
+"cat": "sans",
+"tags": "clean neutral corporate",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Source Serif 4",
+"cat": "serif",
+"tags": "editorial classic",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Special Elite",
+"cat": "display",
+"tags": "typewriter vintage grunge",
+"w": [
+400
+],
+"license": "Apache-2.0"
+},
+{
+"name": "Spectral",
+"cat": "serif",
+"tags": "elegant editorial book",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Spicy Rice",
+"cat": "display",
+"tags": "playful retro bold",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Spline Sans",
+"cat": "sans",
+"tags": "modern clean",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Spline Sans Mono",
+"cat": "mono",
+"tags": "code modern",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Squada One",
+"cat": "display",
+"tags": "condensed bold tech",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Sriracha",
+"cat": "script",
+"tags": "handwritten brush casual",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Staatliches",
+"cat": "display",
+"tags": "condensed bold poster modern",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Stardos Stencil",
+"cat": "display",
+"tags": "stencil military vintage",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Sue Ellen Francisco",
+"cat": "script",
+"tags": "handwritten tall",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Syncopate",
+"cat": "sans",
+"tags": "futuristic wide fashion",
+"w": [
+400,
+700
+],
+"license": "Apache-2.0"
+},
+{
+"name": "Syne",
+"cat": "sans",
+"tags": "quirky modern art bold",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Syne Mono",
+"cat": "mono",
+"tags": "quirky art",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Tangerine",
+"cat": "script",
+"tags": "script elegant wedding thin",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Taviraj",
+"cat": "serif",
+"tags": "elegant classic",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Teko",
+"cat": "sans",
+"tags": "condensed sport bold",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Tenor Sans",
+"cat": "sans",
+"tags": "elegant fashion luxury minimal",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Tilt Neon",
+"cat": "display",
+"tags": "neon retro sign",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Tilt Warp",
+"cat": "display",
+"tags": "bold retro 70s",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Tinos",
+"cat": "serif",
+"tags": "classic formal news",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Titan One",
+"cat": "display",
+"tags": "bold playful kids chunky",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Titillium Web",
+"cat": "sans",
+"tags": "tech modern sport",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Train One",
+"cat": "display",
+"tags": "retro stripes",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Trirong",
+"cat": "serif",
+"tags": "classic elegant",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Ultra",
+"cat": "serif",
+"tags": "bold heavy slab poster",
+"w": [
+400
+],
+"license": "Apache-2.0"
+},
+{
+"name": "Unbounded",
+"cat": "display",
+"tags": "wide bold modern tech",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Uncial Antiqua",
+"cat": "display",
+"tags": "medieval celtic fantasy",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Unna",
+"cat": "serif",
+"tags": "elegant classic",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Urbanist",
+"cat": "sans",
+"tags": "modern minimal geometric",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "VT323",
+"cat": "mono",
+"tags": "pixel retro gaming",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Varela Round",
+"cat": "sans",
+"tags": "rounded friendly soft",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Vast Shadow",
+"cat": "display",
+"tags": "western vintage shadow",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Viga",
+"cat": "sans",
+"tags": "bold modern sport",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Vollkorn",
+"cat": "serif",
+"tags": "classic warm book",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Waiting for the Sunrise",
+"cat": "script",
+"tags": "handwritten personal",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Wix Madefor Display",
+"cat": "sans",
+"tags": "modern clean startup",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Xanh Mono",
+"cat": "mono",
+"tags": "elegant quirky mono",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Yanone Kaffeesatz",
+"cat": "sans",
+"tags": "condensed friendly cafe",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Yellowtail",
+"cat": "script",
+"tags": "retro script diner 50s",
+"w": [
+400
+],
+"license": "Apache-2.0"
+},
+{
+"name": "Yeseva One",
+"cat": "display",
+"tags": "elegant bold feminine",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Yesteryear",
+"cat": "script",
+"tags": "retro script 50s",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Young Serif",
+"cat": "serif",
+"tags": "warm vintage editorial",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Yusei Magic",
+"cat": "display",
+"tags": "marker playful",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Zen Antique",
+"cat": "serif",
+"tags": "classic vintage",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Zen Dots",
+"cat": "display",
+"tags": "futuristic tech gaming",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Zeyada",
+"cat": "script",
+"tags": "handwritten scribble",
+"w": [
+400
+],
+"license": "OFL-1.1"
+},
+{
+"name": "Zilla Slab",
+"cat": "serif",
+"tags": "sturdy modern tech",
+"w": [
+400,
+700
+],
+"license": "OFL-1.1"
+}
+]
