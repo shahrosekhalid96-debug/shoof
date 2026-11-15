@@ -2604,6 +2604,15 @@ def t_designs_from_scratch(B):
     say('can you add an icon?')
     ok(c.ev("(SH.msgs[SH.msgs.length-1].icons||[]).includes('gift')") and not c.ev("(SH.msgs[SH.msgs.length-1].cards||[]).length"), 'icon question shows icons, not templates')
     c.page.click('#shMsgs .shm.bot:last-child .shicons button >> nth=0'); ok(c.ev("doc.elements.some(e=>e.type==='icon'&&e.icon==='star')") or c.ev("doc.elements.some(e=>e.type==='icon')"), 'tapping an icon adds it')
+    c.page.unroute('**/api/shoofy')
+    # colour-scheme sense: a muddy grey/brown re-colour from the AI becomes a designer palette, everything readable
+    c.ev("(()=>{useTemplate(TEMPLATES.findIndex(x=>/giveaway/.test(x.key)));})()")
+    mud = [{'do': 'set', 'target': 'el:0', 'props': {'fill': '#8f8f8f'}}, {'do': 'set', 'target': 'el:2', 'props': {'fill': '#5e4a3a'}}, {'do': 'set', 'target': 'el:8', 'props': {'fill': '#9a9a9a'}}, {'do': 'set', 'target': 'el:12', 'props': {'fill': '#c8a07a'}}, {'do': 'set', 'target': 'all_text', 'props': {'fill': '#1f3d2b'}}]
+    c.page.route('**/api/shoofy', lambda r: r.fulfill(status=200, content_type='application/json', body=json.dumps({'reply': 'Refreshed with deep forest greens and soft creams.', 'actions': mud})))
+    say('give it a premium calm palette')
+    ok(c.ev("SH.msgs[SH.msgs.length-1].text.includes('design book')"), 'muddy re-colour turned into a knowledge-book scheme')
+    ok(c.ev("(()=>{const {s,l}=hslOf(bgBlock().fill);return l>0.85||l<0.2;})()"), 'page is clean light or deep dark, not a muddy mid-tone')
+    ok(c.ev("(()=>{const pg=doc.pages[doc.page];return pg.elements.every((e,i)=>{if(e.type!=='text'||!e.fill)return true;const u=underColor(pg,i);if(!u)return true;return contrastOf(e.fill,u)>=(e.fontSize>=54?3:4.5)-0.05;});})()"), 'every text readable after the re-colour')
     c.page.unroute('**/api/shoofy'); c.ev("localStorage.removeItem('shoof.shAI')")
     ok(not c.errors, c.errors); c.close()
 
@@ -2692,7 +2701,7 @@ def t_shoofy_chat(B):
         {'do': 'set_background', 'colors': ['#111111', 'not-a-colour']}]})))
     u0 = c.ev("undoStack.length"); say('make the main text huge, bold and red at the top with a shadow')
     e = c.ev(f"(()=>{{const x=doc.pages[doc.page].elements[{n_head}];return {{fs:x.fontSize,b:x.bold,f:x.fill,sh:x.shadowBlur>0,y:elBox(x).y,evil:'evil' in x}}}})()")
-    ok(e['fs'] == 120 and e['b'] and e['f'] == '#c92a2a' and e['sh'] and not e['evil'], f'detailed edit applied safely {e}')
+    ok(e['fs'] == 120 and e['b'] and c.ev(f"(()=>{{const h=hslOf('{e['f']}');return (h.h<15||h.h>345)&&h.s>0.4}})()") and e['sh'] and not e['evil'], f'detailed edit applied safely (red kept, tone adjusted for readability) {e}')
     ok(e['y'] < c.ev("doc.height*0.12"), 'moved to the top')
     eq(c.ev("undoStack.length") - u0, 1, 'all of it is one undo step')
     ok(c.ev("!!(bgBlock().fillGradient)"), 'a one-colour "gradient" is refused (background unchanged)')
