@@ -2604,7 +2604,7 @@ def t_phone(B):
     sb = c.page.locator('#stage').bounding_box(); ok(abs(sb['x'] + sb['width'] / 2 - 195) < 12, f'page centred {sb}')
     c.ev("(()=>{const e=el('text',{text:'tiny words',x:100,y:100,fontSize:16,width:400});e.height=20;doc.elements.push(e);fullRender();commit();select(e.id);})()")
     c.page.wait_for_selector('#selBar.on')
-    eq(c.ev("[...document.querySelectorAll('#selBar [data-sb]')].map(b=>b.dataset.sb)"), ['edit', 'props', 'ask', 'dup', 'del'], 'quick actions for text')
+    eq(c.ev("[...document.querySelectorAll('#selBar [data-sb]')].map(b=>b.dataset.sb)"), ['edit', 'font', 'props', 'ask', 'dup', 'del'], 'quick actions for text')
     s0 = c.ev('scale'); c.page.click('#selBar [data-sb="edit"]'); c.page.wait_for_timeout(300)
     ok(c.ev('scale') > s0 * 1.5 and c.ev("$('#editText').style.display") == 'block', 'tiny text zooms in for typing')
     c.ev("hideEditor()"); c.ev("fitZoom()"); s1 = c.ev('scale')
