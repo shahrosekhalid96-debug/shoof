@@ -1723,7 +1723,7 @@ PIX = """async(pts)=>{const u=renderExport('image/png');const im=new Image();awa
 @test('elements_panel_search_and_add')
 def t_elements(B):
     c = Ctx(B); c.blank(); c.tab('shapes')
-    eq(c.ev("[...document.querySelectorAll('#elBody h3')].map(h=>h.textContent)"), ['Shapes', 'Lines', 'Photo frames', 'Mockups', 'Patterns & textures', 'Infographics', 'Stickers', 'Charts', 'Icons'], 'sections')
+    eq(c.ev("[...document.querySelectorAll('#elBody h3')].map(h=>h.textContent)"), ['Shapes', 'Lines', 'Photo frames', 'Mockups', 'Patterns & textures', 'Infographics', 'Stickers', 'QR code', 'Charts', 'Icons'], 'sections')
     eq(c.page.locator('#drawer [data-icon]').count(), 30, 'first 30 icons shown')
     c.page.click('#drawer [data-more-icons]'); eq(c.page.locator('#drawer [data-icon]').count(), c.ev('ICON_NAMES.length'), 'show all icons')
     ok(c.ev('ICON_NAMES.length') >= 200, 'at least 200 icons bundled')
@@ -1990,7 +1990,7 @@ def t_ux7(B):
 @test('library_patterns_mockups_infographics')
 def t_library(B):
     c = Ctx(B); c.blank(); c.tab('shapes')
-    eq(c.ev("[...document.querySelectorAll('#elBody h3')].map(h=>h.textContent)"), ['Shapes', 'Lines', 'Photo frames', 'Mockups', 'Patterns & textures', 'Infographics', 'Stickers', 'Charts', 'Icons'], 'sections')
+    eq(c.ev("[...document.querySelectorAll('#elBody h3')].map(h=>h.textContent)"), ['Shapes', 'Lines', 'Photo frames', 'Mockups', 'Patterns & textures', 'Infographics', 'Stickers', 'QR code', 'Charts', 'Icons'], 'sections')
     c.page.wait_for_function("document.querySelectorAll('#elBody [data-pattern] img').length===PATTERNS.length && document.querySelectorAll('#elBody [data-mockup] img').length===MOCKUPS.length", timeout=8000)
     # every pattern: added behind content, renders, exports
     c.ev("()=>{addText('h')}")
@@ -2315,6 +2315,55 @@ def t_font_library(B):
     c.page.click('#shMsgs .shm.bot:last-child [data-shfont] >> nth=1'); c.page.wait_for_selector('#pvBar:not([hidden])')
     ok(c.ev("shFontTargets()[0].fontFamily") != f0 and c.ev("undoStack.length") == u, 'font previewed on the headline'); c.page.click('#pvBar [data-pv=back]')
     eq(c.ev("shFontTargets()[0].fontFamily"), f0, 'Back restores the font')
+    ok(not c.errors, c.errors); c.close()
+
+
+QR_HASH = '9c5c9a6515baab08'
+
+
+@test('small_tools_qr_duotone_style_autofit')
+def t_small_tools(B):
+    import hashlib
+    c = Ctx(B)
+    # QR code: correct symbol (checked against a reference encoder when this test was written), editable, always scannable colours
+    m = c.ev("qrMatrix('https://shoof.pages.dev').map(r=>r.join('')).join('/')")
+    eq(hashlib.sha256(m.encode()).hexdigest()[:16], QR_HASH, 'QR modules for a known link')
+    ok(c.ev("qrMatrix('x'.repeat(214))===null&&qrMatrix('x'.repeat(213)).length===57&&qrMatrix('A').length===21"), 'QR sizes and the length limit')
+    c.page.click('.rail [data-tab=shapes]'); c.page.fill('#qrIn', 'https://shoof.pages.dev/editor'); c.page.click('#qrAdd'); c.page.wait_for_timeout(200)
+    e = c.sel_el(); eq([e['type'], e['text']], ['qr', 'https://shoof.pages.dev/editor'], 'QR added from Elements')
+    ok(c.page.locator('#pQr').count() == 1 and c.page.locator('#pQrBg').count() == 1, 'QR can be edited')
+    eq(c.ev("addQr('é'.repeat(150))"), False, 'too long is refused')
+    q = c.ev("sanitizeEl({type:'qr',x:0,y:0,width:100,height:100,text:'a\\u0000b'+'c'.repeat(400),fill:'url(x)',fill2:'javascript:1',fillGradient:{type:'linear',angle:0,stops:[{offset:0,color:'#f00'},{offset:1,color:'#00f'}]}},new Set())")
+    ok(len(q['text']) == 200 and '\x00' not in q['text'] and q['fill'].startswith('#') and q['fill2'].startswith('#') and 'fillGradient' not in q, f'QR sanitised {q}')
+    px = c.ev("""(async()=>{const e=byId(selId);e.fill='#fefefe';e.fill2='#ffffff';e.x=0;e.y=0;e.width=doc.width;e.height=doc.width;fullRender();const im=new Image();im.src=renderExport('image/png');await im.decode();const cv=document.createElement('canvas');cv.width=im.width;cv.height=im.height;const x=cv.getContext('2d');x.drawImage(im,0,0);const s=im.width/(qrMatrix(e.text).length+4);const d=x.getImageData(Math.round(s*2.5),Math.round(s*2.5),1,1).data;return [d[0],d[1],d[2]];})()""")
+    ok(max(px) < 40, f'white-on-white QR is drawn dark so it still scans {px}')
+    ok(len(c.ev("renderExport('image/png')")) > 1000, 'exports with a QR')
+    c.ev("delSel()")
+    # photo colour: duotone and tint
+    c.ev("""(async()=>{const cv=document.createElement('canvas');cv.width=cv.height=64;const x=cv.getContext('2d');x.fillStyle='#808080';x.fillRect(0,0,64,64);x.fillStyle='#ffffff';x.fillRect(0,0,32,64);await addImage(cv.toDataURL('image/png'));})()"""); c.page.wait_for_timeout(500)
+    eq(c.sel_el()['type'], 'image', 'test photo added'); ok(c.page.locator('#props [data-duo]').count() == 7, 'duotone presets shown')
+    c.page.click('#props [data-duo="0"]'); c.page.wait_for_timeout(300); eq(c.sel_el()['duo'], ['#1b1464', '#ff6fb5'], 'duotone set')
+    samp = """(async()=>{const e=byId(selId);e.x=0;e.y=0;e.width=doc.width;e.height=doc.height;delete e.radius;fullRender();await new Promise(r=>setTimeout(r,150));const im=new Image();im.src=renderExport('image/png');await im.decode();const cv=document.createElement('canvas');cv.width=im.width;cv.height=im.height;const x=cv.getContext('2d');x.drawImage(im,0,0);const a=x.getImageData(Math.round(im.width*0.25),Math.round(im.height/2),1,1).data,b=x.getImageData(Math.round(im.width*0.75),Math.round(im.height/2),1,1).data;return [[a[0],a[1],a[2]],[b[0],b[1],b[2]]];})()"""
+    a, b = c.ev(samp)
+    ok(abs(a[0] - 255) < 8 and abs(a[1] - 111) < 8 and abs(a[2] - 181) < 8, f'white becomes the highlight colour {a}'); ok(a != b and b[0] < a[0], f'grey sits between the two colours {b}')
+    c.page.click('#props [data-duo="off"]'); c.page.wait_for_timeout(200); ok('duo' not in c.sel_el(), 'duotone off')
+    c.ev("(()=>{const e=byId(selId);e.tint='#ff0000';e.tintAmt=100;bump(e);fullRender();commit();})()"); a, b = c.ev(samp)
+    ok(a[0] > 240 and a[1] > 240 and b[0] > 230 and b[1] < 40, f'tint colours the mid-tones and keeps white {a} {b}')
+    t2 = c.ev("sanitizeEl(Object.assign({},byId(selId),{duo:['red','javascript:x'],tint:'#00ff00',tintAmt:900}),new Set())"); ok(t2['tintAmt'] == 100 and all(x.startswith('#') for x in t2['duo']), 'photo colour sanitised')
+    c.ev("delSel()")
+    # copy style / paste style
+    c.ev("""(()=>{addText('h');const a=byId(selId);Object.assign(a,{text:'Source',fontFamily:'Lobster',fill:'#ff0066',bold:true,letterSpacing:4,shadowColor:'#000000',shadowBlur:8});window._a=a.id;addText('b');const b=byId(selId);b.text='Target words';window._b=b.id;window._bs=b.fontSize;addShape('rect');window._r=selId;fullRender();commit();select(window._a);})()""")
+    u = c.ev("undoStack.length"); c.page.click('#qStyle'); c.ev("select(window._b)"); c.page.wait_for_timeout(100); c.page.click('#qStyle'); c.page.wait_for_timeout(300)
+    bb = c.ev("byId(window._b)"); eq([bb['fontFamily'], bb['fill'], bb['bold'], bb['letterSpacing'], bb['text'], bb['fontSize']], ['Lobster', '#ff0066', True, 4, 'Target words', c.ev("window._bs")], 'look copied, words and size kept')
+    eq(c.ev("undoStack.length"), u + 1, 'paste style is one undo step')
+    c.ev("(()=>{select(window._a);copyStyle();select(window._r);pasteStyle();})()"); rr = c.ev("byId(window._r)"); ok(rr['fill'] == '#ff0066' and 'fontFamily' not in rr and rr.get('shadowBlur') == 8, f'text style on a shape copies colour and shadow only {rr}')
+    # text that fits its box
+    c.ev("select(window._b)"); c.page.wait_for_timeout(100); c.page.click('#pAutoFit'); c.page.wait_for_timeout(200)
+    f0 = c.sel_el(); ok(f0['autoFit'] is True and f0['fitH'] > 10, 'fit to box on')
+    c.ev("setProp('text','Target words that now run on for much longer than they did before, across several lines')"); f1 = c.sel_el()
+    ok(f1['fontSize'] < f0['fontSize'] and c.ev("nodeOf(selId).findOne('.tx').height()") <= f1['fitH'] + 2, f"more words shrink to fit {f0['fontSize']}→{f1['fontSize']}")
+    c.ev("setProp('text','Hi')"); f2 = c.sel_el(); ok(f2['fontSize'] > f1['fontSize'], 'fewer words grow')
+    ok(c.ev("sanitizeEl(byId(selId),new Set()).autoFit===true"), 'fit to box survives save and open')
     ok(not c.errors, c.errors); c.close()
 
 
