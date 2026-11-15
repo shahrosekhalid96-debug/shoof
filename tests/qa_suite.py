@@ -2429,6 +2429,24 @@ def t_animation(B):
     ok(not c.errors, c.errors); c.close()
 
 
+@test('shoofy_pattern_replace')
+def t_pattern_replace(B):
+    c = Ctx(B); c.ev("(()=>{useTemplate(TEMPLATES.findIndex(x=>/giveaway/.test(x.key)));doc.pages[0].elements=doc.pages[0].elements.filter(e=>e.type!=='pattern');hydrate(doc);addPattern('stripes');fullRender();commit();})()")
+    pats = "doc.elements.filter(e=>e.type==='pattern').map(e=>e.pattern)"
+    eq(c.ev(pats), ['stripes'], 'one texture to start'); op = c.ev("doc.elements.find(e=>e.type==='pattern').opacity")
+    c.page.click('#buddy'); c.page.wait_for_selector('#shChat:not([hidden])')
+    def say(q):
+        n = c.ev("SH.msgs.length"); c.page.fill('#shIn', q); c.page.press('#shIn', 'Enter'); c.page.wait_for_function(f"SH.msgs.length>={n+2}&&!SH.busy&&!SH.tw", timeout=9000)
+    u = c.ev("undoStack.length"); say('the pattern can be different')
+    p1 = c.ev(pats); ok(len(p1) == 1 and p1[0] != 'stripes', f'pattern replaced, not stacked {p1}'); eq(c.ev("doc.elements.find(e=>e.type==='pattern').opacity"), op, 'same strength'); eq(c.ev("undoStack.length"), u + 1, 'one undo step')
+    c.ev("localStorage.setItem('shoof.shAI','1')")
+    c.page.route('**/api/shoofy', lambda r: r.fulfill(status=200, content_type='application/json', body='{"ok":true}' if 'feedback' in (r.request.post_data or '') else json.dumps({'reply': 'Swapped to a dot grid.', 'actions': [{'do': 'add_pattern', 'pattern': 'dotGrid'}]})))
+    say('please could you swap that texture for a calm dotted grid one, thanks'); eq(c.ev(pats), ['dotGrid'], 'AI pattern also replaces')
+    c.page.unroute('**/api/shoofy'); c.ev("localStorage.removeItem('shoof.shAI')")
+    say('remove the pattern'); eq(c.ev(pats), [], 'pattern removed')
+    ok(not c.errors, c.errors); c.close()
+
+
 @test('background_remover_on_device')
 def t_bg_remove(B):
     c = Ctx(B); c.blank()
