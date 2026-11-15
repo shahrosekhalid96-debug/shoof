@@ -88,6 +88,23 @@ bg / surface / text / accent / accent2 (text/bg ratio; text/surface also ≥4.5)
 **Real estate**
 - `realestate_stone` Stone & Pine (solid, upscale, calm): #F2F0EB / #FFFFFF / #1E2A32 / #2F6F63 / #C8A46B (12.9)
 
+**Events & conferences (from Shary's flyer study, 2026-11-15)**
+- `conf_navy_orange` Navy & Orange Summit (confident, corporate, energetic): #FFFFFF / #F2F5FB / #1A2B6D / #1F3FA0 / #F39A2C (13.4)
+- `conf_teal_slate` Teal Conference (fresh, professional, calm): #FFFFFF / #EEF6F4 / #123B3A / #0F8A7A / #1C2B3A (13.0)
+- `conf_purple_white` Violet Keynote (modern, bold, polished): #FFFFFF / #F4EFFA / #2A2A35 / #7B2FD0 / #B44FE0 (14.5)
+- `conf_midnight_mint` Midnight Mint (sleek, premium, techy): #1D2939 / #26344A / #FFFFFF / #7FDCB6 / #2BB58D (14.9)
+- `tech_teal_orange` Teal Duotone Tech (edgy, bold, nocturnal): #0F3B3F / #164C51 / #FFFFFF / #F2733A / #5FD0C4 (12.6)
+- `event_night_orange` Black & Amber Stage (dramatic, strong, urban): #121212 / #1F1F1F / #FFFFFF / #F7941D / #4A90B8 (18.7)
+- `fest_indigo_pink` Festival Indigo (vibrant, musical, youthful): #2B1A5E / #3A2672 / #FFFFFF / #FF3FA4 / #7FD3FF (14.3)
+- `music_lilac_magenta` Lilac Stage (playful, lively, fresh): #E4E3EC / #FFFFFF / #2E2A5C / #B0217E / #3C2F7A (10.9)
+- `yoga_navy_sun` Calm Navy & Sun (soothing, warm, friendly): #2F3A7A / #3B4790 / #FFFFFF / #F6D860 / #5FC3D9 (10.3)
+- `charity_charcoal_orange` Warm Cause (heartfelt, hopeful, grounded): #1E1B1A / #2B2725 / #FFFFFF / #E07B2E / #F4E3D3 (17.2)
+- `lux_stone_maroon` Stone & Maroon (luxury, minimal, fashion): #E9E1D6 / #FFFFFF / #4A2328 / #5A2A2E / #B07A4F (10.5)
+- `info_cyan_amber` Clean Infographic (clear, friendly, informative): #F1F1F2 / #FFFFFF / #17496A / #00BBD6 / #FAA32B (8.4)
+- `colorblock_mix` Colour Block (loud, graphic, artistic): #151515 / #222222 / #F4EFE3 / #EF5A3C / #F7C832 (16.0)
+- `art_charcoal_splash` Paint Splash (creative, vivid, gallery): #3A3A3D / #47474B / #FFFFFF / #19C3D9 / #FF3D7F (11.1)
+- `kids_magenta_orange` Fun Day Brights (cheerful, busy, family): #FFFFFF / #FFF3F8 / #1E1E1E / #E8237C / #F2802B (16.7)
+
 On dark palettes, use bg-coloured text on accent buttons, not white.
 
 ## 4. Font pairings
@@ -120,6 +137,10 @@ Scripts (Great Vibes, Sacramento, Dancing Script): one accent word, 40 px or mor
 7. **Photos lead:** sample accents from the product photo; desaturate busy photos.
 8. **Gradients need a reason:** neighbouring hues, 2–3 stops, pointing to the headline.
 
+9. **Complementary pop (flyer study):** one dominant colour + a neutral + one opposite accent: navy/blue + orange, teal + orange, navy + yellow, purple + white, magenta + navy. The accent goes only on the date, price, button and one shape.
+10. **Tint the photo:** a colour overlay (60–75%) or duotone on photos ties them to the palette and keeps white text readable on top.
+11. **Repeat the accent 3 times:** the same accent on the date tag, a decorative shape and the button so the eye travels down the page.
+
 ## 6. Layout & composition rules
 
 1. **Three levels:** headline, support line, CTA/details; headline ≥2× the next size.
@@ -130,6 +151,11 @@ Scripts (Great Vibes, Sacramento, Dancing Script): one accent word, 40 px or mor
 6. **One focal point** on a rule-of-thirds line; nothing competes with it in size.
 7. **Proximity:** date, place and price grouped on one card; separate groups with space, not lines.
 8. **Restraint:** ≤25 words and ≤2 families per post (plus one accent word); logo in a corner at 8–12% width.
+
+9. **Two zones:** split the page into a bold zone (colour band, tinted photo or dark panel) and a calm zone (white/light) for details, joined by a diagonal, curve or wedge, never a plain straight line only.
+10. **Headline contrast:** pair a huge heavy condensed word with a lighter or script second word ("FUNDRAISING / Event", "FEEL THE / Music").
+11. **Tags for facts:** date, time and price sit in a contrasting tag, ribbon, pill or circle badge that overlaps the zone edge.
+12. **People in shapes:** speaker photos go in circles or hexagons with an accent ring and a name label below, repeated in a row or column.
 
 ## 7. Sources
 
