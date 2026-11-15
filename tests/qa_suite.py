@@ -2367,6 +2367,28 @@ def t_small_tools(B):
     ok(not c.errors, c.errors); c.close()
 
 
+@test('share_link')
+def t_share_link(B):
+    c = Ctx(B); c.ctx.grant_permissions(['clipboard-read', 'clipboard-write'])
+    c.ev("(()=>{useTemplate(TEMPLATES.findIndex(x=>/giveaway/.test(x.key)));addQr('https://shoof.pages.dev');const e=doc.elements.filter(e=>e.type==='text')[0];e.text='Shared headline ✓';fullRender();commit();})()")
+    want = c.ev("JSON.stringify(sanitizeDoc(JSON.parse(JSON.stringify(doc))).pages)")
+    c.page.click('#exportBtn'); c.page.click('#expLink'); c.page.wait_for_selector('#shUrl')
+    url = c.page.input_value('#shUrl'); ok('#d=' in url and len(url) < 9000, f'short link for a design without photos ({len(url)} chars)')
+    ok('uploaded' in c.page.inner_text('#modalBox'), 'says nothing is uploaded'); c.page.click('#shX')
+    # opening the link gives the same design as a new copy
+    c2 = Ctx(B); id0 = c2.ev("curId"); c2.ev("location.hash=" + json.dumps(url.split('#')[1])); c2.page.wait_for_function("doc.elements.some(e=>e.text==='Shared headline ✓')", timeout=6000)
+    eq(c2.ev("JSON.stringify(sanitizeDoc(JSON.parse(JSON.stringify(doc))).pages)"), want, 'same design on the other side')
+    ok(c2.ev("location.hash===''&&!homeOpen()") and c2.ev("curId") != id0, 'link is cleared and it is a new design of their own')
+    # hostile and broken links are refused; photos are made smaller to fit
+    for bad in ['#d=' + 'A' * 40, '#d=H4sIAAAAAAAAA6tWKkktLlGyUlAqS8wpTtVRSs7PS0nNK1GyqgUAZ1y2SBwAAAA']:
+        n = c2.ev("undoStack.length"); c2.ev("location.hash=" + json.dumps(bad)); c2.page.wait_for_timeout(400); eq(c2.ev("undoStack.length"), n, 'bad link changes nothing')
+    evil = c2.ev("""(async()=>{const d=JSON.parse(JSON.stringify(doc));d.pages[0].elements.push({type:'image',x:0,y:0,width:10,height:10,src:'https://evil.example/x.png'},{type:'text',x:0,y:0,width:50,text:'<img src=x onerror=alert(1)>',fontFamily:'Nope'});location.hash='d='+b64u.enc(await gzPack(JSON.stringify(d)));await new Promise(r=>setTimeout(r,600));return [doc.elements.some(e=>e.type==='image'&&/^https/.test(e.src||'')),doc.elements.filter(e=>e.type==='text').some(e=>e.fontFamily==='Nope'),!!document.querySelector('img[src=x]')];})()""")
+    eq(evil, [False, False, False], 'shared designs go through the same safety check as files')
+    r = c.ev("""(async()=>{const cv=document.createElement('canvas');cv.width=1400;cv.height=1000;const x=cv.getContext('2d');for(let i=0;i<4000;i++){x.fillStyle='hsl('+(i*37%360)+',70%,'+(30+i%50)+'%)';x.fillRect((i*97)%1400,(i*53)%1000,60,40);}await addImage(cv.toDataURL('image/jpeg',0.92));await new Promise(r=>setTimeout(r,300));const im=()=>doc.elements.filter(e=>e.type==='image').pop();const before=im().src.length;const p=await sharePack();return [before,p.code.length,p.tier,im().src.length===before];})()""")
+    ok(r[1] and r[1] <= 60000 and r[2] >= 1 and r[3], f'photo shrunk for the link only, design untouched {r}')
+    ok(not c.errors and not c2.errors, c.errors + c2.errors); c.close(); c2.close()
+
+
 @test('background_remover_on_device')
 def t_bg_remove(B):
     c = Ctx(B); c.blank()
