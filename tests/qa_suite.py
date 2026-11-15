@@ -2648,7 +2648,7 @@ def t_designs_from_scratch(B):
     c.ev("(()=>{useTemplate(TEMPLATES.findIndex(x=>/giveaway/.test(x.key)));})()")
     mud = [{'do': 'set', 'target': 'el:0', 'props': {'fill': '#8f8f8f'}}, {'do': 'set', 'target': 'el:2', 'props': {'fill': '#5e4a3a'}}, {'do': 'set', 'target': 'el:8', 'props': {'fill': '#9a9a9a'}}, {'do': 'set', 'target': 'el:12', 'props': {'fill': '#c8a07a'}}, {'do': 'set', 'target': 'all_text', 'props': {'fill': '#1f3d2b'}}]
     c.page.route('**/api/shoofy', lambda r: r.fulfill(status=200, content_type='application/json', body=json.dumps({'reply': 'Refreshed with deep forest greens and soft creams.', 'actions': mud})))
-    say('give it a premium calm palette')
+    say('restyle everything premium and calm')
     ok(c.ev("SH.msgs[SH.msgs.length-1].text.includes('design book')"), 'muddy re-colour turned into a knowledge-book scheme')
     ok(c.ev("(()=>{const {s,l}=hslOf(bgBlock().fill);return l>0.85||l<0.2;})()"), 'page is clean light or deep dark, not a muddy mid-tone')
     ok(c.ev("(()=>{const pg=doc.pages[doc.page];return pg.elements.every((e,i)=>{if(e.type!=='text'||!e.fill)return true;const u=underColor(pg,i);if(!u)return true;return contrastOf(e.fill,u)>=(e.fontSize>=54?3:4.5)-0.05;});})()"), 'every text readable after the re-colour')
