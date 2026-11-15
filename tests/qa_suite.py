@@ -2565,6 +2565,35 @@ def t_shoofy_learns(B):
     ok(c.ev("!!bgBlock()&&doc.elements[0].role==='bg'&&bgBlock().x===0&&bgBlock().y===0"), 'but never deleted or moved')
     ok(not c.errors, c.errors); c.close()
 
+@test('shoofy_designs_from_scratch')
+def t_designs_from_scratch(B):
+    c = Ctx(B)
+    b = c.ev("dgBrief('design me a poster for my bakery opening on friday at 4pm, 20% off everything')")
+    ok(b['head'] == 'Bakery Opening' and b['format'] == 'a3' and 'Friday' in b['details'] and '4 PM' in b['details'] and b['num'] == '20%', f'brief from plain words {b}')
+    # every layout x every style, in square, story and landscape: valid, editable, bg block first, no text off the page
+    bad = c.ev("""(async()=>{const out=[];for(const f of ['ig','story','li']){const b=dgBrief('design a post for my coffee shop opening saturday 9am at King Road, 20% off');b.format=f;
+      for(const k of Object.keys(DG_LAYOUTS))for(const st of DKB.styles){if((k==='stat_hero'&&!b.num))continue;const d=await dgBuild(b,k,st,null,3);const pg=d.pages[0];
+        if(pg.elements[0].role!=='bg')out.push(f+'/'+k+'/'+st.id+': no bg');if(pg.elements.length<6)out.push(f+'/'+k+'/'+st.id+': too few items');
+        if(pg.elements.some(e=>e.locked))out.push(k+': locked');
+        pg.elements.forEach(e=>{if(e.type!=='text')return;if(e.x<-2||e.y<-2||e.x+e.width>d.width+2||e.y>d.height-10)out.push(f+'/'+k+'/'+st.id+': text off page "'+String(e.text).slice(0,12)+'"');});}}return out;})()""")
+    eq(bad[:6], [], 'every layout and style builds a clean design')
+    # chat: designs, steering, open
+    c.page.click('#buddy'); c.page.wait_for_selector('#shChat:not([hidden])')
+    def say(q):
+        n = c.ev("SH.msgs.length"); c.page.fill('#shIn', q); c.page.press('#shIn', 'Enter')
+        c.page.wait_for_function(f"SH.msgs.length>={n+2}&&!SH.busy&&!SH.tw", timeout=20000)
+    say("I don't like any templates, design me a post for my coffee shop opening saturday 9am")
+    eq(c.page.locator('#shMsgs .shm.bot:last-child .dgcards .shcard').count(), 4, '4 new designs')
+    first = c.ev("SH.msgs[SH.msgs.length-1].designs.map(d=>d.doc._dg.lay+'|'+d.doc._dg.st)")
+    ok(len(set(x.split('|')[0] for x in first)) == 4 and len(set(x.split('|')[1] for x in first)) == 4, f'4 different layouts and styles {first}')
+    say('none of these, bolder')
+    second = c.ev("SH.msgs[SH.msgs.length-1].designs.map(d=>d.doc._dg.lay+'|'+d.doc._dg.st)")
+    ok(not set(first) & set(second), 'the next round never repeats an idea'); ok(c.ev("DG.prefs.bold===true"), 'bolder is remembered')
+    c.page.click('#shMsgs .shm.bot:last-child .dgcards .shcard >> nth=0'); c.page.wait_for_timeout(400)
+    ok(c.ev("doc.elements[0].role==='bg'&&doc.elements.some(e=>e.type==='text'&&/Coffee Shop/i.test(e.text))"), 'design opened and editable')
+    c.ev("undo()")
+    ok(not c.errors, c.errors); c.close()
+
 @test('shoofy_design_consultant')
 def t_design_consultant(B):
     import subprocess

@@ -10,7 +10,7 @@
 /* strongest free model first (gpt-oss-120b, low reasoning effort for speed); the rest are fall-backs */
 const MODELS = ['@cf/openai/gpt-oss-120b', '@cf/google/gemma-4-26b-a4b-it', '@cf/qwen/qwen3.8-27b'];
 const PER_DAY = 40; // chat messages per visitor (IP) per day; the account's free daily allowance is the hard cap
-const DOS = ['suggest_palettes', 'show_styles', 'apply_palette', 'apply_style', 'critique', 'polish', 'show_templates', 'add_text', 'edit_text', 'add_icon', 'add_shape', 'set_background', 'recolor', 'set_font', 'set', 'move', 'arrange', 'delete', 'duplicate', 'resize', 'remove_bg', 'add_photo', 'add_page', 'check', 'logo', 'download', 'open'];
+const DOS = ['design', 'suggest_palettes', 'show_styles', 'apply_palette', 'apply_style', 'critique', 'polish', 'show_templates', 'add_text', 'edit_text', 'add_icon', 'add_shape', 'set_background', 'recolor', 'set_font', 'set', 'move', 'arrange', 'delete', 'duplicate', 'resize', 'remove_bg', 'add_photo', 'add_page', 'check', 'logo', 'download', 'open'];
 const FONTS = ['Inter', 'Poppins', 'Montserrat', 'Raleway', 'Nunito', 'DM Sans', 'Space Grotesk', 'Fredoka', 'Playfair Display', 'Lora', 'DM Serif Display', 'Cormorant Garamond', 'Bebas Neue', 'Oswald', 'Anton', 'Archivo Black', 'Lobster', 'Abril Fatface', 'Righteous', 'Bangers', 'Pacifico', 'Dancing Script', 'Caveat', 'Great Vibes', 'Space Mono'];
 const json = (body, status = 200, cookie = '') => new Response(JSON.stringify(body), { status, headers: Object.assign({ 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', 'x-content-type-options': 'nosniff' }, cookie ? { 'set-cookie': cookie } : {}) });
 /* after one passed Turnstile check the visitor gets a signed 30-minute pass, so a conversation is not interrupted */
@@ -86,6 +86,7 @@ If the user is only chatting (a compliment, thanks, a greeting, "ok"), answer wa
 "reply": one or two short, warm, specific sentences in plain text (no markdown), in the user's language. Describe exactly what you changed. Never claim something you did not put in actions.
 "actions": up to 6 items; every item MUST have a "do" field. Available:
 - show_templates {"keys":[up to 6 keys from TEMPLATES]} : the user wants to find, start or switch to a design.
+- design {"head":"≤6 punchy words","sub":"≤10 words","kicker":"2-3 words","details":["≤3 short facts: date, time, place, price, %"],"cta":"2-3 words","topic":"what it is for","icon":"one icon name from ICONS","styles":[style ids that fit],"mood":"words","base_color":"#hex if asked","photo":true|false,"format":"ig|story|a3|flyer|li|fb|x|yt|a4|pres"} : create 4 BRAND-NEW designs from scratch with the knowledge book (not templates). Use when the user asks to design / make / create something, wants something different or original, or dislikes the templates. Write the copy yourself from what they said (never invent prices or dates). For "more ideas", "bolder", "simpler", "other colours" after designs were shown use {"do":"design","more":true}.
 - suggest_palettes {"mood":"words","ids":[palette ids],"base_color":"#hex"} : show colour combinations as tappable swatches (use for colour ideas / "what colours go with…"; base_color builds harmonies from one colour)
 - show_styles {"ids":[style ids]} : show art styles as tappable cards (use for "what's trending", "ideas", "make it look modern" when unsure)
 - apply_palette {"id":"palette id"} or {"colors":{"bg","surface","text","accent","accent2"}} : recolour the whole design by role (text is kept readable automatically)
@@ -169,7 +170,7 @@ export async function onRequestPost({ request, env }) {
     if (r && typeof r === 'object' && (r.reply || Array.isArray(r.actions))) break; r = null;
   }
   if (!r) return json({ error: 'ai_failed', detail: clean(why || 'no JSON in reply', 200) }, 502);
-  const FIELDS = ['keys', 'text', 'style', 'target', 'name', 'shape', 'color', 'colors', 'font', 'size', 'format', 'panel', 'to', 'angle', 'type', 'ids', 'id', 'mood', 'base_color', 'query'];
+  const FIELDS = ['keys', 'text', 'style', 'target', 'name', 'shape', 'color', 'colors', 'font', 'size', 'format', 'panel', 'to', 'angle', 'type', 'ids', 'id', 'mood', 'base_color', 'query', 'head', 'sub', 'kicker', 'details', 'cta', 'icon', 'styles', 'photo', 'topic', 'more'];
   const cleanProps = (p, depth) => { const o = {}; if (!p || typeof p !== 'object' || Array.isArray(p)) return o; Object.keys(p).slice(0, 24).forEach(k => { if (/^[a-zA-Z]{1,20}$/.test(k)) o[k] = p[k] && typeof p[k] === 'object' && !Array.isArray(p[k]) ? (depth < 2 ? cleanProps(p[k], depth + 1) : {}) : cleanVal(p[k]); }); return o; };
   const cleanVal = v => typeof v === 'number' || typeof v === 'boolean' ? v : Array.isArray(v) ? v.slice(0, 6).map(x => typeof x === 'number' ? x : clean(x, 80)) : clean(v, 300);
   const norm = a => {
