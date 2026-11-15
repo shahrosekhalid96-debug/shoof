@@ -3,9 +3,9 @@ import { readFileSync, writeFileSync, mkdtempSync } from 'node:fs'; import { tmp
 const here = new URL('.', import.meta.url).pathname, dir = mkdtempSync(join(tmpdir(), 'shoofy-'));
 writeFileSync(join(dir, 's.mjs'), readFileSync(join(here, '../../functions/api/shoofy.js')));
 const store = new Map(); globalThis.caches = { default: { match: async k => store.has(k.url) ? new Response(store.get(k.url)) : undefined, put: async (k, r) => store.set(k.url, await r.text()) } };
-const rows = []; let sys = '';
+const rows = [], looks = {}; let sys = '';
 const DB = { prepare(sql) { return { bind(...a) { this.a = a; return this; },
-  async run() { if (sql.startsWith('INSERT')) { rows.push({ id: rows.length + 1, ts: this.a[0], req: this.a[1], words: this.a[2], actions: this.a[4], score: 0 }); return { meta: { last_row_id: rows.length } }; }
+  async run() { if (sql.includes('INTO looks')) { looks[this.a[0]] = (looks[this.a[0]] || 0) + this.a[1]; return { meta: {} }; } if (sql.startsWith('INSERT')) { rows.push({ id: rows.length + 1, ts: this.a[0], req: this.a[1], words: this.a[2], actions: this.a[4], score: 0 }); return { meta: { last_row_id: rows.length } }; }
     if (sql.startsWith('UPDATE')) { const r = rows.find(x => x.id === this.a[1]); r.score = Math.max(-10, Math.min(30, r.score + this.a[0])); } return { meta: {} }; },
   async all() { if (sql.includes('FROM notes')) return { results: [{ rule: 'Items must stand out from what they sit on.' }] }; return { results: rows.filter(r => r.score >= 2 || r.score <= -2) }; } }; } };
 const AI = { run: async (m, o) => { sys = o.messages[0].content; return { response: JSON.stringify({ reply: 'Tidied.', actions: [{ do: 'polish' }, { do: 'set', target: 'el:2', props: { fill: '#ff0000' } }] }) }; } };
@@ -24,4 +24,6 @@ ok(/PEOPLE LIKED/.test(sys) && sys.includes('"polish"') && sys.includes('make it
 ok(sys.includes('LESSONS LEARNED') && sys.includes('Items must stand out'), 'standing lessons from the notebook are in the prompt');
 r = await (await call({ messages: [{ role: 'user', content: 'hi' }] }, { AI })).json();
 ok(!r.rid, 'without a database nothing is stored');
+ok((await (await call({ feedback: { v: -4, look: ['hues:L|30,60,330', 'style:bold_type_pop', 'evil<script>'] } })).json()).ok && looks['hues:L|30,60,330'] === -2 && !Object.keys(looks).some(k => k.includes('<')), 'looks scored, junk keys dropped ' + JSON.stringify(looks));
+await call({ feedback: { v: -4, look: ['hues:L|30,60,330'] } }); ok(looks['hues:L|30,60,330'] === -2, 'one look vote per visitor per day');
 console.log('shoofy learn: ok');

@@ -2551,7 +2551,7 @@ def t_shoofy_learns(B):
     ok(c.ev("t('shPraise1')+t('shPraise2')+t('shPraise3')").find(c.ev("SH.msgs[SH.msgs.length-1].text")) >= 0, 'praise answered warmly')
     ok(any(b.get('feedback', {}).get('v') == 2 for b in sent[n0:]), 'praise counted as a 👍')
     ok(len([b for b in sent[n0:] if 'messages' in b]) == 1, 'small talk does not call the AI')
-    ok(any(b.get('feedback') == {'rid': '7.' + 'a' * 64, 'v': -1} for b in sent), f'Undo reports a bad answer {[b for b in sent if "feedback" in b]}')
+    ok(any((b.get('feedback') or {}).get('rid') == '7.' + 'a' * 64 and b['feedback'].get('v') == -1 and b['feedback'].get('look') for b in sent), f'Undo reports a bad answer {[b for b in sent if "feedback" in b]}')
     c.page.unroute('**/api/shoofy')
     ok(c.page.locator('#shChat .shnote').is_visible(), 'privacy note visible')
     # the AI is told what each item is and how the page is laid out top to bottom
@@ -2563,6 +2563,33 @@ def t_shoofy_learns(B):
     c.ev("shTargets('el:0')[0].fill='#ffe066'"); eq(c.ev("shTargets('el:0').length"), 1, 'page background addressable for colour')
     c.ev("(async()=>{await shRun([{do:'delete',target:'el:0'},{do:'move',target:'el:0',to:'top'}]);})()"); c.page.wait_for_timeout(200)
     ok(c.ev("!!bgBlock()&&doc.elements[0].role==='bg'&&bgBlock().x===0&&bgBlock().y===0"), 'but never deleted or moved')
+    ok(not c.errors, c.errors); c.close()
+
+@test('shoofy_taste_and_memory')
+def t_taste_memory(B):
+    c = Ctx(B, init="localStorage.setItem('shoof.buddy','on')")
+    c.ev("(()=>{useTemplate(TEMPLATES.findIndex(x=>/giveaway/.test(x.key)));})()")
+    c.page.click('#buddy'); c.page.wait_for_selector('#shChat:not([hidden])')
+    def say(q):
+        n = c.ev("SH.msgs.length"); c.page.fill('#shIn', q); c.page.press('#shIn', 'Enter')
+        c.page.wait_for_function(f"SH.msgs.length>={n+2}&&!SH.busy&&!SH.tw", timeout=20000)
+    # the look of a page is fingerprinted
+    lk = c.ev("shLook().keys"); ok(lk[0].startswith('hues:L|'), f'look keys {lk}')
+    # "never this colour combination" is remembered as a strong dislike of THIS look, and other palettes are offered
+    say('no, never this colour combination')
+    ok(c.ev("SH.msgs[SH.msgs.length-1].text") == c.ev("t('shNoted')") and c.ev("(SH.msgs[SH.msgs.length-1].pals||[]).length") >= 3, 'dislike understood, palettes offered')
+    ok(c.ev(f"tasteScore({json.dumps(lk[:1])})") < -3, 'look scored down on this device')
+    # loved style is preferred next time, hated layout avoided in new designs
+    c.ev("tasteAdd(['style:quiet_serif'],12);tasteAdd(['lay:big_type','lay:diagonal'],-12)")
+    ideas = c.ev("(async()=>{const o=await dgIdeas(dgBrief('design a poster for our business conference on friday 4 december at Grand Hall'),4);return o.map(x=>x.doc._dg.lay+'|'+x.doc._dg.st);})()")
+    ok(any(x.endswith('quiet_serif') for x in ideas) and not any(x.startswith(('big_type', 'diagonal')) for x in ideas), f'taste steers new designs {ideas}')
+    # self-check: designs shown pass the designer check (no broken words, at most 2 loud colours, score >= 7) when possible
+    chk = c.ev("DG.last.map(x=>{const r=dgCheck(x.doc);return [r.cr.score,shBrokenWords(x.doc),r.look.loud];})")
+    ok(all(sc >= 7 and br == 0 and ld <= 2 for sc, br, ld in chk), f'shown ideas pass the self-check {chk}')
+    eq(c.ev("shBrokenWords({width:500,height:500,elements:[{type:'text',text:'December',fontFamily:'Inter',fontSize:90,width:120,bold:true}]})"), 1, 'broken word detected')
+    # it remembers what it just did, and "undo that" undoes it
+    say('make the background navy'); log = c.ev("SH.log"); ok(log and 'navy' in log[-1]['ask'], f'change logged {log}')
+    say('undo that'); ok(c.ev("bgBlock().fill.toLowerCase()") != '#1b2a4a' and c.ev("SH.msgs[SH.msgs.length-1].text").startswith('Undone'), 'undo by words '+str(c.ev('[bgBlock().fill,SH.msgs[SH.msgs.length-1].text,shLocal("undo that")]')))
     ok(not c.errors, c.errors); c.close()
 
 @test('shoofy_designs_from_scratch')
@@ -2596,7 +2623,7 @@ def t_designs_from_scratch(B):
     c.ev("(()=>{useTemplate(TEMPLATES.findIndex(x=>/giveaway/.test(x.key)));})()"); c.ev("localStorage.setItem('shoof.shAI','1')")
     seq = [{'reply': 'Done.', 'actions': [{'do': 'set', 'target': 'el:2', 'props': {'fill': '#0b1f44'}}, {'do': 'set', 'target': 'el:8', 'props': {'fill': '#0b1f44'}}]},
            {'reply': 'We could add a gift or a star icon. Which would you prefer?', 'actions': []}]
-    c.page.route('**/api/shoofy', lambda r: r.fulfill(status=200, content_type='application/json', body=json.dumps(seq.pop(0))))
+    c.page.route('**/api/shoofy', lambda r: r.fulfill(status=200, content_type='application/json', body='{"ok":true}' if 'feedback' in (r.request.post_data or '') else json.dumps(seq.pop(0))))
     say('make the band and the first card navy')
     ok(c.ev("shCDist(doc.elements[2].fill,doc.elements[8].fill)>=42"), 'card no longer blends into the band')
     ok(c.ev("doc.elements.filter(e=>e.type==='text'&&/Follow/.test(e.text)).every(e=>contrastOf(e.fill,doc.elements[8].fill)>=4.5)"), 'its text stays readable')
