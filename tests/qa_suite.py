@@ -2590,6 +2590,18 @@ def t_taste_memory(B):
     # it remembers what it just did, and "undo that" undoes it
     say('make the background navy'); log = c.ev("SH.log"); ok(log and 'navy' in log[-1]['ask'], f'change logged {log}')
     say('undo that'); ok(c.ev("bgBlock().fill.toLowerCase()") != '#1b2a4a' and c.ev("SH.msgs[SH.msgs.length-1].text").startswith('Undone'), 'undo by words '+str(c.ev('[bgBlock().fill,SH.msgs[SH.msgs.length-1].text,shLocal("undo that")]')))
+    # asking for an opinion sends a small picture of the page for the AI to look at (never otherwise)
+    c.ev("localStorage.setItem('shoof.shAI','1')"); sent = []
+    def route(r):
+        b = json.loads(r.request.post_data or '{}'); sent.append(b)
+        r.fulfill(status=200, content_type='application/json', body=json.dumps({'reply': 'The pink band fights with the yellow page.', 'actions': [], 'saw': True}))
+    c.page.route('**/api/shoofy', route)
+    say('what do you think of my design?')
+    snap = [b for b in sent if b.get('snapshot')]
+    ok(snap and snap[-1]['snapshot'].startswith('data:image/jpeg;base64,') and len(snap[-1]['snapshot']) < 95000, 'snapshot sent with a review request')
+    ok(c.page.locator('#shMsgs .shm.bot:last-child .shsaw').count() == 1, 'reply shows it looked')
+    n0 = len(sent); say('make the title bigger'); ok(not any(b.get('snapshot') for b in sent[n0:]), 'no snapshot for normal edits')
+    c.page.unroute('**/api/shoofy'); c.ev("localStorage.removeItem('shoof.shAI')")
     ok(not c.errors, c.errors); c.close()
 
 @test('shoofy_designs_from_scratch')

@@ -140,7 +140,7 @@ FONTS: ${FONTS.join(', ')}`;
 export async function onRequestPost({ request, env }) {
   const origin = request.headers.get('Origin');
   if (origin && origin !== new URL(request.url).origin) return json({ error: 'origin' }, 403);
-  if (Number(request.headers.get('content-length') || 0) > 16000) return json({ error: 'too_big' }, 413);
+  if (Number(request.headers.get('content-length') || 0) > 110000) return json({ error: 'too_big' }, 413);
   let body; try { body = await request.json(); } catch { return json({ error: 'bad_json' }, 400); }
   if (body && body.feedback) return feedback(body.feedback, env, request);
   const msgs = (Array.isArray(body && body.messages) ? body.messages : []).slice(-6)
@@ -184,10 +184,14 @@ export async function onRequestPost({ request, env }) {
   let r = null, why = '';
   /* quick model for short, simple asks; the strong reasoning model for detailed or multi-step ones (and as the back-up) */
   const last = msgs[msgs.length - 1].content, hard = last.split(/\s+/).length > 9 || /\b(and|then|also|but|after|while|instead|both|each|every|all)\b|,|;/i.test(last);
-  const order = hard ? MODELS : ['@cf/google/gemma-4-26b-a4b-it', '@cf/openai/gpt-oss-120b', '@cf/qwen/qwen3.8-27b'];
+  /* a small JPEG of the page (sent only when the user asks for a review / opinion): vision models look at it, never stored */
+  const snap = typeof body.snapshot === 'string' && /^data:image\/jpeg;base64,[A-Za-z0-9+/=]{100,95000}$/.test(body.snapshot) ? body.snapshot : '';
+  const VISION = ['@cf/google/gemma-4-26b-a4b-it', '@cf/meta/llama-4-scout-17b-16e-instruct'];
+  const withImage = msgsIn => { const m2 = msgsIn.slice(); const last = m2[m2.length - 1]; m2[m2.length - 1] = { role: last.role, content: [{ type: 'text', text: last.content + '\n(The attached IMAGE is the current design. Look at it like a senior designer: what pops, what clashes, what is hard to read, what feels crowded or empty. Then answer and fix it with actions.)' }, { type: 'image_url', image_url: { url: snap } }] }; return m2; };
+  const order = snap ? VISION.concat(['@cf/openai/gpt-oss-120b']) : hard ? MODELS : ['@cf/google/gemma-4-26b-a4b-it', '@cf/openai/gpt-oss-120b', '@cf/qwen/qwen3.8-27b'];
   let used = '';
   for (const model of order) {
-    try { used = model; const opts = model.includes('gpt-oss') ? { messages, max_tokens: 1200, reasoning: { effort: 'low' } } : { messages, max_tokens: 600, temperature: 0.3, chat_template_kwargs: { enable_thinking: false } }; r = parse(textOf(await env.AI.run(model, opts))); }
+    try { used = model; const msgsM = snap && VISION.includes(model) ? withImage(messages) : messages; const opts = model.includes('gpt-oss') ? { messages: msgsM, max_tokens: 1200, reasoning: { effort: 'low' } } : { messages: msgsM, max_tokens: 700, temperature: 0.3, chat_template_kwargs: { enable_thinking: false } }; r = parse(textOf(await env.AI.run(model, opts))); }
     catch (e) { why = String(e && e.message || e).slice(0, 110); }
     if (r && typeof r === 'object' && (r.reply || Array.isArray(r.actions))) break; r = null;
   }
@@ -210,7 +214,7 @@ export async function onRequestPost({ request, env }) {
     return o;
   });
   const reply = clean(r.reply, 400), rid = await remember(env, scrub(last0), reply, actions.filter(a => !['show_templates', 'download', 'open', 'logo', 'add_photo', 'check', 'critique', 'show_styles', 'suggest_palettes'].includes(a.do)), used, els);
-  return json(Object.assign({ reply, actions }, rid ? { rid } : {}, r.feedback === 'good' || r.feedback === 'bad' ? { feedback: r.feedback } : {}), 200, pass);
+  return json(Object.assign({ reply, actions, saw: !!(snap && VISION.includes(used)) }, rid ? { rid } : {}, r.feedback === 'good' || r.feedback === 'bad' ? { feedback: r.feedback } : {}), 200, pass);
 }
 /* GET ?looks=1 : the shared taste scores (cached at the edge for 10 minutes) */
 export async function onRequestGet({ request, env }) {
