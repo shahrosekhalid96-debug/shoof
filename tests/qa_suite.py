@@ -2401,14 +2401,14 @@ def t_photo_search(B):
             {'id': '22222222-2222-4222-8222-222222222222', 'title': 'Needs credit', 'license': 'by'},
             {'id': '../../evil', 'title': 'x', 'license': 'cc0'}]}))
     c.page.route('https://api.openverse.org/**', api)
-    c.page.click('.rail [data-tab=uploads]'); eq(len(seen), 0, 'nothing is sent before a search')
+    c.page.click('.rail [data-tab=photos]'); eq(len(seen), 0, 'nothing is sent before a search'); ok(c.page.locator('#drawer [data-cutgo]').count() == 1, 'background remover offered in Photos')
     c.page.fill('#psIn', 'coffee'); c.page.click('[data-psgo]'); c.page.wait_for_selector('#psGrid [data-ps]')
     ok('license=cc0,pdm' in seen[0] and 'q=coffee' in seen[0], 'asks only for public-domain photos')
     eq(c.page.locator('#psGrid [data-ps]').count(), 1, 'only CC0 results with a valid id are shown'); ok(c.ev("!document.querySelector('#psGrid b')"), 'titles are text, not HTML')
     n = c.ev("doc.elements.length"); c.page.click('#psGrid [data-ps] >> nth=0'); c.page.wait_for_function(f"doc.elements.length>{n}||doc.elements.some(e=>e.type==='image')", timeout=6000)
     ok(c.ev("doc.elements.filter(e=>e.type==='image').every(e=>/^data:image\\//.test(e.src))"), 'the photo is stored inside the design, not linked')
     c.page.unroute('https://api.openverse.org/**'); c.page.route('https://api.openverse.org/**', lambda r: r.fulfill(status=429, body='', headers={'access-control-allow-origin': '*'}))
-    c.page.click('.rail [data-tab=uploads]'); c.page.fill('#psIn', 'tea'); c.page.click('[data-psgo]'); c.page.wait_for_function("PS.msg&&!PS.busy")
+    c.page.click('.rail [data-tab=photos]'); c.page.fill('#psIn', 'tea'); c.page.click('[data-psgo]'); c.page.wait_for_function("PS.msg&&!PS.busy")
     ok('while' in c.page.inner_text('#psGrid'), 'rate limit is explained')
     ok(not [e for e in c.errors if '429' not in e], c.errors); c.close()
 
