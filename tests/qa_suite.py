@@ -2565,6 +2565,44 @@ def t_shoofy_learns(B):
     ok(c.ev("!!bgBlock()&&doc.elements[0].role==='bg'&&bgBlock().x===0&&bgBlock().y===0"), 'but never deleted or moved')
     ok(not c.errors, c.errors); c.close()
 
+@test('shoofy_design_consultant')
+def t_design_consultant(B):
+    import subprocess
+    r = subprocess.run([sys.executable, os.path.join(ROOT, 'tools', 'design_kb.py'), '--check'], capture_output=True, text=True)
+    ok(r.returncode == 0, 'knowledge book in index.html matches the research file: ' + r.stdout[-300:])
+    c = Ctx(B)
+    kb = c.ev("({v:DKB.v,s:DKB.styles.length,p:DKB.palettes.length,f:DKB.pairs.length,bad:DKB.styles.flatMap(x=>[x.head,x.body]).concat(DKB.pairs.flatMap(x=>[x.head,x.body])).filter(f=>!FONTS.includes(f))})")
+    ok(kb['s'] >= 8 and kb['p'] >= 16 and kb['f'] >= 10 and not kb['bad'], f'knowledge book loaded {kb}')
+    # every style and palette keeps every text readable on every template family we try
+    bad = c.ev("""(async()=>{const out=[];for(const key of ['giveaway','retro_market','hiring']){const i=TEMPLATES.findIndex(x=>x.key.includes(key));if(i<0)continue;
+      for(const st of DKB.styles){useTemplate(i);await dkApplyStyle(st);const pg=doc.pages[doc.page];pg.elements.forEach((e,j)=>{if(e.type!=='text'||e.hidden||!e.fill)return;const u=underColor(pg,j);if(!u)return;const big=e.fontSize>=Math.min(doc.width,doc.height)*0.05;const k=contrastOf(e.fill,u);if(k<(big?3:4.5)-0.01)out.push(key+'/'+st.id+': "'+String(e.text).slice(0,14)+'" '+k.toFixed(2));});}
+      for(const p of DKB.palettes.slice(0,8)){useTemplate(i);dkApplyPalette(p);const pg=doc.pages[doc.page];pg.elements.forEach((e,j)=>{if(e.type!=='text'||e.hidden||!e.fill)return;const u=underColor(pg,j);if(!u)return;const big=e.fontSize>=Math.min(doc.width,doc.height)*0.05;const k=contrastOf(e.fill,u);if(k<(big?3:4.5)-0.01)out.push(key+'/'+p.id+': '+k.toFixed(2));});}}return out;})()""")
+    eq(bad[:8], [], 'text stays readable with every style and palette')
+    # harmonies from one colour
+    h = c.ev("['complementary','analogous','triadic','split','mono'].map(t=>dkHarmony('#e0457b',t)).every(p=>contrastOf(p.c.text,p.c.bg)>=4.5&&/^#[0-9a-f]{6}$/.test(p.c.accent2))")
+    ok(h, 'colour harmonies are readable')
+    # chat: trends, colour ideas, apply, style, review
+    c.ev("(()=>{const i=TEMPLATES.findIndex(x=>/giveaway/.test(x.key));useTemplate(i);})()")
+    c.page.click('#buddy'); c.page.wait_for_selector('#shChat:not([hidden])')
+    def say(q):
+        n = c.ev("SH.msgs.length"); c.page.fill('#shIn', q); c.page.press('#shIn', 'Enter')
+        c.page.wait_for_function(f"SH.msgs.length>={n+2}&&!SH.busy&&!SH.tw", timeout=9000)
+    say("what's trending in design?"); ok(c.page.locator('#shMsgs .shm.bot:last-child .dkst').count() >= 4, 'trend styles shown')
+    c.page.click('#shMsgs .shm.bot:last-child .dkst >> nth=0'); c.page.wait_for_function("SH.msgs[SH.msgs.length-1].text&&SH.msgs[SH.msgs.length-1].text.includes(DKB.styles[0].name)", timeout=6000)
+    eq(c.ev("doc.elements.filter(e=>e.type==='text').sort((a,b)=>b.fontSize-a.fontSize)[0].fontFamily"), c.ev("DKB.styles[0].head"), 'style font applied to the headline')
+    c.ev("undo()")
+    say('colour ideas for my bakery'); ok(c.page.locator('#shMsgs .shm.bot:last-child .dkpal').count() >= 3, 'palettes shown')
+    ok('food' in c.ev("SH.msgs[SH.msgs.length-1].pals.map(p=>p.id).join(' ')"), 'bakery gets food palettes')
+    c.page.click('#shMsgs .shm.bot:last-child .dkpal >> nth=0'); c.page.wait_for_timeout(300)
+    eq(c.ev("bgBlock().fill"), c.ev("SH.msgs[SH.msgs.length-2].pals[0].c.bg"), 'palette applied to the page background')
+    say('what colours go with #2a9d8f?'); eq(c.ev("SH.msgs[SH.msgs.length-1].pals.filter(p=>p.id.startsWith('h_')).length"), 5, 'harmonies built from a colour')
+    say('make it retro neon'); eq(c.ev("bgBlock().fill"), c.ev("dkById(DKB.styles,'retro_neon').palette.c.bg"), 'named style applied')
+    say('what do you think of my design?'); ok(c.page.locator('#shMsgs .shm.bot:last-child .dkscore').count() == 1, 'design review shown')
+    # a messy page gets real findings with fixes
+    c.ev("""(()=>{useTemplate(TEMPLATES.findIndex(x=>/giveaway/.test(x.key)));['Lobster','Bangers','Pacifico'].forEach((f,i)=>{addText('b');Object.assign(byId(selId),{text:'Extra '+i,fontFamily:f,fill:'#ffe9f0',x:120,y:880+i*20,fontSize:30});});fullRender();commit();})()""")
+    cr = c.ev("dkCritique().out.map(x=>x.k)"); ok('fonts' in cr and 'contrast' in cr, f'review finds problems {cr}')
+    ok(not c.errors, c.errors); c.close()
+
 @test('shoofy_chat')
 def t_shoofy_chat(B):
     c = Ctx(B, home=True, init="localStorage.setItem('shoof.buddy','on')")
