@@ -3073,7 +3073,7 @@ def t_landing(B):
         pg = c.page.context.new_page(); pg.set_viewport_size({'width': w, 'height': h}); errs = []; pg.on('pageerror', lambda e: errs.append(str(e)))
         pg.goto(base + '/welcome.html'); pg.wait_for_timeout(900)
         eq(pg.title(), 'Shoof — free design for everyone', 'title'); ok(pg.locator('h1').is_visible(), 'headline')
-        eq(pg.evaluate("[...document.querySelectorAll('a.btn')].map(a=>a.getAttribute('href')).filter(x=>x!=='#examples')"), ['./editor', './editor', './editor?tool=cutout', './editor'], 'buttons open the editor')
+        eq(pg.evaluate("[...document.querySelectorAll('a.btn')].map(a=>a.getAttribute('href')).filter(x=>x!=='#examples')"), ['./editor', './editor', './editor?tpl=neon_open', './editor?tool=cutout', './editor'], 'buttons open the editor')
         ok(pg.locator('#cutout h2').is_visible() and pg.locator('.top a[href="#cutout"]').count() == 1 and 'Background remover' in pg.locator('#inside .card h3').first.inner_text(), 'background remover is a highlight')
         pg.evaluate("window.scrollTo(0,document.body.scrollHeight)"); pg.wait_for_timeout(900)
         eq(pg.evaluate("Promise.all([...document.images].map(i=>fetch(i.src).then(r=>r.ok&&/image/.test(r.headers.get('content-type')))) ).then(a=>a.filter(x=>!x).length)"), 0, 'every picture exists'); ok(pg.evaluate("[...document.images].filter(i=>i.complete&&i.naturalWidth).length>=3"), 'pictures show'); eq(pg.evaluate("document.documentElement.scrollWidth"), w, f'no sideways scroll at {w}')
@@ -3081,7 +3081,7 @@ def t_landing(B):
         pg.add_script_tag(path=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'vendor', 'axe.min.js'))
         bad = pg.evaluate("axe.run(document,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21a','wcag21aa']}}).then(r=>r.violations.map(v=>v.id+': '+v.nodes.length))")
         eq(bad, [], f'accessibility at {w}'); ok(not errs, errs); pg.close()
-    ok(os.path.getsize(os.path.join(APP_DIR, 'welcome.html')) < 30000, 'page stays light')
+    ok(os.path.getsize(os.path.join(APP_DIR, 'welcome.html')) < 60000, 'page stays light')  # raised from 30 KB on 2026-11-16: live preview, feedback box, install button
     ok(sum(os.path.getsize(os.path.join(APP_DIR, 'welcome', f)) for f in os.listdir(os.path.join(APP_DIR, 'welcome'))) < 200000, 'pictures stay light')
     pg = c.page.context.new_page(); pg.emulate_media(reduced_motion='reduce'); pg.goto(base + '/welcome.html'); pg.wait_for_timeout(300)
     ok(pg.evaluate("getComputedStyle(document.querySelector('.track')).animationName==='none'&&!document.documentElement.classList.contains('js')"), 'motion is off when the visitor asks for less motion'); pg.close()
@@ -3146,6 +3146,74 @@ def t_pwa(B):
         for f in ['sw.js', 'manifest.webmanifest', 'icons/icon-512.png', 'welcome/big_sale.webp', 'vendor/ai/u2netp.onnx', 'fonts/fonts.css']: ok(os.path.exists(os.path.join(out, f)), f)
         for f in ['tests', 'tools', 'functions', 'CLAUDE.md']: ok(not os.path.exists(os.path.join(out, f)), f'{f} not published')
     finally: shutil.rmtree(out, ignore_errors=True)
+
+
+@test('feedback_install_and_front_page')
+def t_feedback_install_front(B):
+    import subprocess
+    r = subprocess.run(['node', os.path.join(ROOT, 'tests', 'server', 'feedback.mjs')], capture_output=True, text=True, timeout=60); ok(r.returncode == 0 and 'feedback: ok' in r.stdout, 'feedback server: ' + r.stdout + r.stderr)
+    r = subprocess.run([sys.executable, os.path.join(ROOT, 'tools', 'landing_try.py'), '--check'], capture_output=True, text=True); eq(r.returncode, 0, r.stdout + r.stderr)
+    fake_inst = "const e=new Event('beforeinstallprompt');e.prompt=()=>{window.__asked=(window.__asked||0)+1};e.userChoice=Promise.resolve({outcome:'accepted'});window.dispatchEvent(e)"
+    # ---- editor: feedback box
+    c = Ctx(B); p = c.page; sent = []; mode = {'s': 200}
+    def fb(route):
+        sent.append(json.loads(route.request.post_data))
+        route.fulfill(status=mode['s'], content_type='application/json', body=json.dumps({'ok': True} if mode['s'] == 200 else {'error': 'x'}))
+    p.route('**/api/feedback', fb)
+    ok(p.locator('#fbBtn').is_visible() and p.inner_text('#fbBtn') == 'Feedback', 'Feedback button in the top bar')
+    p.click('#fbBtn'); p.wait_for_selector('#fbText'); p.wait_for_timeout(80); ok(c.ev("document.activeElement.id==='fbText'"), 'message box is focused')
+    p.click('#fbSend'); eq(p.inner_text('#fbMsg'), 'Write a few more words first.', 'empty message is not sent'); eq(sent, [], 'nothing sent yet')
+    p.click('[data-fbk="problem"]'); eq(c.ev("[...document.querySelectorAll('[data-fbk]')].map(b=>b.getAttribute('aria-checked')).join()"), 'false,true,false', 'kind chosen')
+    p.fill('#fbText', 'I could not find the font list <b>'); p.fill('#fbMail', 'me@example.com'); p.click('#fbSend')
+    p.wait_for_function("!document.querySelector('#modal').classList.contains('open')"); ok('Thank you' in p.inner_text('.toast'), 'thanks shown')
+    eq(sent[0], {'kind': 'problem', 'page': 'editor', 'text': 'I could not find the font list <b>', 'contact': 'me@example.com', 'website': '', 'lang': 'en'}, 'only the message, kind and email are sent')
+    c.errors.clear(); mode['s'] = 429; p.click('#fbBtn'); p.fill('#fbText', 'one more message today'); p.click('#fbSend'); p.wait_for_function("document.querySelector('#fbMsg').textContent.length>5")
+    ok('enough messages' in p.inner_text('#fbMsg'), 'daily limit explained')
+    mode['s'] = 503; p.click('#fbSend'); p.wait_for_function("!!document.querySelector('#fbMsg a')")
+    ok(c.ev("document.querySelector('#fbMsg a').href").startswith('https://github.com/shahrosekhalid96-debug/shoof/issues') and c.ev("!document.querySelector('#fbSend').disabled"), 'where it cannot be sent, GitHub is offered and Send works again')
+    c.ev("closeModal()"); c.errors.clear()  # the two refused sends above log a failed request in the console, as intended
+    # ---- editor: install button
+    ok(c.ev("document.querySelector('#instBtn').hidden&&document.querySelector('#moreInst').hidden"), 'no install button until the browser can install')
+    c.ev(fake_inst); ok(p.locator('#instBtn').is_visible(), 'install button appears'); p.click('#instBtn'); p.wait_for_timeout(100)
+    ok(c.ev("window.__asked===1") and c.ev("document.querySelector('#instBtn').hidden"), 'asks the browser once, then hides')
+    c.ev("instGo()"); ok('Add to Home screen' in p.inner_text('#modalBox'), 'without a browser prompt the steps are explained'); c.ev("closeModal()")
+    keys = c.ev("TEMPLATES.map(t=>t.key)"); ok(not c.errors, c.errors); c.close()
+    # ---- editor: links from the front page
+    c = Ctx(B, home=True, wait=False); p = c.page; p.goto(URL + '?tpl=big_hiring&head=EID%20SALE%20%3Cb%3E'); p.wait_for_function("typeof homeOpen==='function'&&!homeOpen()&&doc.pages[0].elements.length>5", timeout=20000); p.wait_for_timeout(600)
+    big = c.ev("doc.pages[0].elements.filter(e=>e.type==='text').sort((a,b)=>b.fontSize-a.fontSize)[0]")
+    eq(big['text'], 'EID SALE b', 'headline from the link, cleaned'); ok(c.ev("doc.pages[0].elements.some(e=>e.text==='Apply today')"), 'the chosen template opened')
+    eq(c.ev("location.search"), '', 'address cleaned so a refresh does not repeat it'); c.ev("undo()"); ok(c.ev("doc.pages[0].elements.every(e=>e.text!=='EID SALE b')"), 'one undo step'); ok(not c.errors, c.errors); c.close()
+    c = Ctx(B, home=True, wait=False); p = c.page; p.goto(URL + '?tpl=..%2Fevil&head=x'); p.wait_for_function("typeof homeOpen==='function'"); p.wait_for_timeout(500); ok(c.ev("homeOpen()") and not c.errors, 'unknown template key is ignored'); c.close()
+    c = Ctx(B, home=True, wait=False); p = c.page; p.goto(URL + '?describe=Poster%20for%20our%20farmers%20market%20this%20Saturday'); p.wait_for_function("typeof homeOpen==='function'&&!homeOpen()&&!descBusy", timeout=25000)
+    eq(c.ev("location.search"), '', 'describe link cleaned'); c.close()
+    # ---- phone editor: Feedback in the menu
+    c = Ctx(B, w=390, h=800); p = c.page; p.click('#moreBtn'); ok(p.locator('[data-more="feedback"]').is_visible(), 'Feedback in the phone menu'); p.click('[data-more="feedback"]'); ok(p.locator('#fbText').is_visible(), 'opens the box')
+    ok(c.ev("document.querySelector('#modalBox').getBoundingClientRect().right<=innerWidth"), 'box fits the phone'); ok(not c.errors, c.errors); c.close()
+    # ---- front page
+    c = Ctx(B); base = c.page.url.rsplit('/', 1)[0]
+    for w, h in [(1440, 900), (390, 800)]:
+        pg = c.page.context.new_page(); pg.set_viewport_size({'width': w, 'height': h}); errs = []; pg.on('pageerror', lambda e: errs.append(str(e))); sent = []
+        pg.route('**/api/feedback', lambda route: (sent.append(json.loads(route.request.post_data)), route.fulfill(status=200, content_type='application/json', body='{"ok":true}')))
+        pg.goto(base + '/welcome.html'); pg.wait_for_timeout(700)
+        ok(pg.locator('#try').is_visible() and pg.locator('#tryLooks button').count() == 3, 'try-it section with three looks')
+        head = "[...document.querySelectorAll('#tryStage div')].filter(n=>n.textContent&&!n.querySelector('svg')).sort((a,b)=>parseFloat(b.style.fontSize)-parseFloat(a.style.fontSize))[0]"
+        eq(pg.evaluate(head + ".textContent"), 'OPEN\nLATE', 'shows the real template words first')
+        pg.fill('#tryHead', 'Grand opening this Friday'); pg.wait_for_timeout(200)
+        eq(pg.evaluate(head + ".textContent"), 'GRAND OPENING THIS FRIDAY', 'typed headline appears (capitals like the template)')
+        ok(pg.evaluate("(n=>n.scrollWidth<=n.clientWidth+2)(%s)" % head), 'headline shrunk to fit'); eq(pg.get_attribute('#tryOpen', 'href'), './editor?tpl=neon_open&head=GRAND%20OPENING%20THIS%20FRIDAY', 'button carries the headline')
+        pg.locator('#tryLooks button').nth(2).click(); pg.wait_for_timeout(200)
+        eq(pg.evaluate(head + ".textContent"), 'Grand opening this Friday', 'other look keeps the headline'); eq(pg.get_attribute('#tryOpen', 'href'), './editor?tpl=min_spa&head=Grand%20opening%20this%20Friday', 'and the link follows')
+        box = pg.evaluate("(()=>{const v=document.querySelector('#tryView').getBoundingClientRect(),s=document.querySelector('#tryStage').getBoundingClientRect();return Math.abs(v.width-s.width)<1.5&&Math.abs(v.height-s.height)<1.5})()"); ok(box, 'preview fills its frame')
+        links = pg.evaluate("[...document.querySelectorAll('.track a, .fan a, #tryOpen')].map(a=>new URL(a.href).searchParams.get('tpl'))"); ok(len(links) >= 15 and all(k in keys for k in links), f'every example opens a real template {links}')
+        pg.locator('#cutRange').fill('25'); ok(pg.evaluate("document.querySelector('.demo').classList.contains('drag')&&Math.abs(parseFloat(getComputedStyle(document.querySelector('.demo .bar')).left)/document.querySelector('.demo').clientWidth-.25)<.01"), 'before/after can be dragged')
+        ok(pg.evaluate("[...document.querySelectorAll('[data-inst]')].every(b=>b.hidden)"), 'no install button yet'); pg.evaluate(fake_inst); ok(pg.locator('.top [data-inst]').is_visible(), 'install button appears'); pg.locator('.top [data-inst]').click(); pg.wait_for_timeout(100); ok(pg.evaluate("window.__asked===1&&[...document.querySelectorAll('[data-inst]')].every(b=>b.hidden)"), 'asks once, then hides')
+        pg.locator('.fbpill').click(); ok(pg.evaluate("document.querySelector('#fbDlg').open&&document.activeElement.id==='fbText'"), 'feedback box opens'); pg.click('#fbSend'); eq(pg.inner_text('#fbMsg'), 'Write a few more words first.', 'empty is not sent')
+        pg.click('#fbKinds [data-k="question"]'); pg.fill('#fbText', 'Can I use my own logo?'); pg.click('#fbSend'); pg.wait_for_function("document.querySelector('#fbMsg').textContent.includes('Thank you')")
+        eq({k: sent[0][k] for k in ('kind', 'page', 'text', 'contact', 'website')}, {'kind': 'question', 'page': 'home', 'text': 'Can I use my own logo?', 'contact': '', 'website': ''}, 'front page message sent')
+        pg.wait_for_function("!document.querySelector('#fbDlg').open", timeout=5000)
+        eq(pg.evaluate("document.documentElement.scrollWidth"), w, f'no sideways scroll at {w}')
+        pg.fill('#tryDesc', 'Poster for a bake sale'); pg.click('#tryDescForm button'); pg.wait_for_url('**/editor?describe=Poster%20for%20a%20bake%20sale'); ok(not errs, errs); pg.close()
+    ok(not c.errors, c.errors); c.close()
 
 
 def main():

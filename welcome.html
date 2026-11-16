@@ -10,12 +10,22 @@
 <link rel="icon" href="icons/icon-192.png">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
 <style>
-/* Shoof landing page: one file, no libraries, no outside requests. Motion is CSS only and switches off for people who ask for reduced motion. */
+/* Shoof landing page: one file, no libraries, no outside requests. Motion switches off for people who ask for reduced motion. The small script at the end adds the live preview, the before/after slider, the feedback box and the install button; without it the page still reads fine. */
 @font-face{font-family:'Poppins';font-weight:700;font-display:swap;src:url(fonts/poppins-latin-700-normal.woff2) format('woff2')}
 @font-face{font-family:'Inter';font-weight:400;font-display:swap;src:url(fonts/inter-latin-400-normal.woff2) format('woff2')}
 @font-face{font-family:'Inter';font-weight:700;font-display:swap;src:url(fonts/inter-latin-700-normal.woff2) format('woff2')}
+/* fonts used only by the live preview; each one downloads only when its look is shown */
+@font-face{font-family:'Righteous';font-display:swap;src:url(fonts/righteous-latin-400-normal.woff2) format('woff2')}
+@font-face{font-family:'Fredoka';font-weight:700;font-display:swap;src:url(fonts/fredoka-latin-700-normal.woff2) format('woff2')}
+@font-face{font-family:'Montserrat';font-weight:700;font-display:swap;src:url(fonts/montserrat-latin-700-normal.woff2) format('woff2')}
+@font-face{font-family:'Open Sans';font-weight:400;font-display:swap;src:url(fonts/open-sans-latin-400-normal.woff2) format('woff2')}
+@font-face{font-family:'Anton';font-display:swap;src:url(fonts/anton-latin-400-normal.woff2) format('woff2')}
+@font-face{font-family:'Space Grotesk';font-weight:700;font-display:swap;src:url(fonts/space-grotesk-latin-700-normal.woff2) format('woff2')}
+@font-face{font-family:'Cormorant Garamond';font-weight:400;font-display:swap;src:url(fonts/cormorant-garamond-latin-400-normal.woff2) format('woff2')}
+@font-face{font-family:'Cormorant Garamond';font-weight:700;font-display:swap;src:url(fonts/cormorant-garamond-latin-700-normal.woff2) format('woff2')}
 :root{--bg:#fcfcfe;--ink:#1d2330;--muted:#5b6474;--line:#e6e8ef;--accent:#6c4cf5;--accent-dark:#5438d6;--soft:#efebff;--spark:#e8590c}
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 html{scroll-behavior:smooth}
 body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.6 Inter,system-ui,-apple-system,Segoe UI,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
 h1,h2,h3{font-family:Poppins,Inter,system-ui,sans-serif;font-weight:700;line-height:1.12;margin:0;letter-spacing:-.01em}
@@ -37,6 +47,42 @@ a{color:inherit}
 .btn.primary:hover{background:var(--accent-dark);box-shadow:0 10px 26px rgba(108,76,245,.32)}
 .btn.small{padding:9px 16px;font-size:15px}
 .btn svg{width:18px;height:18px}
+button.btn,.chip{cursor:pointer}
+
+/* try it: a real template the visitor can type into */
+.try{display:grid;grid-template-columns:1fr minmax(0,440px);gap:48px;align-items:center;padding:10px 0 64px}
+.try .sub{margin-bottom:22px}
+.lab{display:block;font:700 14px Inter,sans-serif;margin:0 0 6px}
+.inp{width:100%;height:50px;border:1.5px solid #c9cdd8;border-radius:12px;padding:0 14px;font:400 17px Inter,system-ui,sans-serif;color:var(--ink);background:#fff}
+textarea.inp{height:auto;padding:12px 14px;resize:vertical;line-height:1.5}
+.inp:focus{outline:3px solid var(--accent);outline-offset:1px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 20px}
+.chip{font:700 15px Inter,sans-serif;border:1.5px solid #c9cdd8;background:#fff;color:var(--ink);border-radius:999px;padding:9px 18px}
+.chip[aria-checked="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+.or{display:flex;align-items:center;gap:12px;color:var(--muted);font-size:14px;margin:24px 0 14px}
+.or::before,.or::after{content:"";flex:1;height:1px;background:var(--line)}
+.row{display:flex;gap:10px}.row .inp{flex:1;min-width:0}
+.tryview{position:relative;aspect-ratio:1;border-radius:20px;overflow:hidden;background:#e9e9f0;box-shadow:0 24px 54px rgba(29,35,48,.18),0 2px 6px rgba(29,35,48,.08)}
+#tryStage{position:absolute;left:0;top:0;width:1080px;height:1080px;transform-origin:0 0;overflow:hidden}
+#tryStage div{position:absolute}
+/* phones: heading, then the preview, then the box to type in, so the design stays in view while typing */
+@media(max-width:860px){.try{grid-template-columns:1fr;gap:0}.try>div:first-child{display:contents}.tryview{order:1;width:min(300px,100%);margin:0 auto 22px}.try>div>.lab,.try>div>.inp,.try>div>.chips,.try>div>.btn,.try>div>.or,.try>div>form{order:2}.try>div>.btn{justify-self:start}}
+@media(max-width:480px){.row{flex-direction:column}.row .inp{flex:none}}
+
+/* feedback and install */
+.fbpill{position:fixed;right:16px;bottom:16px;z-index:30;border-radius:999px;background:var(--ink);border-color:var(--ink);color:#fff;box-shadow:0 10px 26px rgba(29,35,48,.25)}
+dialog{border:0;border-radius:18px;padding:26px;width:min(480px,92vw);color:var(--ink);box-shadow:0 30px 80px rgba(0,0,0,.3)}
+dialog::backdrop{background:rgba(20,22,30,.55)}
+dialog h2{font-size:24px;margin-bottom:8px}
+dialog p{margin:0 0 14px;color:var(--muted);font-size:15.5px}
+dialog .chips{margin:0 0 16px}
+dialog .lab{margin-top:12px}
+dialog .small{font-size:13.5px;margin:10px 0 0}
+dialog .msg{font-weight:700;color:var(--ink);min-height:1.3em;margin:10px 0 0}
+dialog .msg a{color:var(--accent-dark)}
+.foot{display:flex;gap:10px;justify-content:flex-end;margin-top:14px}
+.linkbtn{font:inherit;color:var(--muted);background:none;border:0;padding:0;text-decoration:underline;cursor:pointer}
+.linkbtn:hover{color:var(--ink)}
 
 /* hero */
 .hero{display:grid;grid-template-columns:1.05fr .95fr;gap:40px;align-items:center;padding:34px 0 64px}
@@ -67,6 +113,10 @@ h1 em::after{content:"";position:absolute;inset-inline:0;bottom:.04em;height:.14
 .strip{overflow:hidden;padding:8px 0 26px;-webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
 .track{display:flex;gap:18px;width:max-content;animation:slide 46s linear infinite}
 .strip:hover .track{animation-play-state:paused}
+/* each example opens its template */
+.track a{display:block;flex:none;border-radius:14px;transition:transform .18s ease}
+.track a:hover{transform:translateY(-6px)}
+.fan a{display:block}
 .track img{height:210px;width:auto;border-radius:14px;box-shadow:0 8px 22px rgba(29,35,48,.13);display:block;background:#eee}
 @keyframes slide{to{transform:translateX(calc(-50% - 9px))}}
 
@@ -97,7 +147,7 @@ ol.steps{padding:0;margin:0}
 .band h2{margin-bottom:10px}
 .band p{color:#c9cede;margin:0 auto 26px;max-width:34em}
 .band .btn{border-color:transparent}
-footer{padding:34px 0 46px;color:var(--muted);font-size:14.5px;display:flex;flex-wrap:wrap;gap:8px 22px;align-items:center}
+footer{padding:34px 0 84px;color:var(--muted);font-size:14.5px;display:flex;flex-wrap:wrap;gap:8px 22px;align-items:center}
 footer a{color:var(--muted)}
 footer a:hover{color:var(--ink)}
 footer .sp{flex:1}
@@ -119,6 +169,11 @@ footer .sp{flex:1}
 .demo .lbl.l{left:14px}.demo .lbl.r{right:14px}
 @keyframes wipe{0%,100%{clip-path:inset(0 0 0 78%)}50%{clip-path:inset(0 0 0 22%)}}
 @keyframes bar{0%,100%{left:78%}50%{left:22%}}
+/* the visitor can drag it: an invisible slider sits on top, and the first move stops the automatic wipe */
+.demo input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:ew-resize;z-index:2;touch-action:pan-y}
+.demo:focus-within{outline:3px solid var(--accent);outline-offset:3px}
+.demo.drag .orig{animation:none;clip-path:inset(0 0 0 var(--p))}
+.demo.drag .bar{animation:none;left:var(--p)}
 @media(max-width:860px){.spot{grid-template-columns:1fr;gap:28px}}
 
 /* reveal on scroll (added by the small script; without script everything is simply visible) */
@@ -156,6 +211,7 @@ footer .sp{flex:1}
   <a class="link" href="#cutout">Background remover</a>
   <a class="link" href="#inside">What's inside</a>
   <a class="link" href="https://github.com/shahrosekhalid96-debug/shoof" rel="noopener">Source code</a>
+  <button class="btn small" type="button" data-inst hidden>Install app</button>
   <a class="btn primary small" href="./editor">Open Shoof</a>
  </header>
 
@@ -172,30 +228,48 @@ footer .sp{flex:1}
    <p class="note rise">Nothing to install. Your designs stay on your device.</p>
   </div>
   <div class="fan" aria-hidden="true">
-   <figure class="a"><img src="welcome/retro_coffee.webp" width="440" height="440" alt=""></figure>
-   <figure class="b"><img src="welcome/mag_style.webp" width="360" height="640" alt=""></figure>
-   <figure class="c"><img src="welcome/big_sale.webp" width="440" height="440" alt=""></figure>
+   <figure class="a"><a href="./editor?tpl=retro_coffee" tabindex="-1"><img src="welcome/retro_coffee.webp" width="440" height="440" alt=""></a></figure>
+   <figure class="b"><a href="./editor?tpl=mag_style" tabindex="-1"><img src="welcome/mag_style.webp" width="360" height="640" alt=""></a></figure>
+   <figure class="c"><a href="./editor?tpl=big_sale" tabindex="-1"><img src="welcome/big_sale.webp" width="440" height="440" alt=""></a></figure>
   </div>
  </div>
+
+ <section class="try" id="try" aria-labelledby="tryH" hidden>
+  <div>
+   <p class="kicker">Try it now</p>
+   <h2 id="tryH">Type a headline. Watch it become a design.</h2>
+   <p class="sub">This is a real Shoof template. Change the words, pick a look, then open it to edit everything else.</p>
+   <label class="lab" for="tryHead">Your headline</label>
+   <input class="inp" id="tryHead" maxlength="40" autocomplete="off" dir="auto" placeholder="e.g. Grand opening">
+   <div class="chips" id="tryLooks" role="radiogroup" aria-label="Look"></div>
+   <a class="btn primary" id="tryOpen" href="./editor?tpl=neon_open">Open this in the editor <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+   <p class="or">or</p>
+   <form id="tryDescForm">
+    <label class="lab" for="tryDesc">Describe what you need and the free AI writes it</label>
+    <div class="row"><input class="inp" id="tryDesc" maxlength="300" autocomplete="off" dir="auto" placeholder="e.g. Instagram post for my bakery: 20% off cakes this Friday"><button class="btn" type="submit">Make it</button></div>
+   </form>
+  </div>
+  <div class="tryview" id="tryView" role="img" aria-label="Live preview of your design"><div id="tryStage" aria-hidden="true"></div></div>
+ </section>
  </main>
 </div>
 
-<div class="strip" id="examples" aria-label="Example designs made with Shoof templates">
+<div class="strip" id="examples" aria-label="Example designs made with Shoof templates. Choose one to open it.">
  <div class="track">
-  <img src="welcome/neon_open.webp" width="440" height="440" alt="Neon sign post: Open late" loading="lazy">
-  <img src="welcome/min_wedding.webp" width="360" height="640" alt="Wedding invitation with an arch photo" loading="lazy">
-  <img src="welcome/show_app.webp" width="440" height="440" alt="App launch post with three phones" loading="lazy">
-  <img src="welcome/retro_market.webp" width="440" height="440" alt="Retro farmers market badge" loading="lazy">
-  <img src="welcome/hand_bake.webp" width="440" height="440" alt="Handwritten bake sale post" loading="lazy">
-  <img src="welcome/big_hiring.webp" width="440" height="440" alt="Big type hiring post" loading="lazy">
-  <img src="welcome/app_launch.webp" width="440" height="440" alt="App launch post with a phone mockup" loading="lazy">
-  <img src="welcome/neon_open.webp" width="440" height="440" alt="" aria-hidden="true" loading="lazy">
-  <img src="welcome/min_wedding.webp" width="360" height="640" alt="" aria-hidden="true" loading="lazy">
-  <img src="welcome/show_app.webp" width="440" height="440" alt="" aria-hidden="true" loading="lazy">
-  <img src="welcome/retro_market.webp" width="440" height="440" alt="" aria-hidden="true" loading="lazy">
-  <img src="welcome/hand_bake.webp" width="440" height="440" alt="" aria-hidden="true" loading="lazy">
-  <img src="welcome/big_hiring.webp" width="440" height="440" alt="" aria-hidden="true" loading="lazy">
-  <img src="welcome/app_launch.webp" width="440" height="440" alt="" aria-hidden="true" loading="lazy">
+  <a href="./editor?tpl=neon_open" title="Use this template"><img src="welcome/neon_open.webp" width="440" height="440" alt="Neon sign post: Open late" loading="lazy"></a>
+  <a href="./editor?tpl=min_wedding" title="Use this template"><img src="welcome/min_wedding.webp" width="360" height="640" alt="Wedding invitation with an arch photo" loading="lazy"></a>
+  <a href="./editor?tpl=show_app" title="Use this template"><img src="welcome/show_app.webp" width="440" height="440" alt="App launch post with three phones" loading="lazy"></a>
+  <a href="./editor?tpl=retro_market" title="Use this template"><img src="welcome/retro_market.webp" width="440" height="440" alt="Retro farmers market badge" loading="lazy"></a>
+  <a href="./editor?tpl=hand_bake" title="Use this template"><img src="welcome/hand_bake.webp" width="440" height="440" alt="Handwritten bake sale post" loading="lazy"></a>
+  <a href="./editor?tpl=big_hiring" title="Use this template"><img src="welcome/big_hiring.webp" width="440" height="440" alt="Big type hiring post" loading="lazy"></a>
+  <a href="./editor?tpl=app_launch" title="Use this template"><img src="welcome/app_launch.webp" width="440" height="440" alt="App launch post with a phone mockup" loading="lazy"></a>
+  <a href="./editor?tpl=neon_open" tabindex="-1" aria-hidden="true"><img src="welcome/neon_open.webp" width="440" height="440" alt="" loading="lazy"></a>
+  <a href="./editor?tpl=min_wedding" tabindex="-1" aria-hidden="true"><img src="welcome/min_wedding.webp" width="360" height="640" alt="" loading="lazy"></a>
+  <a href="./editor?tpl=show_app" tabindex="-1" aria-hidden="true"><img src="welcome/show_app.webp" width="440" height="440" alt="" loading="lazy"></a>
+  <a href="./editor?tpl=retro_market" tabindex="-1" aria-hidden="true"><img src="welcome/retro_market.webp" width="440" height="440" alt="" loading="lazy"></a>
+  <a href="./editor?tpl=hand_bake" tabindex="-1" aria-hidden="true"><img src="welcome/hand_bake.webp" width="440" height="440" alt="" loading="lazy"></a>
+  <a href="./editor?tpl=big_hiring" tabindex="-1" aria-hidden="true"><img src="welcome/big_hiring.webp" width="440" height="440" alt="" loading="lazy"></a>
+  <a href="./editor?tpl=app_launch" tabindex="-1" aria-hidden="true"><img src="welcome/app_launch.webp" width="440" height="440" alt="" loading="lazy"></a>
  </div>
 </div>
 
@@ -209,11 +283,14 @@ footer .sp{flex:1}
    <ul><li>Runs on your own device, the photo is never uploaded</li><li>No sign-up, no watermark, no daily limit</li><li>Keep editing it like any other picture</li></ul>
    <a class="btn primary" href="./editor?tool=cutout">Remove a background <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
   </div>
-  <div class="demo reveal" role="img" aria-label="A photo of a potted plant shown before and after its background is removed">
+  <div class="demo reveal">
+   <div role="img" aria-label="A photo of a potted plant shown before and after its background is removed">
    <div class="lay cut"><svg viewBox="0 0 360 288" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><g transform="translate(0,-122)"><g><path d="M170 300c-6-40-38-70-78-74 10 38 40 66 78 74z" fill="#2f9e5b"/><path d="M178 296c10-46 46-80 92-84-8 44-46 78-92 84z" fill="#3cb46d"/><path d="M174 302c-20-52-10-112 26-150 18 52 8 110-26 150z" fill="#27894e"/><path d="M174 300c-2-30 4-62 22-90" stroke="#1f6e3f" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M118 296h124l-14 96a14 14 0 0 1-14 12h-68a14 14 0 0 1-14-12z" fill="#e8590c"/><rect x="110" y="288" width="140" height="22" rx="8" fill="#c94d0a"/><path d="M150 330h60" stroke="#ffb07a" stroke-width="6" stroke-linecap="round"/></g></g></svg></div>
    <div class="lay orig"><svg viewBox="0 0 360 288" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#bfe3ff"/><stop offset="1" stop-color="#fdf1dc"/></linearGradient></defs><rect width="360" height="288" fill="url(#sky)"/><circle cx="292" cy="62" r="30" fill="#ffd27a"/><path d="M0 196q60-40 120-10t130-6 110 14v94H0z" fill="#9fd3a8"/><path d="M0 230q80-26 170 0t190-6v64H0z" fill="#d9b991"/><rect x="24" y="112" width="18" height="96" fill="#8a6748"/><circle cx="33" cy="104" r="34" fill="#5fb072"/><g transform="translate(0,-122)"><g><path d="M170 300c-6-40-38-70-78-74 10 38 40 66 78 74z" fill="#2f9e5b"/><path d="M178 296c10-46 46-80 92-84-8 44-46 78-92 84z" fill="#3cb46d"/><path d="M174 302c-20-52-10-112 26-150 18 52 8 110-26 150z" fill="#27894e"/><path d="M174 300c-2-30 4-62 22-90" stroke="#1f6e3f" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M118 296h124l-14 96a14 14 0 0 1-14 12h-68a14 14 0 0 1-14-12z" fill="#e8590c"/><rect x="110" y="288" width="140" height="22" rx="8" fill="#c94d0a"/><path d="M150 330h60" stroke="#ffb07a" stroke-width="6" stroke-linecap="round"/></g></g></svg></div>
+   </div>
    <div class="bar" aria-hidden="true"></div>
    <span class="lbl l" aria-hidden="true">After</span><span class="lbl r" aria-hidden="true">Before</span>
+   <input type="range" id="cutRange" min="4" max="96" value="50" aria-label="Drag to compare before and after">
   </div>
  </section>
 
@@ -247,6 +324,7 @@ footer .sp{flex:1}
    <h2>Ready when you are.</h2>
    <p>It opens in a second and costs nothing. Arabic and English are both supported.</p>
    <a class="btn" href="./editor">Open Shoof <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+   <button class="btn" type="button" data-inst hidden>Install app</button>
   </div>
  </section>
 
@@ -254,15 +332,82 @@ footer .sp{flex:1}
   <span>Shoof is free software under the AGPL-3.0 licence.</span>
   <span class="sp"></span>
   <a href="https://github.com/shahrosekhalid96-debug/shoof" rel="noopener">Source code on GitHub</a>
+  <button class="linkbtn" type="button" data-fb hidden>Send feedback</button>
   <a href="./editor">Open the editor</a>
  </footer>
 </div>
+
+<button class="btn small fbpill" type="button" data-fb hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>Feedback</button>
+
+<dialog id="fbDlg" aria-labelledby="fbH">
+ <form id="fbForm">
+  <h2 id="fbH">Help us make Shoof better</h2>
+  <p>Tell us what went wrong or what you wish Shoof could do. We read every message.</p>
+  <div class="chips" id="fbKinds" role="radiogroup" aria-label="What is it about?">
+   <button type="button" class="chip" role="radio" aria-checked="true" data-k="idea">An idea or a wish</button>
+   <button type="button" class="chip" role="radio" aria-checked="false" data-k="problem">Something is not working</button>
+   <button type="button" class="chip" role="radio" aria-checked="false" data-k="question">A question</button>
+  </div>
+  <label class="lab" for="fbText">Your message</label>
+  <textarea class="inp" id="fbText" rows="5" maxlength="1500" dir="auto" placeholder="e.g. I wish there were more wedding templates"></textarea>
+  <label class="lab" for="fbMail">Email (only if you want an answer)</label>
+  <input class="inp" id="fbMail" type="email" maxlength="120" autocomplete="email">
+  <input id="fbTrap" name="website" tabindex="-1" autocomplete="off" hidden>
+  <p class="small">Only your message is saved, plus the email if you add one. Please leave out private details.</p>
+  <p class="msg" id="fbMsg" role="status"></p>
+  <div class="foot"><button class="btn small" type="button" data-x>Cancel</button><button class="btn primary small" type="submit" id="fbSend">Send</button></div>
+ </form>
+</dialog>
+
+<dialog id="instDlg" aria-labelledby="instH">
+ <h2 id="instH">Install Shoof as an app</h2>
+ <p>Shoof then opens in its own window and works offline.</p>
+ <p>On iPhone or iPad: tap the Share button, then "Add to Home Screen".</p>
+ <div class="foot"><button class="btn primary small" type="button" data-x>Close</button></div>
+</dialog>
 <script>
 try{if('serviceWorker'in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(function(){});}catch(e){}
 /* fade sections in as they scroll into view; skipped entirely for reduced motion or old browsers */
 (function(){if(!('IntersectionObserver' in window)||matchMedia('(prefers-reduced-motion: reduce)').matches)return;document.documentElement.classList.add('js');
 var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{rootMargin:'0px 0px -8% 0px',threshold:0.08});
 document.querySelectorAll('.reveal').forEach(function(n){io.observe(n);});})();
+function $(id){return document.getElementById(id);}
+/* Try it: redraws a real template (copied from the editor by tools/landing_try.py) with plain HTML, puts the typed headline into its biggest text and shrinks it until it fits, the way the editor does. The button then opens that template with the same headline. */
+(function(){var T=/*@try*/[{"k":"neon_open","n":"Neon","els":[{"type":"rect","width":1080,"height":1080,"fill":"#0b0714","fillGradient":{"type":"radial","stops":[{"offset":0,"color":"#2b1248"},{"offset":1,"color":"#07040d"}]}},{"type":"rect","x":80,"y":80,"width":920,"height":920,"stroke":"#ff3d9a","strokeWidth":7,"radius":44,"shadowColor":"#ff3d9a","shadowBlur":36,"shadowOpacity":1},{"type":"rect","x":106,"y":106,"width":868,"height":868,"stroke":"#35e0ff","strokeWidth":3,"radius":28,"opacity":0.9,"shadowColor":"#35e0ff","shadowBlur":22,"shadowOpacity":1},{"type":"icon","x":480,"y":138,"width":120,"height":120,"stroke":"#35e0ff","strokeWidth":1.6,"shadowColor":"#35e0ff","shadowBlur":24,"shadowOpacity":1,"d":"M6 8l1.75 12.28a2 2 0 0 0 2 1.72h4.54a2 2 0 0 0 2-1.72L18 8M5 8h14M7 15a6.47 6.47 0 0 1 5 0 6.47 6.47 0 0 0 5 0M12 8l1-6h2"},{"type":"text","x":120,"y":288,"width":840,"fill":"#35e0ff","text":"COFFEE · DESSERTS · MUSIC","fontFamily":"Montserrat","fontSize":28,"bold":true,"align":"center","lineHeight":1.15,"letterSpacing":8},{"type":"text","x":120,"y":352,"width":840,"fill":"#ffffff","text":"OPEN\nLATE","fontFamily":"Righteous","fontSize":190,"align":"center","lineHeight":1.0,"shadowColor":"#ff3d9a","shadowBlur":46,"shadowOpacity":1},{"type":"text","x":120,"y":766,"width":840,"fill":"#35e0ff","text":"Every night until 2 am","fontFamily":"Fredoka","fontSize":48,"bold":true,"align":"center","lineHeight":1.15,"shadowColor":"#35e0ff","shadowBlur":22,"shadowOpacity":1},{"type":"text","x":120,"y":850,"width":840,"fill":"#d9cfee","text":"King Road, next to the park","fontFamily":"Open Sans","fontSize":28,"align":"center","lineHeight":1.15}]},{"k":"big_hiring","n":"Bold","els":[{"type":"rect","width":1080,"height":1080,"fill":"#e9e4ff"},{"type":"rect","x":-389,"y":606,"width":1836,"height":300,"fill":"#a493ff","rotation":-12},{"type":"rect","width":1080,"height":96,"fill":"#1d1640"},{"type":"text","y":24,"width":1080,"fill":"#e9e4ff","text":"JOIN THE TEAM · JOIN THE TEAM · JOIN THE TEAM","fontFamily":"Anton","fontSize":38,"align":"center","lineHeight":1.15,"letterSpacing":8},{"type":"rect","y":984,"width":1080,"height":96,"fill":"#1d1640"},{"type":"text","y":1008,"width":1080,"fill":"#e9e4ff","text":"JOIN THE TEAM · JOIN THE TEAM · JOIN THE TEAM","fontFamily":"Anton","fontSize":38,"align":"center","lineHeight":1.15,"letterSpacing":8},{"type":"text","x":40,"y":266,"width":1000,"fill":"#1d1640","text":"WE ARE\nHIRING","fontFamily":"Anton","fontSize":228,"align":"center","lineHeight":1.0},{"type":"text","x":100,"y":744,"width":880,"fill":"#1d1640","text":"Designers, baristas and store staff","fontFamily":"Space Grotesk","fontSize":36,"bold":true,"align":"center","lineHeight":1.15},{"type":"ellipse","x":806,"y":118,"width":230,"height":230,"fill":"#1d1640","shadowColor":"#000000","shadowBlur":18,"shadowY":8,"shadowOpacity":0.25},{"type":"ellipse","x":818,"y":130,"width":206,"height":206,"stroke":"#e9e4ff","strokeWidth":3},{"type":"text","x":826,"y":179,"width":190,"fill":"#e9e4ff","text":"3 NEW\nROLES","fontFamily":"Anton","fontSize":50,"align":"center","lineHeight":1.08},{"type":"rect","x":402,"y":893,"width":275,"height":69,"fill":"#1d1640","radius":34},{"type":"text","x":402,"y":910,"width":275,"fill":"#e9e4ff","text":"Apply today","fontFamily":"Inter","fontSize":30,"bold":true,"align":"center","lineHeight":1.2}]},{"k":"min_spa","n":"Elegant","els":[{"type":"rect","width":1080,"height":1080,"fill":"#eef1ec"},{"type":"rect","x":40,"y":40,"width":1000,"height":1000,"stroke":"#7d9a84","strokeWidth":2},{"type":"ellipse","x":316,"y":420,"width":120,"height":120,"fill":"#7d9a84","opacity":0.35},{"type":"placeholder","x":350,"y":100,"width":380,"height":470,"fill":"#cfd9d0","mask":"arch"},{"type":"text","x":90,"y":618,"width":900,"fill":"#2f3b33","text":"NOW OPEN","fontFamily":"Montserrat","fontSize":22,"bold":true,"align":"center","lineHeight":1.15,"letterSpacing":7},{"type":"text","x":90,"y":676,"width":900,"fill":"#2f3b33","text":"Calm Studio","fontFamily":"Cormorant Garamond","fontSize":104,"bold":true,"align":"center","lineHeight":1.05},{"type":"rect","x":490,"y":815,"width":100,"height":2,"fill":"#7d9a84"},{"type":"text","x":90,"y":845,"width":900,"fill":"#2f3b33","text":"MASSAGE · FACIALS · STEAM","fontFamily":"Montserrat","fontSize":23,"bold":true,"align":"center","lineHeight":1.15,"letterSpacing":4},{"type":"text","x":90,"y":891,"width":900,"fill":"#2f3b33","text":"Book your first visit, 20% off","fontFamily":"Cormorant Garamond","fontSize":36,"align":"center","lineHeight":1.15}]}]/*@try*/,sec=$('try');if(!sec||!T.length)return;sec.hidden=false;
+var stage=$('tryStage'),view=$('tryView'),inp=$('tryHead'),open=$('tryOpen'),looks=$('tryLooks'),cur=0,big=null;
+function col(hex,a){if(a==null||a>=1||!/^#[0-9a-f]{6}$/i.test(hex))return hex;var n=parseInt(hex.slice(1),16);return'rgba('+(n>>16)+','+(n>>8&255)+','+(n&255)+','+a+')';}
+function grad(g){var st=g.stops.map(function(x){return x.color+' '+x.offset*100+'%';}).join(',');return g.type==='radial'?'radial-gradient(circle,'+st+')':'linear-gradient('+((g.angle||0)+90)+'deg,'+st+')';}
+function draw(){stage.textContent='';big=null;T[cur].els.forEach(function(e){var n=document.createElement('div'),s=n.style,sh=e.shadowColor&&((e.shadowX||0)+'px '+(e.shadowY||0)+'px '+(e.shadowBlur||0)+'px '+col(e.shadowColor,e.shadowOpacity));
+ s.left=e.x+'px';s.top=e.y+'px';s.width=e.width+'px';if(e.opacity!=null)s.opacity=e.opacity;if(e.rotation){s.transformOrigin='0 0';s.transform='rotate('+e.rotation+'deg)';}
+ if(e.type==='text'){s.font=(e.bold?700:400)+' '+e.fontSize+'px/'+(e.lineHeight||1.15)+' "'+e.fontFamily+'",sans-serif';s.color=e.fill;s.textAlign=e.align||'left';s.whiteSpace='pre-wrap';if(e.letterSpacing)s.letterSpacing=e.letterSpacing+'px';if(sh)s.textShadow=sh;n.textContent=e.text;if(!big||e.fontSize>big.e.fontSize)big={e:e,n:n};}
+ else if(e.type==='icon'){s.height=e.height+'px';if(sh)s.filter='drop-shadow('+sh+')';var v=document.createElementNS('http://www.w3.org/2000/svg','svg'),p=document.createElementNS('http://www.w3.org/2000/svg','path');v.setAttribute('viewBox','0 0 24 24');v.setAttribute('width','100%');v.setAttribute('height','100%');p.setAttribute('d',e.d);p.setAttribute('fill',e.fill||'none');p.setAttribute('stroke',e.stroke||'none');p.setAttribute('stroke-width',e.strokeWidth||2);p.setAttribute('stroke-linecap','round');p.setAttribute('stroke-linejoin','round');v.appendChild(p);n.appendChild(v);}
+ else{s.height=e.height+'px';s.boxSizing='border-box';if(e.fillGradient)s.background=grad(e.fillGradient);else if(e.fill)s.background=e.fill;if(e.stroke)s.border=e.strokeWidth+'px solid '+e.stroke;s.borderRadius=e.type==='ellipse'?'50%':e.mask==='arch'?'9999px 9999px 0 0':(e.radius||0)+'px';if(sh)s.boxShadow=e.fill?sh:sh+',inset '+sh;}
+ stage.appendChild(n);});fit();}
+function fit(){if(!big)return;var e=big.e,n=big.n,v=inp.value.replace(/\s+/g,' ').trim(),up=e.text===e.text.toUpperCase();if(v&&up)v=v.toUpperCase();var fs=e.fontSize,maxH=e.text.split('\n').length*e.fontSize*(e.lineHeight||1.15)+4;
+ n.textContent=v||e.text;n.style.fontSize=fs+'px';while(fs>24&&(n.scrollHeight>maxH||n.scrollWidth>e.width+2)){fs=Math.floor(fs*.94);n.style.fontSize=fs+'px';}
+ open.href='./editor?tpl='+T[cur].k+(v?'&head='+encodeURIComponent(v):'');}
+function size(){stage.style.transform='scale('+view.clientWidth/1080+')';}
+T.forEach(function(t,i){var b=document.createElement('button');b.type='button';b.className='chip';b.setAttribute('role','radio');b.setAttribute('aria-checked',String(i===0));b.textContent=t.n;b.addEventListener('click',function(){cur=i;[].forEach.call(looks.children,function(c,j){c.setAttribute('aria-checked',String(j===i));});draw();});looks.appendChild(b);});
+inp.addEventListener('input',fit);addEventListener('resize',size);if(document.fonts&&document.fonts.addEventListener)document.fonts.addEventListener('loadingdone',fit);draw();size();
+$('tryDescForm').addEventListener('submit',function(ev){ev.preventDefault();var d=$('tryDesc').value.replace(/\s+/g,' ').trim();if(d.length<3){$('tryDesc').focus();return;}location.href='./editor?describe='+encodeURIComponent(d.slice(0,300));});})();
+/* before / after: dragging (or the arrow keys) moves the divider and stops the automatic wipe */
+(function(){var r=$('cutRange');if(!r)return;var d=r.parentNode;r.addEventListener('input',function(){d.classList.add('drag');d.style.setProperty('--p',r.value+'%');});})();
+/* dialogs: close buttons and a click on the dark area close them */
+[].forEach.call(document.querySelectorAll('dialog'),function(d){d.addEventListener('click',function(ev){if(ev.target===d||ev.target.closest('[data-x]'))d.close();});});
+/* Feedback: the message goes to api/feedback (saved in Shoof's own database). Nothing is sent until Send is pressed. Where that is not available the visitor gets the GitHub link instead. */
+(function(){var d=$('fbDlg');if(!d||!d.showModal||!window.fetch)return;var kind='idea',busy=false,tx=$('fbText'),msg=$('fbMsg'),btn=$('fbSend');
+[].forEach.call(document.querySelectorAll('[data-fb]'),function(b){b.hidden=false;b.addEventListener('click',function(){msg.textContent='';btn.disabled=false;d.showModal();tx.focus();});});
+$('fbKinds').addEventListener('click',function(ev){var k=ev.target.closest('[data-k]');if(!k)return;kind=k.getAttribute('data-k');[].forEach.call(this.children,function(c){c.setAttribute('aria-checked',String(c===k));});});
+$('fbForm').addEventListener('submit',function(ev){ev.preventDefault();if(busy)return;var t=tx.value.trim();if(t.length<5){msg.textContent='Write a few more words first.';tx.focus();return;}busy=true;btn.disabled=true;btn.textContent='Sending…';msg.textContent='';
+ fetch('api/feedback',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({kind:kind,page:'home',text:t.slice(0,1500),contact:$('fbMail').value.trim().slice(0,120),website:$('fbTrap').value,lang:(navigator.language||'').slice(0,5)})})
+ .then(function(r){return r.ok?r.json().then(function(j){return j&&j.ok?200:0;}):r.status;}).catch(function(){return 0;})
+ .then(function(st){busy=false;btn.textContent='Send';if(st===200){tx.value='';msg.textContent='Thank you. Your message is saved and we will read it.';setTimeout(function(){if(d.open)d.close();},2200);return;}btn.disabled=false;
+  if(st===429)msg.textContent='That is enough messages for today. Thank you.';else{msg.textContent='It could not be sent from here. You can write to us on GitHub instead: ';var a=document.createElement('a');a.href='https://github.com/shahrosekhalid96-debug/shoof/issues/new';a.rel='noopener';a.target='_blank';a.textContent='open GitHub';msg.appendChild(a);}});});})();
+/* Install as an app: shown when the browser says it can install, or on iPhones (which only have the Share menu route). Hidden when Shoof already runs as an app. */
+(function(){var ev=null,btns=[].slice.call(document.querySelectorAll('[data-inst]')),d=$('instDlg'),alone=matchMedia('(display-mode: standalone)').matches||navigator.standalone===true,ios=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+function show(){var on=!alone&&(!!ev||(ios&&!!(d&&d.showModal)));btns.forEach(function(b){b.hidden=!on;});}
+addEventListener('beforeinstallprompt',function(e){e.preventDefault();ev=e;show();});addEventListener('appinstalled',function(){ev=null;alone=true;show();});
+btns.forEach(function(b){b.addEventListener('click',function(){if(ev){var e=ev;ev=null;e.prompt();if(e.userChoice)e.userChoice.then(show,show);else show();}else if(d&&d.showModal)d.showModal();});});show();})();
 </script>
 </body>
 </html>

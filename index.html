@@ -147,6 +147,9 @@ details.gdet>summary::before{content:'▸ '}details.gdet[open]>summary::before{c
 .size-grid button[aria-pressed=true]{border-color:var(--accent);background:var(--accent-soft);box-shadow:0 0 0 1px var(--accent)}
 .wh input{width:84px;border:1px solid var(--line);border-radius:7px;padding:5px 6px}
 .newfoot{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:12px}.newfoot .sp{flex:1}
+#instBtn[hidden],#moreInst[hidden]{display:none!important}
+.fbk{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 4px}.fbk button{border-radius:999px;padding:7px 14px;min-height:36px}.fbk button[aria-checked="true"]{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+.fld textarea{border:1px solid var(--line);border-radius:10px;padding:10px 12px;font:inherit;resize:vertical;min-height:110px;width:100%;box-sizing:border-box}.fbtrap{display:none}.fbnote{font-size:12.5px;color:var(--muted);margin:4px 0 0}.fbmsg{font-size:13.5px;font-weight:600;margin:8px 0 0;min-height:1em}.fbmsg a{color:var(--accent)}
 #newTpl{border:0;color:var(--accent);padding:6px 0;text-decoration:underline}
 .layers .ty{width:18px;text-align:center;color:var(--muted);flex:none}
 .layers .nm{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;unicode-bidi:plaintext}
@@ -420,6 +423,8 @@ html[dir=rtl] .shchat{right:auto;left:var(--shR)}
   <button id="newBtn" class="wide-only" data-i18n="new">New</button>
   <button id="openBtn" class="wide-only" data-i18n="open">Open</button>
   <button id="saveBtn" class="wide-only" data-i18n="save">Save</button>
+  <button id="instBtn" class="wide-only" data-i18n="instBtn" hidden>Install app</button>
+  <button id="fbBtn" class="wide-only" data-i18n="fbBtn">Feedback</button>
   <button class="primary" id="exportBtn" aria-haspopup="true" aria-expanded="false" data-i18n="export">Download</button>
   <button class="icon more-only" id="moreBtn" aria-haspopup="true" aria-expanded="false" data-i18n-title="more"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></button>
   <div class="menu" id="exportMenu">
@@ -449,6 +454,8 @@ html[dir=rtl] .shchat{right:auto;left:var(--shR)}
     <button data-more="new" data-i18n="new">New</button>
     <button data-more="open" data-i18n="open">Open</button>
     <button data-more="save" data-i18n="save">Save</button>
+    <button data-more="feedback" data-i18n="fbBtn">Feedback</button>
+    <button data-more="install" id="moreInst" data-i18n="instBtn" hidden>Install app</button>
     <button data-more="about" class="about-item" data-i18n="about">About</button>
     <button data-more="lang" id="moreLang">العربية</button>
   </div>
@@ -595,7 +602,9 @@ searchEl:'Search icons, shapes, stickers…',elShapes:'Shapes',elLines:'Lines',e
   chText:'Text colour',chLabels:'Show labels',iconWeight:'Line weight',lnStyle:'Style',lnSolid:'Solid',lnDash:'Dashed',lnDot:'Dotted',lnEnds:'Ends',lnNone:'None',lnArrow:'Arrow',lnBoth:'Both',
   frameShape:'Frame shape',frNone:'No mask',
   st_sale:'Sale badge',st_new:'New star',st_offer:'Limited offer',st_hello:'Hello bubble',st_follow:'Follow us',st_price:'Price tag',st_check:'Check badge',st_open:'We are open',st_swipe:'Swipe',
-  sz_flyer:'Flyer A5',sz_logo:'Logo',sz_card:'Business card',sz_pres:'Presentation 16:9'},
+  sz_flyer:'Flyer A5',sz_logo:'Logo',sz_card:'Business card',sz_pres:'Presentation 16:9',
+  fbBtn:'Feedback',fbTitle:'Help us make Shoof better',fbLead:'Tell us what went wrong or what you wish Shoof could do. We read every message.',fbKind:'What is it about?',fbK_idea:'An idea or a wish',fbK_problem:'Something is not working',fbK_question:'A question',fbText:'Your message',fbPh:'e.g. I could not find where to change the font colour',fbMail:'Email (only if you want an answer)',fbSend:'Send',fbSending:'Sending…',fbThanks:'Thank you. Your message is saved and we will read it.',fbShort:'Write a few more words first.',fbLimit:'That is enough messages for today. Thank you.',fbFail:'It could not be sent from here. You can write to us on GitHub instead.',fbGit:'Open GitHub',fbNote:'Only your message is saved, plus the email if you add one. Please leave out private details.',
+  instBtn:'Install app',instTitle:'Install Shoof as an app',instLead:'Shoof then opens in its own window and works offline.',instIos:'On iPhone or iPad: tap the Share button, then "Add to Home Screen".',instOther:'In your browser menu, choose "Install app" or "Add to Home screen".',instDone:'Shoof is installed.'},
  ar:{docTitle:'شوف — محرر تصاميم مجاني ومفتوح المصدر',brand:'شوف',tag:'تصميم مجاني للجميع',new:'جديد',open:'فتح',save:'حفظ',export:'تنزيل',langTitle:'اللغة',sizeTitle:'حجم التصميم',undoTitle:'تراجع (Ctrl+Z)',redoTitle:'إعادة (Ctrl+Y)',propsTitle:'الخصائص',edit:'تعديل',more:'المزيد',
   expPng:'الأفضل لوسائل التواصل',expJpg:'حجم ملف أصغر',expPdf:'للطباعة',
   templates:'القوالب',text:'النص',shapes:'الأشكال',uploads:'المرفوعات',background:'الخلفية',layers:'الطبقات',about:'عن شوف',askClaude:'اسأل Claude',
@@ -2221,7 +2230,29 @@ $('#exportBtn').onclick=ev=>{ev.stopPropagation();const o=!$('#exportMenu').clas
 $('#moreBtn').onclick=ev=>{ev.stopPropagation();const o=!$('#moreMenu').classList.contains('open');closeMenus();$('#moreMenu').classList.toggle('open',o);$('#moreBtn').setAttribute('aria-expanded',String(o));};
 document.addEventListener('click',ev=>{if(!ev.target.closest('#exportMenu,#moreMenu'))closeMenus();});
 $('#exportMenu').addEventListener('click',ev=>{const b=ev.target.closest('[data-exp]');if(b)exportAs(b.dataset.exp);});
-$('#moreMenu').addEventListener('click',ev=>{const b=ev.target.closest('[data-more]');if(!b)return;const a=b.dataset.more;closeMenus();if(a==='new')$('#newBtn').click();else if(a==='open')$('#openFile').click();else if(a==='save')saveDesign();else if(a==='lang')switchLang();else if(a==='about')$('#rail .about-btn').click();else if(a==='buddy')bdSetOn(!BD.on);else if(a==='home')showHome();});
+$('#moreMenu').addEventListener('click',ev=>{const b=ev.target.closest('[data-more]');if(!b)return;const a=b.dataset.more;closeMenus();if(a==='new')$('#newBtn').click();else if(a==='open')$('#openFile').click();else if(a==='save')saveDesign();else if(a==='lang')switchLang();else if(a==='about')$('#rail .about-btn').click();else if(a==='buddy')bdSetOn(!BD.on);else if(a==='home')showHome();else if(a==='feedback')openFeedback();else if(a==='install')instGo();});
+/* Feedback box: what the visitor types is sent to api/feedback (Cloudflare Pages Function -> D1 table feedback). Only the message, its kind and an optional email are stored. Where the function is missing (local copy, GitHub backup, Claude artifact) the dialog offers GitHub instead. */
+const FB_GIT='https://github.com/shahrosekhalid96-debug/shoof/issues/new';let fbKind='idea',fbBusy=false;
+function openFeedback(){fbKind='idea';modal(`<h2>${esc(t('fbTitle'))}</h2><p>${esc(t('fbLead'))}</p><div class="fbk" role="radiogroup" aria-label="${esc(t('fbKind'))}">${['idea','problem','question'].map(k=>`<button type="button" role="radio" aria-checked="${k===fbKind}" data-fbk="${k}">${esc(t('fbK_'+k))}</button>`).join('')}</div><label class="fld"><span>${esc(t('fbText'))}</span><textarea id="fbText" maxlength="1500" rows="5" dir="auto" placeholder="${esc(t('fbPh'))}"></textarea></label><label class="fld"><span>${esc(t('fbMail'))}</span><input id="fbMail" type="email" maxlength="120" autocomplete="email" dir="ltr"></label><input id="fbTrap" class="fbtrap" name="website" tabindex="-1" autocomplete="off"><p class="fbnote">${esc(t('fbNote'))}</p><p id="fbMsg" class="fbmsg" role="status"></p><div class="newfoot"><span class="sp"></span><button data-close>${esc(t('cancel'))}</button><button class="primary" id="fbSend">${esc(t('fbSend'))}</button></div>`);setTimeout(()=>{const i=$('#fbText');if(i)i.focus();},30);}
+async function fbSend(){if(fbBusy)return;const tx=($('#fbText').value||'').trim(),msg=$('#fbMsg'),btn=$('#fbSend');if(tx.length<5){msg.textContent=t('fbShort');$('#fbText').focus();return;}fbBusy=true;btn.disabled=true;btn.textContent=t('fbSending');msg.textContent='';let st=0;
+ try{const ac=new AbortController(),tm=setTimeout(()=>ac.abort(),15000);const r=await fetch('api/feedback',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({kind:fbKind,page:'editor',text:tx.slice(0,1500),contact:($('#fbMail').value||'').trim().slice(0,120),website:$('#fbTrap').value||'',lang:LANG}),signal:ac.signal});clearTimeout(tm);st=r.status;if(r.ok)st=/json/.test(r.headers.get('content-type')||'')&&(await r.json()).ok?200:0;}catch(e){st=0;}
+ fbBusy=false;if(!$('#fbSend'))return;btn.disabled=false;btn.textContent=t('fbSend');
+ if(st===200){closeModal();toast(t('fbThanks'),5000);}else if(st===429)msg.textContent=t('fbLimit');else msg.innerHTML=`${esc(t('fbFail'))} <a href="${FB_GIT}" target="_blank" rel="noopener">${esc(t('fbGit'))}</a>`;}
+$('#fbBtn').addEventListener('click',openFeedback);
+$('#modal').addEventListener('click',ev=>{const k=ev.target.closest('[data-fbk]');if(k){fbKind=k.dataset.fbk;document.querySelectorAll('#modal [data-fbk]').forEach(b=>b.setAttribute('aria-checked',String(b===k)));return;}if(ev.target.closest('#fbSend'))fbSend();});
+/* Install as an app: the browser tells us when it can install (beforeinstallprompt); iPhones have no such prompt, so they get the two steps in words. Hidden once Shoof runs as an installed app. */
+let instEv=null;const instAlone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true,instIos=()=>/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+function instShow(){const on=!instAlone()&&(!!instEv||instIos());['#instBtn','#moreInst'].forEach(q=>{const b=$(q);if(b)b.hidden=!on;});}
+window.addEventListener('beforeinstallprompt',ev=>{ev.preventDefault();instEv=ev;instShow();});
+window.addEventListener('appinstalled',()=>{instEv=null;instShow();toast(t('instDone'),4000);});
+async function instGo(){if(instEv){const e=instEv;instEv=null;try{e.prompt();await e.userChoice;}catch(x){}instShow();return;}modal(`<h2>${esc(t('instTitle'))}</h2><p>${esc(t('instLead'))}</p><p>${esc(t(instIos()?'instIos':'instOther'))}</p><div class="newfoot"><span class="sp"></span><button class="primary" data-close>${esc(t('close'))}</button></div>`);}
+$('#instBtn').addEventListener('click',instGo);
+/* Links from the landing page: ./editor?tpl=<template key>&head=<headline> opens that template with the visitor's headline; ./editor?describe=<words> runs Describe it. The address is cleaned afterwards so a refresh does not repeat it. */
+async function openFromLink(){let q;try{q=new URLSearchParams(location.search);}catch(e){return;}const k=q.get('tpl')||'',d=clean1(q.get('describe'),300);if(!k&&!d)return;try{history.replaceState(null,'',location.pathname+location.hash);}catch(e){}
+ const i=/^[a-z0-9_]{1,40}$/.test(k)?TEMPLATES.findIndex(x=>x.key===k):-1;
+ if(i>=0){const tp=TEMPLATES[i],h=clean1(q.get('head'),80);hideHome();applyDoc(withBgBlocks(sanitizeDoc(tp.make())));if(h){const fs=[...new Set(doc.pages[0].elements.filter(e=>e.type==='text').map(e=>e.fontFamily))];try{await Promise.all(fs.map(loadFont));}catch(e){}fillDescribed({headline:h});fullRender();}commit();}
+ else if(d.length>=3){const inp=$('#homeDesc');if(inp){inp.value=d;describeGo();}}}
+
 /* Share a link: the whole design travels inside the link itself (the part after #, which browsers never send to a server). Nothing is uploaded. */
 /* Animation: the items of the current page appear one by one (top to bottom). Played on the real canvas, saved as a video (MediaRecorder) or a GIF (gifenc, loaded on first use). Nothing is stored in the design. */
 const AN_STYLES=['fade','rise','pop','slide'];let anStyle='rise',anBusy=false,gifP=null;
@@ -3284,7 +3315,7 @@ function regSW(){try{if('serviceWorker'in navigator&&location.protocol==='https:
  applyLang();
  try{fullRender();}catch(e){doc=withBgBlocks(sanitizeDoc(starterTemplate().make()));resetHistory();fullRender();bad=true;}
  syncSize();fitZoom();
- renderPages();refreshPageThumbs(true);try{curId=localStorage.getItem('shoof.cur');}catch(e){}if(!curId||!/^d[a-z0-9]{6,20}$/.test(curId))dsNew();homeWork=restored;if(restored)dsQueue();showHome();bdShowEl();bdWake();if(/[?&]tool=cutout\b/.test(location.search))openCutout();openShared();
+ renderPages();refreshPageThumbs(true);try{curId=localStorage.getItem('shoof.cur');}catch(e){}if(!curId||!/^d[a-z0-9]{6,20}$/.test(curId))dsNew();homeWork=restored;if(restored)dsQueue();showHome();bdShowEl();bdWake();if(/[?&]tool=cutout\b/.test(location.search))openCutout();openShared();openFromLink();instShow();
  if(bad)toast(t('autosaveBad'),4000);else if(restored)toast(t('restored'));
  const fams=CORE_FONTS.flatMap(f=>[`400 40px "${f}"`,`700 40px "${f}"`]);
  const fontsReady=Promise.all(fams.map(f=>document.fonts.load(f).catch(()=>{})));
