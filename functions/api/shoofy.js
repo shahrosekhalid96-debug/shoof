@@ -10,7 +10,7 @@
 /* strongest free model first (gpt-oss-120b, low reasoning effort for speed); the rest are fall-backs */
 const MODELS = ['@cf/openai/gpt-oss-120b', '@cf/google/gemma-4-26b-a4b-it', '@cf/qwen/qwen3.8-27b'];
 const PER_DAY = 40; // chat messages per visitor (IP) per day; the account's free daily allowance is the hard cap
-const DOS = ['show_fonts', 'add_pattern', 'undo', 'show_icons', 'design', 'suggest_palettes', 'show_styles', 'apply_palette', 'apply_style', 'critique', 'polish', 'show_templates', 'add_text', 'edit_text', 'add_icon', 'add_shape', 'set_background', 'recolor', 'set_font', 'set', 'move', 'arrange', 'delete', 'duplicate', 'resize', 'remove_bg', 'add_photo', 'add_page', 'check', 'logo', 'download', 'open'];
+const DOS = ['slides', 'show_fonts', 'add_pattern', 'undo', 'show_icons', 'design', 'suggest_palettes', 'show_styles', 'apply_palette', 'apply_style', 'critique', 'polish', 'show_templates', 'add_text', 'edit_text', 'add_icon', 'add_shape', 'set_background', 'recolor', 'set_font', 'set', 'move', 'arrange', 'delete', 'duplicate', 'resize', 'remove_bg', 'add_photo', 'add_page', 'check', 'logo', 'download', 'open'];
 const FONTS = ['Inter', 'Poppins', 'Montserrat', 'Raleway', 'Nunito', 'DM Sans', 'Space Grotesk', 'Fredoka', 'Playfair Display', 'Lora', 'DM Serif Display', 'Cormorant Garamond', 'Bebas Neue', 'Oswald', 'Anton', 'Archivo Black', 'Lobster', 'Abril Fatface', 'Righteous', 'Bangers', 'Pacifico', 'Dancing Script', 'Caveat', 'Great Vibes', 'Space Mono'];
 const json = (body, status = 200, cookie = '') => new Response(JSON.stringify(body), { status, headers: Object.assign({ 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', 'x-content-type-options': 'nosniff' }, cookie ? { 'set-cookie': cookie } : {}) });
 /* after one passed Turnstile check the visitor gets a signed 30-minute pass, so a conversation is not interrupted */
@@ -105,6 +105,7 @@ If the user is only chatting (a compliment, thanks, a greeting, "ok"), answer wa
 - show_templates {"keys":[up to 6 keys from TEMPLATES]} : the user wants to find, start or switch to a design.
 - design {"head":"≤6 punchy words","sub":"≤10 words","kicker":"2-3 words","details":["≤3 short facts: date, time, place, price, %"],"cta":"2-3 words","topic":"what it is for","icon":"one icon name from ICONS","styles":[style ids that fit],"mood":"words","base_color":"#hex if asked","photo":true|false,"format":"ig|story|a3|flyer|li|fb|x|yt|a4|pres"} : create 4 BRAND-NEW designs from scratch with the knowledge book (not templates). Use when the user asks to design / make / create something, wants something different or original, or dislikes the templates. Write the copy yourself from what they said (never invent prices or dates). For "more ideas", "bolder", "simpler", "other colours" after designs were shown use {"do":"design","more":true}.
 - add_pattern {"pattern":"dotsFade|dotsEdges|dotsRadial|dotsRing|dotsArrow|dotGrid|pixelCircle|waves|contours|stripes|stripesFade|none"} : set the page's background pattern/texture. A page has ONE texture: this REPLACES the existing one (so use it for "change/different pattern" too); {"pattern":"none"} removes it. Never claim you swapped a pattern without this action
+- slides {"topic":"what the deck is about, in the user's words; empty if they gave none"} : opens the Presentation maker, which writes and designs a whole multi-slide deck. Use it whenever the user wants a presentation, slides, a PPT, PowerPoint, keynote or pitch deck. Never use design or resize for that, and never say you resized or designed slides yourself.
 - undo {} : undo your last change (when the user says undo / revert / go back / not this, put it back)
 - show_fonts {"names":[font names],"query":"words"} : show font choices the user can try on the headline (use when asked for font ideas, pairings or "which font")
 - show_icons {"names":[icon names from ICONS],"query":"words"} : show icon choices as tappable buttons (use whenever you talk about or offer icons; never show templates for an icon question)
@@ -217,7 +218,7 @@ export async function onRequestPost({ request, env }) {
     if (a.colors && typeof a.colors === 'object' && !Array.isArray(a.colors)) o.colors = cleanProps(a.colors, 0);
     return o;
   });
-  const reply = clean(r.reply, 400), rid = await remember(env, scrub(last0), reply, actions.filter(a => !['show_templates', 'download', 'open', 'logo', 'add_photo', 'check', 'critique', 'show_styles', 'suggest_palettes'].includes(a.do)), used, els);
+  const reply = clean(r.reply, 400), rid = await remember(env, scrub(last0), reply, actions.filter(a => !['slides', 'show_templates', 'download', 'open', 'logo', 'add_photo', 'check', 'critique', 'show_styles', 'suggest_palettes'].includes(a.do)), used, els);
   return json(Object.assign({ reply, actions, saw: !!(snap && VISION.includes(used)) }, rid ? { rid } : {}, r.feedback === 'good' || r.feedback === 'bad' ? { feedback: r.feedback } : {}), 200, pass);
 }
 /* GET ?looks=1 : the shared taste scores (cached at the edge for 10 minutes) */

@@ -5,7 +5,8 @@ Updated: 2026-11-17 | From: Claude chat session with repo access (repo `shahrose
 Shoof is Shary's free, browser-only design editor (posts, posters, slides, logos) with the Shoofy helper chat. Live at https://shoof.pages.dev (auto-deploys on every push to `main`). Keep making it easier and better than Canva, at zero cost.
 
 ## Status
-- Done (all pushed, full suite 116/116 green locally on 2026-11-17):
+- Done (all pushed, full suite 117/117 green locally on 2026-11-17):
+  - **Shoofy hands presentations to the maker (2026-11-17):** asking Shoofy for a ppt / slides / deck now opens the Presentation maker with a topic filled in, instead of making single-page designs.
   - **Presentation maker (2026-11-17):** home tile → type a topic (free AI writes the slides) or paste own text → six looks → opens as an editable 16:9 deck. PowerPoint export as before.
   - **Logo maker upgrade (2026-11-17):** 441 icons, 18 abstract marks, symbol picker, kinds (any / with a symbol / name only / initials), 18 layouts, logo pack download (PNG + SVG for light and dark backgrounds, square icon).
   - **Website pass (2026-11-16):** Feedback box (saved to D1 table `feedback`), Install app button, interactive home page.
@@ -14,7 +15,7 @@ Shoof is Shary's free, browser-only design editor (posts, posters, slides, logos
 - Not started:
   - "Support Shoof" donation button. Shary chose donations, not a paid plan. Waiting for his Ko-fi link (he needs a Shoof Gmail, PayPal and Ko-fi first).
   - Microsoft Store listing (free for individuals, package with PWABuilder; Shary does the account steps). Google Play and Apple cost money, parked.
-  - Shoofy chat intent "make a presentation", and a home-page card for the Presentation maker.
+  - A home-page (welcome.html) card for the Presentation maker.
   - Illustrations section (needs Shary's Open Peeps / Open Doodles zips).
 
 ## Next step
@@ -29,7 +30,7 @@ Ask Shary to try "Write it for me" in the Presentation maker and the Logo maker 
 | `functions/api/slides.js` | Outline writer for the Presentation maker (free Workers AI, nothing stored) | not verified live |
 | `functions/api/feedback.js` | Feedback server (D1 `shoof-learn`, table `feedback`) | not verified live |
 | `tools/icons_add.py` | Adds Lucide icons (run `npm i lucide-static` in any folder first) | current |
-| `tests/qa_suite.py` | 116 browser tests. Subset: `QA_ONLY=a,b python3 tests/qa_suite.py`. Full run ~8 min, run it in the background: `timeout 1100 python3 tests/qa_suite.py > /tmp/full.txt` | current |
+| `tests/qa_suite.py` | 117 browser tests. Subset: `QA_ONLY=a,b python3 tests/qa_suite.py`. Full run ~8 min, run it in the background: `timeout 1100 python3 tests/qa_suite.py > /tmp/full.txt` | current |
 
 Read feedback (Cloudflare connector, database `shoof-learn`, id `41d56a00-edd0-4b4c-b60c-7e239f9af00a`):
 `SELECT id, datetime(ts/1000,'unixepoch') at, kind, page, text, contact FROM feedback WHERE done=0 ORDER BY id DESC;`

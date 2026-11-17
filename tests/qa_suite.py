@@ -3330,6 +3330,40 @@ def t_presentation_maker(B):
     c = Ctx(B, w=390, h=800, home=True); c.ev("PM.mode='topic';openSlides()"); ok(c.ev("document.querySelector('#modalBox').getBoundingClientRect().right<=innerWidth&&document.querySelector('#pmGo').getBoundingClientRect().right<=innerWidth"), 'phone: dialog fits'); c.page.click('#pmTpl'); c.page.wait_for_function("!homeOpen()&&doc.width===1920&&tplCat==='deck'"); ok(not c.errors, c.errors); c.close()  # ready presentation templates are one tap away
 
 
+@test('shoofy_presentations_go_to_the_maker')
+def t_shoofy_presentations(B):
+    # Shary 2026-11-17: asked Shoofy for "different design for ppt" and got four single-page poster ideas
+    c = Ctx(B); p = c.page
+    ask = lambda m: c.ev("m=>shDeckAsk(m)", m)
+    for m in ['I need different design for ppt', 'make a presentation about our bakery', 'pitch deck for my startup', 'slides for the team meeting', 'can you do a PowerPoint on safety rules', 'presentation']:
+        ok(ask(m), f'deck request: {m}')
+    for m in ['add a slide', 'make this slide blue', 'add 2 more slides', 'download as pptx', 'resize to slides', 'change the font on slide 3', 'make the headline bigger', 'next slide please']:
+        ok(not ask(m), f'not a new deck: {m}')
+    topic = lambda m: c.ev("m=>shDeckTopic(m)", m)
+    eq(topic('make a presentation about our bakery new menu'), 'bakery new menu', 'topic from the words')
+    c.ev("applyDoc(withBgBlocks(sanitizeDoc(TEMPLATES.find(x=>x.key==='big_hiring').make())));commit()")
+    eq(topic('I need different design for ppt'), c.ev("doc.pages[0].elements.filter(e=>e.type==='text').sort((a,b)=>b.fontSize-a.fontSize)[0].text.replace(/\\s+/g,' ')"), 'no topic given: the open design\'s headline')
+    p.click('#buddy'); p.wait_for_selector('#shChat:not([hidden])')
+    def say(q):
+        n = c.ev("SH.msgs.length"); p.fill('#shIn', q); p.press('#shIn', 'Enter'); p.wait_for_function(f"SH.msgs.length>={n+2}&&!SH.busy&&!SH.tw", timeout=9000)
+    w0 = c.ev("[doc.width,doc.height,doc.pages.length]"); u0 = c.ev("undoStack.length")
+    say('I need different design for ppt'); p.wait_for_selector('#pmTopic', timeout=5000)
+    ok('Presentation maker' in p.inner_text('#modalBox') and c.ev("document.querySelector('#pmTopic').value").startswith('WE'), 'maker opens with the headline as topic')
+    eq(c.ev("[doc.width,doc.height,doc.pages.length]"), w0, 'the open design is not resized'); eq(c.ev("undoStack.length"), u0, 'nothing changed'); ok(c.ev("!document.querySelector('#dgPick')||document.querySelector('#dgPick').hidden"), 'no single-page design picker')
+    m = c.ev("SH.msgs.filter(x=>x.who==='bot').slice(-1)[0]"); ok('own maker' in m['text'] and [b[0] for b in m['buttons']][:1][0].startswith('slides:'), 'reply says so and offers the maker again')
+    c.ev("closeModal()")
+    # the AI path: a "design" for the pres format (plus a resize) is turned into the maker as well
+    c.ev("localStorage.setItem('shoof.shAI','1')")
+    p.route('**/api/shoofy', lambda r: r.fulfill(status=200, content_type='application/json', body='{"ok":true}' if 'feedback' in (r.request.post_data or '') else json.dumps({'reply': "I've resized your project to a presentation and made four slide designs.", 'actions': [{'do': 'resize', 'size': 'pres'}, {'do': 'design', 'format': 'pres', 'head': 'Quarterly results', 'topic': 'quarterly results for the board'}]})))
+    c.ev("shOpen()"); say('our board wants to see the quarterly results, can you lay that out nicely for them')
+    p.wait_for_selector('#pmTopic', timeout=5000); eq(c.ev("document.querySelector('#pmTopic').value"), 'quarterly results for the board', 'AI topic handed over')
+    eq(c.ev("[doc.width,doc.height,doc.pages.length]"), w0, 'AI resize to slides dropped'); c.ev("closeModal()")
+    # editing a deck that is open still works as before
+    p.unroute('**/api/shoofy'); c.ev("localStorage.removeItem('shoof.shAI')"); c.ev("shOpen()")
+    n = c.ev("doc.pages.length"); say('add a slide'); ok(not c.ev("document.querySelector('#modal').classList.contains('open')"), 'add a slide does not open the maker')
+    ok(not c.errors, c.errors); c.close()
+
+
 def main():
     only = [x for x in os.environ.get('QA_ONLY', '').split(',') if x]
     t0 = time.time()
