@@ -1,0 +1,27 @@
+/* Unit test for functions/api/slides.js (no network): fake AI, fake edge cache. Run: node tests/server/slides.mjs */
+import { readFileSync, writeFileSync, mkdtempSync } from 'node:fs'; import { tmpdir } from 'node:os'; import { join } from 'node:path';
+const here = new URL('.', import.meta.url).pathname, dir = mkdtempSync(join(tmpdir(), 'shoof-sl-'));
+writeFileSync(join(dir, 'f.mjs'), readFileSync(join(here, '../../functions/api/slides.js')));
+const store = new Map(); globalThis.caches = { default: { match: async k => store.has(k.url) ? new Response(store.get(k.url)) : undefined, put: async (k, r) => store.set(k.url, await r.text()) } };
+const { onRequestPost, onRequest, tidy } = await import(join(dir, 'f.mjs'));
+let reply = '', asked = [];
+const AI = { run: async (model, o) => { asked.push({ model, o }); if (reply === 'throw') throw new Error('model retired'); return { choices: [{ message: { content: reply } }] }; } };
+const call = (b, env = { AI }, h = {}) => onRequestPost({ request: new Request('https://shoof.pages.dev/api/slides', { method: 'POST', headers: { 'content-type': 'application/json', 'CF-Connecting-IP': '9.9.9.9', ...h }, body: typeof b === 'string' ? b : JSON.stringify(b) }), env });
+const ok = (c, m) => { if (!c) { console.error('FAIL ' + m); process.exit(1); } };
+const deck = { title: 'Open a second branch.', subtitle: 'Plan for the owners', slides: [{ title: 'Where we are now:', kind: 'points', points: ['One busy shop.', '**Queues** at lunch', '<b>Regulars</b> ask for delivery'] }, { title: 'A line to remember', kind: 'quote', points: ['Grow where the customers already are'] }, { title: 'Made-up number', kind: 'stat', points: ['x'] }, { title: 'Too many', points: ['1', '2', '3', '4', '5', '6', '7'] }, 'junk', { title: '', points: [] }] };
+reply = 'Sure! ```json\n' + JSON.stringify(deck) + '\n```';
+let r = await call({ topic: 'Why our cafe should open a second branch', n: 6 }), j = await r.json();
+ok(r.status === 200 && j.title === 'Open a second branch' && j.slides.length === 4, 'outline returned: ' + JSON.stringify(j).slice(0, 200));
+ok(j.slides[0].title === 'Where we are now' && j.slides[0].points[0] === 'One busy shop' && j.slides[0].points[1] === 'Queues at lunch' && !/[<>]/.test(JSON.stringify(j)), 'titles and points cleaned');
+ok(j.slides[1].kind === 'quote' && j.slides[2].kind === 'points' && !('stat' in j.slides[2]) && j.slides[3].points.length === 5, 'kinds checked, a stat needs a value, at most 5 points');
+ok(asked[0].o.messages[0].content.includes('exactly 6 slides') && asked[0].o.messages[1].content === 'Request: Why our cafe should open a second branch', 'prompt carries the request and the count');
+ok(tidy({ slides: [{ title: 'only one', points: ['a'] }] }, 8) === null && tidy('x', 8) === null, 'too little is refused');
+ok((await call({ topic: 'hi' })).status === 400 && (await call('{nope')).status === 400 && (await call({ topic: 'x'.repeat(5000) })).status === 413, 'bad input refused');
+ok((await call({ topic: 'A real topic here' }, { AI }, { Origin: 'https://evil.example' })).status === 403, 'other sites refused');
+ok((await call({ topic: 'A real topic here' }, {})).status === 503, 'no AI binding: says off');
+asked = []; reply = 'no json here'; r = await call({ topic: 'A real topic here', n: 99 }); ok(r.status === 502 && asked.length === 3 && asked[0].o.messages[0].content.includes('exactly 12 slides'), 'tries every model, slide count clamped');
+reply = 'throw'; ok((await call({ topic: 'A real topic here' })).status === 502, 'model errors are handled');
+reply = JSON.stringify(deck); for (let i = 0; i < 5; i++) await call({ topic: 'Another topic ' + i });
+ok((await call({ topic: 'One too many today' })).status === 429, 'daily limit per visitor');
+ok(onRequest().status === 405, 'only POST');
+console.log('slides: ok');

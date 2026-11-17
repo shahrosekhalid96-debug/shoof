@@ -1601,9 +1601,9 @@ def t_home(B):
     c.page.click('#homeBtn'); c.page.click('#home [data-tile="story"]')
     eq(c.ev('[doc.width,doc.height,doc.elements.filter(e=>e.role!=="bg").length,homeOpen(),tplCat,curTab,$("#sizeSel").value]'), [1080, 1920, 0, False, 'story', 'templates', 'story'], 'story tile')
     c.page.keyboard.press('Control+z'); eq(c.ev('[doc.width,doc.height]'), [1080, 1920], 'undo tile')
-    for tile, wh in [('flyer', [1748, 2480]), ('card', [1050, 600]), ('pres', [1920, 1080])]:  # the logo tile opens the logo maker (test logo_maker)
+    for tile, wh in [('flyer', [1748, 2480]), ('card', [1050, 600])]:  # the logo tile opens the logo maker (test logo_maker), the slides tile the presentation maker (test presentation_maker)
         c.page.click('#homeBtn'); c.page.click(f'#home [data-tile="{tile}"]'); eq(c.ev('[doc.width,doc.height]'), wh, f'{tile} tile')
-    _export_check(c, 'png', 1920, 1080)
+    _export_check(c, 'png', 1050, 600)
     # blank design -> New dialog -> editor
     c.page.click('#homeBtn'); c.page.click('#homeBlank'); ok(c.page.locator('#modal').is_visible(), 'blank opens New dialog')
     c.page.click('#modal [data-newsize="li"]'); c.page.click('#doNew')
@@ -3035,7 +3035,7 @@ def t_logo_maker(B):
     c.page.wait_for_function("document.querySelectorAll('#lgGrid [data-lg] img').length===24", timeout=30000)
     ok(c.page.locator('#lgEdit').is_disabled(), 'actions wait for a pick')
     c.page.fill('#lgName', 'Sunrise Bakery'); c.page.fill('#lgTag', 'Fresh every morning'); c.page.fill('#lgKw', 'coffee')
-    c.page.wait_for_function("logo.list.length===24&&logo.list.every(d=>d.pages[0].elements.some(e=>e.type==='text'&&/sunrise/i.test(e.text)))", timeout=30000)
+    c.page.wait_for_function("logo.list.length===24&&logo.list.every(d=>d.pages[0].elements.some(e=>e.type==='text'&&/unrise/i.test(e.text)))", timeout=30000)  # one layout colours the first letter separately
     info = c.ev("logo.list.map(d=>({n:d.pages[0].elements.length,w:d.width,icons:d.pages[0].elements.filter(e=>e.type==='icon'&&e.icon!=='star').map(e=>e.icon),tag:d.pages[0].elements.some(e=>/FRESH EVERY MORNING/.test(e.text||'')),off:d.pages[0].elements.filter(e=>e.type==='text'&&!e.curve&&(e.x<0||e.x+e.width>1000||e.y<0||e.y+e.fontSize>1000)).length}))")
     ok(all(x['w'] == 1000 and x['n'] >= 2 for x in info), 'every idea is a 1000px design'); ok(all(x['tag'] for x in info), 'tagline is on every idea')
     ok(all(i == 'coffee' or 'coffee' in c.ev("n=>(n+' '+(ICON_TAGS[n]||''))", i) for x in info for i in x['icons']), 'icons follow the keyword'); eq(sum(x['off'] for x in info), 0, 'nothing off the canvas')
@@ -3214,6 +3214,120 @@ def t_feedback_install_front(B):
         eq(pg.evaluate("document.documentElement.scrollWidth"), w, f'no sideways scroll at {w}')
         pg.fill('#tryDesc', 'Poster for a bake sale'); pg.click('#tryDescForm button'); pg.wait_for_url('**/editor?describe=Poster%20for%20a%20bake%20sale'); ok(not errs, errs); pg.close()
     ok(not c.errors, c.errors); c.close()
+
+
+@test('logo_maker_kinds_symbols_pack')
+def t_logo_upgrade(B):
+    import zipfile, io
+    c = Ctx(B, home=True); p = c.page
+    ok(c.ev("ICON_NAMES.length") >= 430, 'more than 430 icons to choose a symbol from')
+    c.ev("logo.name='Olive Grove';logo.tag='Fresh kitchen';logo.kw='food';logo.style='lsAll';logo.type='lgtAll';logo.sym='';logo.seed=1")
+    p.click('#home [data-tile="logo"]'); p.wait_for_function("logo.list.length===24&&document.querySelectorAll('#lgGrid img').length===24", timeout=40000)
+    lays = c.ev("logo.list.map(d=>d._lg.lay)"); ok(len(set(lays)) >= 15, f'24 ideas use at least 15 different layouts {sorted(set(lays))}')
+    ok(len(set(c.ev("logo.list.map(d=>d.pages[0].background.color)"))) >= 8, 'many colour schemes')
+    off = c.ev("logo.list.map((d,i)=>d.pages[0].elements.filter(e=>!e.curve&&!e.rotation&&(e.x<-2||e.x+e.width>1002||e.y<-2||e.y+(e.type==='text'?e.fontSize*(e.lineHeight||1.1):e.height)>1002)).length?d._lg.lay:null).filter(x=>x!==null)"); eq(off, [], 'nothing off the canvas in any layout')
+    # every abstract mark is a valid, editable set of shapes
+    marks = c.ev("Object.keys(LOGO_MARKS).map(k=>{const d=sanitizeDoc({formatVersion:1,app:'shoof',width:1000,height:1000,pages:[{background:{color:'#ffffff',image:null},elements:LOGO_MARKS[k]('#6c4cf5','#1d2330','#ffffff')}]});return [k,d.pages[0].elements.length,d.pages[0].elements.every(e=>SHAPES.includes(e.type))]})")
+    ok(len(marks) >= 18 and all(m[1] >= 2 and m[2] for m in marks), f'abstract marks build from plain shapes {marks}')
+    # symbol row: keyword icons first, then the marks; picking one puts it on every symbol idea
+    row = c.ev("[...document.querySelectorAll('#lgSyms [data-lgsym]')].map(b=>b.dataset.lgsym)"); eq(row[0], '', 'Mix comes first'); ok(len(row) >= 25 and 'm_petals' in row, 'icons and marks offered')
+    ok(all(k.startswith('m_') or 'food' in c.ev("n=>(n+' '+(ICON_TAGS[n]||''))", k) for k in row[1:]), 'offered icons follow the keyword')
+    p.click('#modalBox [data-lgt="lgtSym"]'); p.wait_for_function("logo.type==='lgtSym'&&logo.list.length===24&&document.querySelectorAll('#lgGrid img').length===24", timeout=30000)
+    ok(set(c.ev("logo.list.map(d=>d._lg.lay)")) <= set(c.ev("LOGO_LAYS.lgtSym")) and c.ev("logo.list.every(d=>d._lg.mk.length>0)"), 'With a symbol: only symbol layouts')
+    p.click('#lgSyms [data-lgsym="m_petals"]'); p.wait_for_function("logo.sym==='m_petals'&&logo.list.length===24&&document.querySelectorAll('#lgGrid img').length===24", timeout=30000)
+    ok(c.ev("logo.list.every(d=>d.pages[0].elements.filter(e=>e.type==='ellipse'&&e.rotation!==undefined).length>=4&&!d.pages[0].elements.some(e=>e.type==='icon'&&e.icon!=='star'))"), 'the chosen mark is used everywhere')
+    eq(c.ev("document.querySelector('#lgSyms [aria-pressed=true]').dataset.lgsym"), 'm_petals', 'choice is shown')
+    p.click('#modalBox [data-lgt="lgtName"]'); p.wait_for_function("logo.type==='lgtName'&&logo.list.length===24", timeout=30000)
+    ok(set(c.ev("logo.list.map(d=>d._lg.lay)")) <= set(c.ev("LOGO_LAYS.lgtName")) and c.ev("document.querySelector('#lgSyms').hidden"), 'Name only: wordmarks, no symbol row')
+    p.click('#modalBox [data-lgt="lgtIni"]'); p.wait_for_function("logo.type==='lgtIni'&&logo.list.length===24&&document.querySelectorAll('#lgGrid img').length===24", timeout=30000)
+    ok(set(c.ev("logo.list.map(d=>d._lg.lay)")) == set(c.ev("LOGO_LAYS.lgtIni")), 'Initials: all five initials layouts')
+    ok(c.ev("logo.list.every(d=>d.pages[0].elements.some(e=>e.type==='text'&&/^(OG|O|G)$/.test(e.text)))"), 'initials OG are on every idea')
+    # logo pack
+    ok(p.locator('#lgPack').is_disabled(), 'pack waits for a pick'); before = c.ev("JSON.stringify(doc)")
+    idx = c.ev("logo.list.findIndex(d=>d._lg.lay===3)"); p.click(f'#lgGrid [data-lg="{idx}"]')
+    with p.expect_download(timeout=60000) as dl: p.click('#lgPack')
+    eq(dl.value.suggested_filename, 'olive-grove-logo-pack.zip', 'pack named after the logo'); z = zipfile.ZipFile(dl.value.path()); names = sorted(z.namelist())
+    eq(names, sorted(['logo-light-background.png', 'logo-light-background-transparent.png', 'logo-light-background.svg', 'logo-dark-background.png', 'logo-dark-background-transparent.png', 'logo-dark-background.svg', 'icon.png', 'icon-transparent.png', 'icon-dark.png', 'read-me.txt']), 'ten files')
+    from PIL import Image
+    im = {n: Image.open(io.BytesIO(z.read(n))).convert('RGBA') for n in names if n.endswith('.png')}
+    eq(im['logo-light-background.png'].size, (2000, 2000), 'logo is 2000 px'); eq(im['icon.png'].size, (1024, 1024), 'icon is 1024 px')
+    lum = lambda px: 0.2126 * px[0] + 0.7152 * px[1] + 0.0722 * px[2]
+    ok(lum(im['logo-light-background.png'].getpixel((5, 5))) > lum(im['logo-dark-background.png'].getpixel((5, 5))) + 60, 'light and dark versions differ in background')
+    for n in ('logo-light-background-transparent.png', 'logo-dark-background-transparent.png', 'icon-transparent.png'):
+        ok(im[n].getpixel((3, 3))[3] == 0 and im[n].getbbox() is not None, f'{n}: clear corners, something drawn')
+    ib = im['icon-transparent.png'].getbbox(); ok(ib[2] - ib[0] > 500 and ib[3] - ib[1] > 500, f'icon fills its square {ib}')
+    for n in ('logo-light-background.svg', 'logo-dark-background.svg'):
+        sv = z.read(n).decode(); ok(sv.startswith('<?xml') and '<text' in sv and 'OG' in sv and '<rect width="1000" height="1000"' not in sv, f'{n}: vector text, no background')
+    ok('light pages' in z.read('read-me.txt').decode(), 'read-me explains the files'); eq(c.ev("JSON.stringify(doc)"), before, 'the open design is untouched'); ok('Logo pack saved' in p.inner_text('.toast'), 'pack toast')
+    # dark version keeps text readable; icon-only exists for name-only logos too
+    bad = c.ev("(()=>{const out=[];for(const ty of ['lgtAll','lgtName']){logo.type=ty;const r=lgRand(5),pool=[...lgIcons(),...Object.keys(LOGO_MARKS)];for(let i=0;i<24;i++){const d=lgBuild(i,r,pool),k=lgDark(d),ic=lgIconDoc(d);if(!ic.pages[0].elements.length)out.push(['noicon',d._lg.lay]);if(k.pages[0].background.color.toLowerCase()!==d._lg.ink.toLowerCase())out.push(['bg',d._lg.lay]);k.pages[0].elements.forEach((e,j)=>{if(e.type==='text'&&!d._lg.on.includes(j)&&contrastOf(e.fill,k.pages[0].background.color)<2)out.push(['contrast',d._lg.lay,e.text,e.fill]);});}}logo.type='lgtIni';return out})()")
+    eq(bad, [], 'dark versions readable, icon for every idea')
+    # Arabic names still build in every kind
+    eq(c.ev("(()=>{const keep=logo.name;logo.name='مخبز الشروق';let n=0;for(const ty of ['lgtAll','lgtSym','lgtName','lgtIni']){logo.type=ty;const r=lgRand(3);for(let i=0;i<24;i++){const d=lgBuild(i,r,['star','m_duo']);if(d.pages[0].elements.some(e=>e.type==='text'&&(e.curve||e.letterSpacing)&&hasArabic(e.text)))n++;}}logo.name=keep;logo.type='lgtAll';return n})()"), 0, 'Arabic names: no curve or letter spacing')
+    ok(not c.errors, c.errors); c.close()
+    c = Ctx(B, w=390, h=800, home=True); c.page.click('#home [data-tile="logo"]'); c.page.wait_for_function("document.querySelectorAll('#lgGrid img').length===24", timeout=40000)
+    ok(c.ev("document.querySelector('#modalBox').getBoundingClientRect().right<=innerWidth&&document.querySelector('#lgSyms').scrollWidth>document.querySelector('#lgSyms').clientWidth"), 'phone: dialog fits, symbols scroll sideways'); ok(not c.errors, c.errors); c.close()
+
+
+@test('presentation_maker')
+def t_presentation_maker(B):
+    import subprocess, zipfile, io
+    r = subprocess.run(['node', os.path.join(ROOT, 'tests', 'server', 'slides.mjs')], capture_output=True, text=True, timeout=60); ok(r.returncode == 0 and 'slides: ok' in r.stdout, 'slides server: ' + r.stdout + r.stderr)
+    out = {'title': 'Open a second branch', 'subtitle': 'A plan for the owners', 'slides': [
+        {'title': 'Where we are now', 'kind': 'points', 'points': ['One shop, full at lunch every weekday', 'Regulars ask for delivery to the business district', 'Kitchen runs at about [add number] covers a day']},
+        {'title': 'Why a second branch', 'kind': 'points', 'points': ['Demand we cannot serve from one site', 'Shorter delivery times mean hotter food', 'A second kitchen spreads the risk', 'Suppliers offer better prices at volume']},
+        {'title': 'A line to remember', 'kind': 'quote', 'points': ['Grow where the customers already are']},
+        {'title': 'Where to open <script>alert(1)</script>', 'kind': 'points', 'points': ['Close to offices, not to our first shop', 'Ground floor with space for a small terrace']},
+        {'title': 'What it costs', 'kind': 'points', 'points': ['Fit-out and equipment', 'Rent deposit and licences', 'Four new staff for the first three months', 'A reserve for slow weeks', 'Marketing for the opening month']},
+        {'title': 'Next steps', 'kind': 'points', 'points': ['Agree the budget this month', 'Shortlist three sites', 'Sign by the end of the quarter']}]}
+    c = Ctx(B, home=True); p = c.page; mode = {'s': 200}; asked = []
+    def api(route):
+        asked.append(json.loads(route.request.post_data)); route.fulfill(status=mode['s'], content_type='application/json', body=json.dumps(out if mode['s'] == 200 else {'error': 'x'}))
+    p.route('**/api/slides', api)
+    # reading the user's own text
+    parse = lambda t: c.ev("t=>pmParse(t)", t)
+    a = parse("Our plan for next year\nOlive Grove, owners' meeting\n\nWhy now\n- Queues every lunchtime\n- Rent prices are down\n\nGrowth\n35% more orders since January\nMostly from the business district\n\nBig idea\n\"Grow where the customers already are\"\n")
+    eq([a['title'], a['sub']], ['Our plan for next year', "Olive Grove, owners' meeting"], 'first block is the deck title'); eq([s['t'] for s in a['slides']], ['Why now', 'Growth', 'Big idea'], 'blank lines separate slides')
+    eq(a['slides'][0]['pts'], ['Queues every lunchtime', 'Rent prices are down'], 'bullets become points'); eq([a['slides'][1]['kind'], a['slides'][1]['stat'], a['slides'][1]['pts'][0]], ['stat', '35%', 'more orders since January'], 'a number first makes a big-number slide')
+    eq([a['slides'][2]['kind'], a['slides'][2]['pts']], ['quote', ['Grow where the customers already are']], 'a quoted line makes a quote slide')
+    b = parse("# Team update\n## Wins\n* Shipped the app\n* **Hired** two people\n## Slide 3: ignored marker\nSlide 2: Risks\nOne supplier only\n---\n## Next\n1. Sign the lease\n2) Train staff")
+    eq([b['title']] + [s['t'] for s in b['slides']], ['Team update', 'Wins', 'Slide 3: ignored marker', 'Risks', 'Next'], 'headings and "Slide n:" start slides'); eq(b['slides'][0]['pts'][1], 'Hired two people', 'markdown marks removed'); eq(b['slides'][3]['pts'], ['Sign the lease', 'Train staff'], 'numbered points')
+    d = parse("Pricing\n- Basic\n- Pro\nSupport\n- Email\n- Chat"); eq([[s['t'], s['pts']] for s in d['slides']], [['Pricing', ['Basic', 'Pro']], ['Support', ['Email', 'Chat']]], 'title lines followed by bullets, no blank lines')
+    e = parse("Welcome\nOur story\nThe team\nContact us"); eq([e['title']] + [[s['t'], s['pts']] for s in e['slides']], ['Welcome', ['Our story', []], ['The team', []], ['Contact us', []]], 'short lines only: one slide each')
+    f = parse("We opened in 2019 with one small shop. Today we serve two hundred people a day. Most of them work nearby. Delivery is growing fast. We think a second kitchen pays for itself."); ok(len(f['slides']) == 2 and len(f['slides'][0]['pts']) == 3, 'a plain paragraph is cut into slides of three sentences')
+    g = parse("Long\n" + "\n".join(f"- point {i}" for i in range(15))); eq([len(s['pts']) for s in g['slides']], [6, 6, 3], 'more than six points continue on the next slide'); ok('continued' in g['slides'][1]['t'], 'continuation is labelled')
+    ok(parse("   \n\n") is None and len(parse("\n\n".join(f"Slide title {i}\n- a\n- b" for i in range(40)))['slides']) == 18, 'empty text refused, at most 20 slides with title and end')
+    # dialog: topic -> AI outline -> looks -> open
+    ok(p.locator('#home [data-tile="slides"]').is_visible() and 'Presentation maker' in p.inner_text('#home [data-tile="slides"]'), 'home tile'); p.click('#home [data-tile="slides"]'); p.wait_for_selector('#pmTopic')
+    p.click('#pmGo'); eq(p.inner_text('#pmNote'), 'Write a few words about your topic first.', 'empty topic'); eq(asked, [], 'nothing sent')
+    p.fill('#pmTopic', 'Why our café should open a second branch'); p.select_option('#pmN', '10'); p.click('#pmGo'); p.wait_for_function("document.querySelectorAll('#pmGrid [data-pm]').length===6", timeout=60000)
+    eq(asked[0], {'topic': 'Why our café should open a second branch', 'n': 10}, 'topic and slide count sent, nothing else'); ok('8 slides ready' in p.inner_text('#pmNote'), 'count shown')
+    ok(p.locator('#pmOpen').is_disabled() and len(set(c.ev("PM.looks.map(l=>l.st.id)"))) == 6, 'six different looks, open waits for a pick'); eq(c.ev("document.querySelectorAll('#pmGrid img').length"), 12, 'two slides shown per look')
+    looks1 = c.ev("PM.looks.map(l=>l.st.id+(l.pal?l.pal.id:'')).join()"); p.click('#pmMore'); p.wait_for_function("l=>document.querySelectorAll('#pmGrid [data-pm]').length===6&&PM.looks.map(l=>l.st.id+(l.pal?l.pal.id:'')).join()!==l", arg=looks1, timeout=60000)
+    p.click('#pmGrid [data-pm="1"]'); p.click('#pmOpen'); p.wait_for_function("!homeOpen()&&doc.pages.length===8&&!document.querySelector('#modal').classList.contains('open')", timeout=40000)
+    info = c.ev("doc.pages.map(pg=>({bg:pg.elements[0].role==='bg',n:pg.elements.length,txt:pg.elements.filter(e=>e.type==='text').map(e=>e.text),off:pg.elements.filter(e=>e.type==='text'&&(e.opacity===undefined||e.opacity>0.3)&&(e.x<-2||e.y<-2||e.x+e.width>1922||e.y+e.height>1082)).map(e=>e.text)}))")
+    eq([c.ev("doc.width"), c.ev("doc.height")], [1920, 1080], '16:9 slides'); ok(all(x['bg'] and x['n'] >= 3 for x in info), 'every slide starts with a background block'); eq([x['off'] for x in info if x['off']], [], 'no text off a slide')
+    ok('Open a second branch' in info[0]['txt'] and 'A plan for the owners' in info[0]['txt'] and 'Thank you' in info[7]['txt'], 'title slide first, thank-you slide last')
+    ok(all(any(pt in x['txt'] for x in info) for s_ in out['slides'] for pt in s_['points']), 'every point is on a slide'); ok(not any('<' in t_ for x in info for t_ in x['txt']), 'markup in AI text is removed')
+    ok('Your 8 slides are ready' in p.inner_text('.toast'), 'toast points to PowerPoint')
+    name, data, _ = c.export('pptx'); zz = zipfile.ZipFile(io.BytesIO(data)); eq(len([n for n in zz.namelist() if re.fullmatch(r'ppt/slides/slide\d+\.xml', n)]), 8, 'PowerPoint file has all eight slides'); ok(b'Where we are now' in zz.read('ppt/slides/slide2.xml'), 'slide text is real, editable text in PowerPoint')
+    # every style, both title layouts, all slide kinds: builds clean and readable
+    rep = c.ev("""(async()=>{const o={title:'Quarterly review for the whole team',sub:'What went well and what is next',slides:[{t:'Highlights of the quarter',kind:'points',pts:['Revenue grew in every region we serve','Two new products launched on time','Customer complaints fell again']},{t:'Sales',kind:'stat',stat:'35%',pts:['more orders than last quarter','mostly from new customers']},{t:'What customers say',kind:'quote',pts:['The fastest delivery in town, and the friendliest']},{t:'Part two',kind:'points',pts:[]},{t:'A long list of things we must not forget before the next launch',kind:'points',pts:['First','Second point is a little longer than the first one','Third','Fourth','Fifth','Sixth and last point of this slide']},{t:'Team',kind:'points',pts:['Hired four','Trained ten']},{t:'Costs',kind:'points',pts:['Rent','Staff','Stock','Marketing']},{t:'Plan',kind:'points',pts:['Open','Hire','Grow']}]},bad=[];
+      for(const st of DKB.styles)for(const seed of [1,2,3,4]){const d=await pmBuild(o,st,seed%2?null:DKB.palettes[seed*3],seed);if(d.pages.length!==10)bad.push([st.id,seed,'pages',d.pages.length]);
+        d.pages.forEach((pg,i)=>{if(pg.elements[0].role!=='bg')bad.push([st.id,seed,i,'nobg']);pg.elements.forEach(e=>{if(e.type!=='text'||(e.opacity!==undefined&&e.opacity<=0.3))return;if(e.x<-2||e.y<-2||e.x+e.width>1922||e.y+e.height>1082)bad.push([st.id,seed,i,'off',e.text.slice(0,20)]);if(e.fontSize<20)bad.push([st.id,seed,i,'tiny',e.text.slice(0,20),e.fontSize]);if(!FONTS.includes(e.fontFamily))bad.push([st.id,seed,i,'font',e.fontFamily]);});});}
+      return bad})()""")
+    eq(rep, [], 'all 10 styles x 4 seeds: ten slides, text on the slide, at least 20 px, known fonts')
+    ok(not c.errors, c.errors); c.close()
+    # AI not available / daily limit -> honest placeholder outline; own text needs no AI
+    c = Ctx(B, home=True); p = c.page; p.route('**/api/slides', api); mode['s'] = 503; asked.clear(); c.ev("PM.mode='topic';PM.topic='';PM.text='';PM.n=8;openSlides()")
+    p.fill('#pmTopic', 'How to start a food truck'); p.click('#pmGo'); p.wait_for_function("document.querySelectorAll('#pmGrid [data-pm]').length===6", timeout=60000)
+    ok('only works on shoof.pages.dev' in p.inner_text('#pmNote') and c.ev("PM.out.local&&PM.out.slides.length===8&&PM.out.title==='How to start a food truck'&&PM.out.slides.every(s=>s.pts.every(x=>x==='Write your point here'))"), 'no AI: placeholder points, said plainly')
+    mode['s'] = 429; p.click('#pmGo'); p.wait_for_function("document.querySelector('#pmNote').textContent.includes('limit')", timeout=60000); c.errors.clear()  # the two refused calls log a failed request, as intended
+    n0 = len(asked); p.click('#modalBox [data-pmm="text"]'); ok(p.locator('#pmText').is_visible() and not p.locator('#pmTopic').is_visible(), 'text tab'); p.click('#pmGo'); ok('Paste or type your text first' in p.inner_text('#pmNote'), 'empty text')
+    p.fill('#pmText', "Menu launch\nSpring 2027\n\nNew dishes\n- Grilled halloumi wrap\n- Lemon chicken bowl\n- Date cake\n\nPrices\n12% lower than last year\nSet lunch stays the same"); p.click('#pmGo'); p.wait_for_function("document.querySelectorAll('#pmGrid [data-pm]').length===6&&PM.out.title==='Menu launch'", timeout=60000)
+    eq(len(asked), n0, 'own text is never sent anywhere'); p.click('#pmGrid [data-pm="0"]'); p.click('#pmOpen'); p.wait_for_function("!homeOpen()&&doc.pages.length===4", timeout=40000)
+    ok(c.ev("doc.pages[2].elements.some(e=>e.text==='12%'&&e.fontSize>=150)&&doc.pages[1].elements.some(e=>e.text==='Date cake')"), 'big-number slide and points from the text'); ok(not c.errors, c.errors); c.close()
+    c = Ctx(B, w=390, h=800, home=True); c.ev("PM.mode='topic';openSlides()"); ok(c.ev("document.querySelector('#modalBox').getBoundingClientRect().right<=innerWidth&&document.querySelector('#pmGo').getBoundingClientRect().right<=innerWidth"), 'phone: dialog fits'); c.page.click('#pmTpl'); c.page.wait_for_function("!homeOpen()&&doc.width===1920&&tplCat==='deck'"); ok(not c.errors, c.errors); c.close()  # ready presentation templates are one tap away
 
 
 def main():
