@@ -3216,6 +3216,7 @@ def t_feedback_install_front(B):
         eq({k: sent[0][k] for k in ('kind', 'page', 'text', 'contact', 'website')}, {'kind': 'question', 'page': 'home', 'text': 'Can I use my own logo?', 'contact': '', 'website': ''}, 'front page message sent')
         pg.wait_for_function("!document.querySelector('#fbDlg').open", timeout=5000)
         eq(pg.evaluate("document.documentElement.scrollWidth"), w, f'no sideways scroll at {w}')
+        pg.evaluate("shoofGo(document.querySelector('#tryDescForm'),'end',1)"); pg.wait_for_timeout(150)  # sections stack like cards, so the next one covers the bottom of this one once you scroll past it
         pg.fill('#tryDesc', 'Poster for a bake sale'); pg.click('#tryDescForm button'); pg.wait_for_url('**/editor?describe=Poster%20for%20a%20bake%20sale'); ok(not errs, errs); pg.close()
     ok(not c.errors, c.errors); c.close()
 

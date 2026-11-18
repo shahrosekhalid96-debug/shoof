@@ -254,7 +254,14 @@ dialog .msg a{color:var(--hi)}
 }
 
 /* Rolling scroll (2026-11-18): each section tilts in from below like a turning drum, flattens in the middle and rolls away at the top; dots on the right show where you are */
-.rl{transform-origin:50% 50%}
+.stk .pnl{position:sticky;top:0;min-height:100vh;min-height:100svh;box-sizing:border-box;isolation:isolate;transform-origin:50% 30%;will-change:transform}
+.stk .rbg,.stk .rdim{display:block}
+.stk .rbg{position:absolute;top:0;bottom:0;left:calc(50% - 50vw);width:100vw;z-index:-1;pointer-events:none;background:radial-gradient(120% 60% at 50% 0%,#17142a 0%,#0b0a12 55%,#08070e 100%);border-radius:36px 36px 0 0;box-shadow:0 -30px 70px rgba(0,0,0,.6),inset 0 1px 0 rgba(190,170,255,.22)}
+.stk .rbg::before{content:"";position:absolute;left:12%;right:12%;top:0;height:1px;background:var(--holo);opacity:.7;filter:blur(.3px)}
+.stk .rdim{position:absolute;top:0;bottom:0;left:calc(50% - 50vw);width:100vw;z-index:20;pointer-events:none;background:#030208;opacity:0;border-radius:36px 36px 0 0}
+.stk .pft{position:relative;isolation:isolate;margin-top:0}
+.stk.nost .pnl{position:relative!important;top:auto!important;transform:none!important}
+@media (max-width:700px){.stk .rbg,.stk .rdim{border-radius:24px 24px 0 0}}
 html,body{overflow-x:clip}
 .rdots{position:fixed;right:18px;top:50%;transform:translateY(-50%);z-index:30;display:flex;flex-direction:column;gap:12px}
 .rdots a{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.22);display:block;transition:transform .3s,background .3s}
@@ -550,27 +557,34 @@ btns.forEach(function(b){b.addEventListener('click',function(){if(ev){var e=ev;e
 
 (function(){var secs=[].slice.call(document.querySelectorAll('.hero,body>section,body>.wrap>section'));if(!secs.length)return;
 var names={examples:'Made in Shoof',try:'Try it',cutout:'Background remover',inside:"What's inside"};
+var H=document.documentElement;
+/* stacked (sticky) sections confuse the browser's own scrollIntoView, so jumps measure the natural page position with stacking switched off for a moment */
+function natY(el){H.classList.add('nost');var y=el.getBoundingClientRect().top+scrollY;H.classList.remove('nost');return y;}
+function go(el,blk,inst){var y=natY(el);if(blk==='end')y=y+el.offsetHeight-innerHeight+24;else if(blk==='center')y=y+el.offsetHeight/2-innerHeight/2;scrollTo({top:Math.max(0,y),behavior:(RM||inst)?'instant':'smooth'});}
+window.shoofGo=go;
+document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a[href^="#"]');if(!a||a.closest('.rdots'))return;var id=a.getAttribute('href').slice(1),t=id&&document.getElementById(id);if(t){e.preventDefault();go(t,'start');}});
+document.addEventListener('focusin',function(e){var el=e.target;if(!H.classList.contains('stk')||!el.getBoundingClientRect)return;requestAnimationFrame(function(){var r=el.getBoundingClientRect(),c=document.elementFromPoint(r.left+r.width/2,r.top+r.height/2);if(r.top<0||r.bottom>innerHeight||(c&&c!==el&&!el.contains(c)&&!c.contains(el)))go(el,'center',1);});});
 var nav=document.createElement('nav');nav.className='rdots';nav.setAttribute('aria-label','Sections');
-secs.forEach(function(s,i){if(!s.id)s.id='sec'+i;var a=document.createElement('a');a.href='#'+s.id;a.setAttribute('aria-label',i===0?'Top':(names[s.id]||'Get started'));a.addEventListener('click',function(e){e.preventDefault();s.scrollIntoView({behavior:RM?'auto':'smooth'});});nav.appendChild(a);});
+secs.forEach(function(s,i){if(!s.id)s.id='sec'+i;var a=document.createElement('a');a.href='#'+s.id;a.setAttribute('aria-label',i===0?'Top':(names[s.id]||'Get started'));a.addEventListener('click',function(e){e.preventDefault();go(s,'start');});nav.appendChild(a);});
 document.body.appendChild(nav);var dots=[].slice.call(nav.children);
-var mob=matchMedia('(max-width:700px)'),tick=0;
-function cl(v){return v<0?0:v>1?1:v}function ez(t){return 1-Math.pow(1-t,3)}
-function run(){tick=0;var vh=innerHeight,best=-1,bd=1e9,A=mob.matches?16:30;
- secs.forEach(function(s,i){if(s.hidden){dots[i].hidden=true;return;}dots[i].hidden=false;var r=s.getBoundingClientRect();
-  var d=Math.abs(r.top+Math.min(r.height,vh)/2-vh/2);if(d<bd){bd=d;best=i;}
-  if(RM){s.style.transform='';return;}
-  if(!s.classList.contains('rl'))s.classList.add('rl');
-  var a=cl((vh-r.top)/(vh*.95)),b=cl(r.bottom/(vh*.95));a=a*a*(3-2*a);b=b*b*(3-2*b);
-  if(i===0)a=1;
-  var rot=0,y=0,sc=1,op=1;
-  if(a<1){var k=1-a;rot=-A*k;y=k*24;sc=1-.12*k;op=.25+.75*a;}
-  else if(b<1){var k2=1-b;rot=A*k2;y=-k2*24;sc=1-.12*k2;op=.25+.75*b;}
-  s.style.transform=(rot||y||sc!==1)?'perspective(1100px) translateY('+y.toFixed(1)+'px) rotateX('+rot.toFixed(2)+'deg) scale('+sc.toFixed(3)+')':'';
-  });
- [].forEach.call(document.querySelectorAll('.reveal:not(.in)'),function(n){if(n.getBoundingClientRect().top<vh*.92)n.classList.add('in');});
- dots.forEach(function(d,i){d.setAttribute('aria-current',String(i===best));});}
+var on=!RM;if(on){document.documentElement.classList.add('stk');secs.forEach(function(s,i){s.classList.add('pnl');if(i){var b=document.createElement('i');b.className='rbg';b.setAttribute('aria-hidden','true');s.appendChild(b);}var d=document.createElement('i');d.className='rdim';d.setAttribute('aria-hidden','true');s.appendChild(d);s._dim=d;});
+ var ft=document.querySelector('footer');if(ft){ft.classList.add('pft');var fb=document.createElement('i');fb.className='rbg';fb.setAttribute('aria-hidden','true');ft.appendChild(fb);}}
+var tick=0,mob=matchMedia('(max-width:700px)');
+function cl(v){return v<0?0:v>1?1:v}
+function tops(){var vh=innerHeight;secs.forEach(function(s){s.style.top=Math.min(0,vh-s.offsetHeight)+'px';});}
+function run(){tick=0;var vh=innerHeight,vis=secs.filter(function(s){return !s.hidden;}),best=0,R=vis.map(function(s){return s.getBoundingClientRect();});
+ secs.forEach(function(s,i){dots[i].hidden=s.hidden;});
+ vis.forEach(function(s,k){var r=R[k],nx=R[k+1];if(r.top<vh*.5)best=secs.indexOf(s);
+  if(!on)return;var t='',dim=0,A=mob.matches?6:10;
+  var p=nx?cl((vh-nx.top)/vh):0;
+  if(p>0){t='scale('+(1-.1*p).toFixed(4)+') translateY('+(-p*3).toFixed(2)+'%)';dim=p*.7;}
+  else if(k&&r.top>0){var q=cl(r.top/vh);t='perspective(1200px) rotateX('+(q*A).toFixed(2)+'deg) scale('+(1-.04*q).toFixed(4)+')';}
+  s.style.transform=t;if(s._dim)s._dim.style.opacity=dim?dim.toFixed(3):'0';});
+ dots.forEach(function(d,i){d.setAttribute('aria-current',String(i===best));});
+ [].forEach.call(document.querySelectorAll('.reveal:not(.in)'),function(n){if(n.getBoundingClientRect().top<vh*.92)n.classList.add('in');});}
 function req(){if(!tick){tick=1;requestAnimationFrame(run);}}
-addEventListener('scroll',req,{passive:true});addEventListener('resize',req);new MutationObserver(req).observe(document.body,{attributes:true,subtree:true,attributeFilter:['hidden']});run();})();
+addEventListener('scroll',req,{passive:true});addEventListener('resize',function(){tops();req();});new MutationObserver(function(){tops();req();}).observe(document.body,{attributes:true,subtree:true,attributeFilter:['hidden']});
+if(on)tops();run();addEventListener('load',function(){tops();req();});})();
 </script>
 </body>
 </html>
