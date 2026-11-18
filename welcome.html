@@ -7,7 +7,7 @@
 <meta name="description" content="Shoof is a free, open-source design editor that runs in your browser. Posts, posters, logos and presentations, with no account and nothing uploaded.">
 <meta name="theme-color" content="#07060c">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" href="icons/icon-192.png">
+<link rel="icon" href="icons/icon-192.png" type="image/png">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
 <style>
 /* Shoof landing page: one file, no libraries, no outside requests.
@@ -54,7 +54,7 @@ a{color:inherit}
 .top{display:flex;align-items:center;gap:14px;padding:22px 0;position:relative;z-index:3}
 .logo{height:30px;width:auto;color:var(--ink);display:block}
 .logo .pupil{animation:look 7s ease-in-out infinite}
-@keyframes look{0%,38%,100%{transform:translate(0,0)}44%,60%{transform:translate(-5px,-2px)}66%,82%{transform:translate(1px,-3px)}88%{transform:translate(0,0)}}
+@keyframes look{0%,38%,100%{transform:translate(0,0)}44%,60%{transform:translate(-2px,-1px)}66%,82%{transform:translate(1px,-3px)}88%{transform:translate(0,0)}}
 .top .sp{flex:1}
 .top a.link{font-size:15px;color:var(--muted);text-decoration:none;padding:8px 12px;border-radius:999px}
 .top a.link:hover{color:var(--ink);background:rgba(255,255,255,.07)}
@@ -260,7 +260,7 @@ dialog .msg a{color:var(--hi)}
  <div class="wrap">
   <header class="top">
    <a href="./editor" title="Open the editor">
-    <svg class="logo" viewBox="0 0 104 40" role="img" aria-label="Shoof"><title>Shoof</title><text x="0" y="30" font-family="Syne,Inter,system-ui,sans-serif" font-weight="700" font-size="30" fill="currentColor">sh</text><circle cx="54" cy="20" r="9.5" fill="none" stroke="currentColor" stroke-width="4"/><circle cx="78" cy="20" r="9.5" fill="none" stroke="currentColor" stroke-width="4"/><circle class="pupil" cx="57" cy="21" r="4" fill="#ff7a3d"/><circle class="pupil" cx="81" cy="21" r="4" fill="#ff7a3d"/><text x="92" y="30" font-family="Syne,Inter,system-ui,sans-serif" font-weight="700" font-size="30" fill="currentColor">f</text></svg>
+    <svg class="logo" viewBox="0 0 132 40" role="img" aria-label="Shoof"><title>Shoof</title><g transform="translate(-4 -4)"><path d="M24 24C27.5 18.2 31.6 15.8 35.6 15.8C40.6 15.8 43.6 19.6 43.6 24C43.6 28.4 40.6 32.2 35.6 32.2C31.6 32.2 27.5 29.8 24 24C20.5 18.2 16.4 15.8 12.4 15.8C7.4 15.8 4.4 19.6 4.4 24C4.4 28.4 7.4 32.2 12.4 32.2C16.4 32.2 20.5 29.8 24 24Z" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linejoin="round"/><circle class="pupil" cx="14.2" cy="25" r="4.2" fill="#ff7a3d"/><circle class="pupil" cx="36.6" cy="25" r="4.2" fill="#ff7a3d"/></g><text x="46" y="28.5" font-family="Syne,Inter,system-ui,sans-serif" font-weight="700" font-size="25" fill="currentColor">shoof</text></svg>
    </a>
    <span class="sp"></span>
    <a class="link" href="#cutout">Background remover</a>
