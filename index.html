@@ -449,6 +449,9 @@ html[dir=rtl] .shchat{right:auto;left:var(--shR)}
 /* Dark theme 2026-11-18: dark chrome, the design page stays as designed. Surfaces: --bg work area < --panel panels < --card buttons/inputs < --hover. */
 button,.btnlike,.seg button,.search,header select,.row input[type=number],.row select,.row input[type=color],.menu select,.pat-grid button,.pmgrid button,.tile,.hsearch,.hdrow input,.shfonts button,.shicons button,.dkpal,.dgpick footer button,body.sh-mini .shminiu:not([hidden]),.dkitem button{background:var(--card);color:var(--ink);border-color:var(--line)}
 button:hover,.layers li:hover,.tile:hover,.btnlike:hover,.layers.mini button:hover,.brand-link:hover{background:var(--hover)}
+.brand-link{flex-direction:column;gap:2px;padding:3px 6px;margin:-3px -6px;text-decoration:none}
+.brand .logo.mark{height:28px;width:28px}
+.bword{font:700 10px/1 Poppins,Inter,sans-serif;letter-spacing:.08em;color:var(--muted)}
 button.primary,button.primary:hover{background:var(--accent);border-color:var(--accent);color:#fff}button.primary:hover{background:#7d60ff}
 input,textarea,select{color:var(--ink);background:var(--card);border-color:var(--line)}
 input::placeholder,textarea::placeholder{color:#8d8aa6}
@@ -493,7 +496,7 @@ header{background:#17161f}
 <script>if(!window.Konva){document.getElementById('bootFail').hidden=false;}</script>
 <div class="app">
 <header>
-  <div class="brand"><a href="#" id="brandHome" class="brand-link" data-i18n-title="goHome" title="Shoof home"><svg class="logo" direction="ltr" style="direction:ltr" viewBox="0 0 104 40" role="img" aria-label="Shoof"><title>Shoof</title><text x="0" y="30" font-family="Poppins,Inter,system-ui,sans-serif" font-weight="700" font-size="30" fill="currentColor">sh</text><circle cx="54" cy="20" r="9.5" fill="none" stroke="currentColor" stroke-width="4"/><circle cx="78" cy="20" r="9.5" fill="none" stroke="currentColor" stroke-width="4"/><circle cx="57" cy="21" r="4" fill="#e8590c"/><circle cx="81" cy="21" r="4" fill="#e8590c"/><text x="92" y="30" font-family="Poppins,Inter,system-ui,sans-serif" font-weight="700" font-size="30" fill="currentColor">f</text></svg></a><span class="bname sr-only" data-i18n="brand">Shoof</span> <small data-i18n="tag">Free design for everyone</small></div>
+  <div class="brand"><a href="#" id="brandHome" class="brand-link" data-i18n-title="goHome" title="Shoof home"><svg class="logo mark" viewBox="0 0 48 48" role="img" aria-label="Shoof"><title>Shoof</title><rect x="1" y="1" width="46" height="46" rx="12" fill="#1d2330" stroke="rgba(255,255,255,.16)" stroke-width="1.5"/><circle cx="16" cy="24" r="7.2" fill="#1d2330" stroke="#fff" stroke-width="3.4"/><circle cx="32" cy="24" r="7.2" fill="#1d2330" stroke="#fff" stroke-width="3.4"/><circle cx="18.4" cy="25.6" r="3.7" fill="#f76707"/><circle cx="34.4" cy="25.6" r="3.7" fill="#f76707"/></svg><span class="bword" aria-hidden="true">shoof</span></a><span class="bname sr-only" data-i18n="brand">Shoof</span> <small data-i18n="tag">Free design for everyone</small></div>
   <button class="icon" id="homeBtn" data-i18n-title="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11l8-7 8 7"/><path d="M6 9.5V20h12V9.5M10 20v-5h4v5"/></svg></button>
   <select id="sizeSel" class="wide-only" data-i18n-title="sizeTitle" aria-label="Canvas size"></select>
   <button class="icon flip" id="undoBtn" data-i18n-title="undoTitle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14L4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg></button>
