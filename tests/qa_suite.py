@@ -134,7 +134,8 @@ class Ctx:
         self.ev(f"()=>{{doc=blankDoc({w},{h});selId=null;$('#sizeSel').value=sizeIdFor();fullRender();fitZoom();resetHistory();}}")
 
     def tab(self, name):
-        self.page.click(f'#rail button[data-tab="{name}"]')
+        # desktop hides Uploads/Background/Layers/About in the rail (they live in the Page panel / ⋯ menu); click through JS so every tab stays reachable
+        self.page.evaluate('n=>document.querySelector(`#rail button[data-tab="${n}"]`).click()', name)
 
     def sel_el(self):
         return self.ev('()=>{const e=byId(selId);return e?JSON.parse(JSON.stringify(e)):null}')
@@ -565,10 +566,10 @@ def t_roundtrip(B):
     c.page.set_input_files('#upFile', IMG)
     c.page.wait_for_function("doc.elements.some(e=>e.type==='image')")
     before = c.ev('JSON.stringify(doc)')
-    name, data, path = c.download(lambda: c.page.click('#saveBtn'))
+    name, data, path = c.download(lambda: c.ev("$('#saveBtn').click()"))
     ok(name.endswith('.json'), f'filename {name}')
     eq(json.loads(data), json.loads(before), 'saved file content')
-    c.page.click('#newBtn'); c.page.click('#doNew')
+    c.ev("$('#newBtn').click()"); c.page.click('#doNew')
     eq(c.ev("doc.elements.map(e=>e.role||e.type)"), ['bg'], 'new design = just an editable background block')
     c.page.set_input_files('#openFile', path); c.page.wait_for_timeout(300)
     eq(json.loads(c.ev('JSON.stringify(doc)')), json.loads(before), 'reopened doc')
@@ -671,7 +672,7 @@ def t_lang(B):
     c = Ctx(B)
     Q = "[...document.querySelectorAll('[data-i18n]')].filter(e=>e.dataset.i18n in I18N.ar).map(e=>e.textContent)"
     en = c.ev(Q)
-    c.page.click('#langBtn'); c.page.wait_for_timeout(100)
+    c.ev("switchLang()"); c.page.wait_for_timeout(100)
     eq(c.ev('[document.documentElement.dir,document.documentElement.lang]'), ['rtl', 'ar'], 'AR dir/lang')
     ar = c.ev(Q)
     same = [a for a, b in zip(en, ar) if a == b]
@@ -682,7 +683,7 @@ def t_lang(B):
     c.tab('text'); ok('إضافة' in c.page.inner_text('#drawer'), 'drawer not Arabic')
     c.page.reload(); c.page.wait_for_function('typeof doc!=="undefined"')
     eq(c.ev('document.documentElement.dir'), 'rtl', 'lang not persisted')
-    c.page.click('#langBtn'); c.page.wait_for_timeout(100)
+    c.ev("switchLang()"); c.page.wait_for_timeout(100)
     eq(c.ev('document.documentElement.dir'), 'ltr', 'back to EN')
     eq(c.ev(Q), en, 'EN strings restored')
     ok(not c.errors, c.errors); c.close()
@@ -1061,7 +1062,7 @@ def t_no_english(B):
         c.page.click('#exportBtn'); texts += _collect_english(c); c.page.keyboard.press('Escape')
         if w < 900:
             c.page.click('#moreBtn'); texts += _collect_english(c); c.page.keyboard.press('Escape')
-        c.page.click('#newBtn') if w >= 900 else c.ev("$('#newBtn').click()")
+        c.ev("$('#newBtn').click()") if w >= 900 else c.ev("$('#newBtn').click()")
         texts += _collect_english(c)
         for s_ in texts:
             for wd in english_words(en_only_strip(c, s_)):
@@ -1330,7 +1331,7 @@ def t_group_sanitize(B):
     eq(r, ['g1', 'g1', None, None], 'group sanitising')
     c.ev("()=>{selectAll();groupSel();}")
     before = c.ev('JSON.stringify(doc)')
-    name, data, path = c.download(lambda: c.page.click('#saveBtn'))
+    name, data, path = c.download(lambda: c.ev("$('#saveBtn').click()"))
     c.page.set_input_files('#openFile', path); c.page.wait_for_timeout(200)
     eq(json.loads(c.ev('JSON.stringify(doc)')), json.loads(before), 'grouped design round-trip')
     ok(not c.errors, c.errors); c.close()
@@ -1428,7 +1429,7 @@ def t_tpls(B):
 @test('b5_new_design_dialog')
 def t_new(B):
     c = Ctx(B)
-    c.page.click('#newBtn')
+    c.ev("$('#newBtn').click()")
     eq(c.page.locator('#modal [data-newsize]').count(), c.ev('SIZES.length'), 'size cards')
     ok(c.ev("$('#modalBox').innerText").find(c.ev("t('newConfirm')")) >= 0, 'unsaved-work note')
     eq(c.ev("$('#modal [data-newsize][aria-pressed=true]').dataset.newsize"), 'ig', 'current size pre-selected')
@@ -1437,10 +1438,10 @@ def t_new(B):
     eq(c.ev('$("#sizeSel").value'), 'story', 'size select synced')
     c.page.keyboard.press('Control+z'); eq(c.ev('[doc.width,doc.height]'), [1080, 1080], 'undo new design')
     ok(c.ev('doc.elements.length') > 0, 'undo did not restore content')
-    c.page.click('#newBtn'); c.page.fill('#newW', '500'); c.page.fill('#newH', '5'); c.page.click('#doNew')
+    c.ev("$('#newBtn').click()"); c.page.fill('#newW', '500'); c.page.fill('#newH', '5'); c.page.click('#doNew')
     eq(c.ev('[doc.width,doc.height]'), [500, 16], 'custom size + clamp')
     eq(c.ev('$("#sizeSel").value'), 'custom', 'custom size shown')
-    c.tab('text'); c.page.click('#newBtn'); c.page.click('#newTpl')
+    c.tab('text'); c.ev("$('#newBtn').click()"); c.page.click('#newTpl')
     ok(not c.page.locator('#modal').is_visible() and c.ev('curTab') == 'templates', 'template link')
     ok(not c.errors, c.errors); c.close()
     for lang in ['en', 'ar']:
@@ -1461,7 +1462,7 @@ def t_shapes2(B):
     eq(c.ev("mainLayer.children.map(g=>g.children[0].className)"), ['Line', 'Path', 'Line'], 'Konva nodes')
     c.ev("select(doc.elements[1].id)"); c.set_color('#pStroke', '#00ff00'); ok(c.sel_el()['strokeWidth'] > 0, 'bubble border')
     before = c.ev('JSON.stringify(doc)')
-    name, data, path = c.download(lambda: c.page.click('#saveBtn'))
+    name, data, path = c.download(lambda: c.ev("$('#saveBtn').click()"))
     c.page.set_input_files('#openFile', path); c.page.wait_for_timeout(200)
     eq(json.loads(c.ev('JSON.stringify(doc)')), json.loads(before), 'shapes round-trip')
     _export_check(c, 'png', 1080, 1080)
@@ -1513,7 +1514,7 @@ def t_r2_lang(B):
     eq(c.ev('[document.documentElement.lang,document.documentElement.dir]'), ['ar', 'rtl'], 'ar-SA browser should boot in Arabic')
     ok(c.ev("doc.elements.filter(e=>e.type==='text').every(e=>!/[A-Za-z]{3}/.test(e.text))"), 'Arabic UI should start with an Arabic starter design')
     ok(c.ev("doc.elements.some(e=>e.type==='text'&&/مقها/.test(e.text))"), 'Arabic starter is the generic café template')
-    c.page.click('#langBtn'); c.page.reload(); c.page.wait_for_function('typeof doc!=="undefined"')
+    c.ev("switchLang()"); c.page.reload(); c.page.wait_for_function('typeof doc!=="undefined"')
     eq(c.ev('document.documentElement.lang'), 'en', 'saved choice beats browser locale')
     ok(not c.errors, c.errors); c.close()
     c = Ctx(B)
@@ -1673,7 +1674,7 @@ def t_grad(B):
     c.page.keyboard.press('Control+z'); eq(c.ev('bgGradNow().type'), 'radial', 'undo restores gradient')
     # template thumbnails + save/open keep gradients
     before = c.ev('JSON.stringify(doc)')
-    name, data, path = c.download(lambda: c.page.click('#saveBtn'))
+    name, data, path = c.download(lambda: c.ev("$('#saveBtn').click()"))
     c.blank(); c.page.set_input_files('#openFile', path); c.page.wait_for_timeout(200)
     eq(json.loads(c.ev('JSON.stringify(doc)')), json.loads(before), 'gradient round-trip')
     ok(not c.errors, c.errors); c.close()
@@ -2687,7 +2688,7 @@ def t_nice(B):
     c.ev("curName='عرض'"); eq(c.ev("fileBase()"), 'shoof-design', 'falls back when no Latin name')
     c.close()
     d = Ctx(B, home=True, init="localStorage.setItem('shoof.buddy','on')")
-    ok(d.ev("getComputedStyle($('#newBtn')).backgroundColor") != d.ev("getComputedStyle($('#openBtn')).backgroundColor"), 'New is the main button on the home screen')
+    ok(d.page.locator('#fileBtn').is_visible() and d.page.locator('#exportBtn').is_hidden(), 'home screen: File menu shown, Download hidden')
     ok('Start something new' in d.page.inner_text('#home'), 'row renamed')
     d.ev("hideHome()"); d.page.click('#rail [data-tab="templates"]')
     ch = d.page.locator('#drawer .chips.one'); ok(ch.count() == 1 and d.ev("(()=>{const r=$('#drawer .chips.one');return r.scrollWidth>r.clientWidth&&r.offsetHeight<60})()"), 'category chips in one scrolling row')
@@ -3077,7 +3078,10 @@ def t_landing(B):
         ok(pg.locator('#cutout h2').is_visible() and pg.locator('.top a[href="#cutout"]').count() == 1 and 'Background remover' in pg.locator('#inside .card h3').first.inner_text(), 'background remover is a highlight')
         pg.evaluate("window.scrollTo(0,document.body.scrollHeight)"); pg.wait_for_timeout(900)
         eq(pg.evaluate("Promise.all([...document.images].map(i=>fetch(i.src).then(r=>r.ok&&/image/.test(r.headers.get('content-type')))) ).then(a=>a.filter(x=>!x).length)"), 0, 'every picture exists'); ok(pg.evaluate("[...document.images].filter(i=>i.complete&&i.naturalWidth).length>=3"), 'pictures show'); eq(pg.evaluate("document.documentElement.scrollWidth"), w, f'no sideways scroll at {w}')
-        ok(pg.evaluate("[...document.querySelectorAll('.reveal')].filter(n=>n.getBoundingClientRect().top<innerHeight).every(n=>getComputedStyle(n).opacity==='1')"), 'sections on screen are revealed')
+        J = "[...document.querySelectorAll('.reveal')].filter(n=>n.getBoundingClientRect().top<innerHeight).every(n=>getComputedStyle(n).opacity==='1')"
+        try: pg.wait_for_function(J, timeout=3000)
+        except Exception: pass
+        ok(pg.evaluate(J), 'sections on screen are revealed')
         pg.add_script_tag(path=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'vendor', 'axe.min.js'))
         bad = pg.evaluate("axe.run(document,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21a','wcag21aa']}}).then(r=>r.violations.map(v=>v.id+': '+v.nodes.length))")
         eq(bad, [], f'accessibility at {w}'); ok(not errs, errs); pg.close()
@@ -3160,22 +3164,22 @@ def t_feedback_install_front(B):
         sent.append(json.loads(route.request.post_data))
         route.fulfill(status=mode['s'], content_type='application/json', body=json.dumps({'ok': True} if mode['s'] == 200 else {'error': 'x'}))
     p.route('**/api/feedback', fb)
-    ok(p.locator('#fbBtn').is_visible() and p.inner_text('#fbBtn') == 'Feedback', 'Feedback button in the top bar')
-    p.click('#fbBtn'); p.wait_for_selector('#fbText'); p.wait_for_timeout(80); ok(c.ev("document.activeElement.id==='fbText'"), 'message box is focused')
+    p.click('#moreBtn'); ok(p.locator('#moreMenu [data-more="feedback"]').is_visible() and p.inner_text('#moreMenu [data-more="feedback"]') == 'Feedback', 'Feedback in the ⋯ menu')
+    p.click('#moreMenu [data-more="feedback"]'); p.wait_for_selector('#fbText'); p.wait_for_timeout(80); ok(c.ev("document.activeElement.id==='fbText'"), 'message box is focused')
     p.click('#fbSend'); eq(p.inner_text('#fbMsg'), 'Write a few more words first.', 'empty message is not sent'); eq(sent, [], 'nothing sent yet')
     p.click('[data-fbk="problem"]'); eq(c.ev("[...document.querySelectorAll('[data-fbk]')].map(b=>b.getAttribute('aria-checked')).join()"), 'false,true,false', 'kind chosen')
     p.fill('#fbText', 'I could not find the font list <b>'); p.fill('#fbMail', 'me@example.com'); p.click('#fbSend')
     p.wait_for_function("!document.querySelector('#modal').classList.contains('open')"); ok('Thank you' in p.inner_text('.toast'), 'thanks shown')
     eq(sent[0], {'kind': 'problem', 'page': 'editor', 'text': 'I could not find the font list <b>', 'contact': 'me@example.com', 'website': '', 'lang': 'en'}, 'only the message, kind and email are sent')
-    c.errors.clear(); mode['s'] = 429; p.click('#fbBtn'); p.fill('#fbText', 'one more message today'); p.click('#fbSend'); p.wait_for_function("document.querySelector('#fbMsg').textContent.length>5")
+    c.errors.clear(); mode['s'] = 429; c.ev('openFeedback()'); p.fill('#fbText', 'one more message today'); p.click('#fbSend'); p.wait_for_function("document.querySelector('#fbMsg').textContent.length>5")
     ok('enough messages' in p.inner_text('#fbMsg'), 'daily limit explained')
     mode['s'] = 503; p.click('#fbSend'); p.wait_for_function("!!document.querySelector('#fbMsg a')")
     ok(c.ev("document.querySelector('#fbMsg a').href").startswith('https://github.com/shahrosekhalid96-debug/shoof/issues') and c.ev("!document.querySelector('#fbSend').disabled"), 'where it cannot be sent, GitHub is offered and Send works again')
     c.ev("closeModal()"); c.errors.clear()  # the two refused sends above log a failed request in the console, as intended
     # ---- editor: install button
-    ok(c.ev("document.querySelector('#instBtn').hidden&&document.querySelector('#moreInst').hidden"), 'no install button until the browser can install')
-    c.ev(fake_inst); ok(p.locator('#instBtn').is_visible(), 'install button appears'); p.click('#instBtn'); p.wait_for_timeout(100)
-    ok(c.ev("window.__asked===1") and c.ev("document.querySelector('#instBtn').hidden"), 'asks the browser once, then hides')
+    ok(c.ev("document.querySelector('#moreInst').hidden"), 'no install item until the browser can install')
+    c.ev(fake_inst); p.click('#moreBtn'); ok(p.locator('#moreInst').is_visible(), 'install item appears in the ⋯ menu'); p.click('#moreInst'); p.wait_for_timeout(100)
+    ok(c.ev("window.__asked===1") and c.ev("document.querySelector('#moreInst').hidden"), 'asks the browser once, then hides')
     c.ev("instGo()"); ok('Add to Home screen' in p.inner_text('#modalBox'), 'without a browser prompt the steps are explained'); c.ev("closeModal()")
     keys = c.ev("TEMPLATES.map(t=>t.key)"); ok(not c.errors, c.errors); c.close()
     # ---- editor: links from the front page
