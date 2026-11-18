@@ -2146,10 +2146,81 @@ def t_brand_kit(B):
     eq(c.sel_el()['fill'], '#f2b705', 'brand swatch recolours the selection')
     # remove a colour; kit survives a reload; hostile stored kit is cleaned
     c.page.hover('#drawer [data-bc="0"]'); c.page.click('#drawer [data-bcx="0"]'); eq(c.ev('brand.colors'), ['#f2b705'], 'colour removed')
-    c.ev("()=>localStorage.setItem('shoof.brand',JSON.stringify({colors:['#123456','javascript:alert(1)','url(x)',7],head:'<img src=x onerror=alert(1)>',body:'Poppins',logo:'https://evil.example/x.png'}))")
+    c.ev("()=>localStorage.setItem('shoof.kits',JSON.stringify({cur:'abcd1234',kits:[{id:'abcd1234',name:'<img src=x>Bloom',colors:['#123456','javascript:alert(1)','url(x)',7],roles:{accent:'javascript:x',bg:'#FFFFFF',text:'#111'},head:'<img src=x onerror=alert(1)>',body:'Poppins',logo:'https://evil.example/x.png',info:{web:'<script>x</script>',phone:'1'.repeat(300)}}]}))")
     c.goto(); c.page.wait_for_timeout(300)
-    eq(c.ev('brand'), {'colors': ['#123456'], 'head': '', 'body': 'Poppins', 'logo': None}, 'stored kit sanitised')
+    eq(c.ev('brand'), {'id': 'abcd1234', 'name': 'img src=xBloom', 'colors': ['#123456'], 'roles': {'bg': '#ffffff', 'text': '#111111'}, 'head': '', 'body': 'Poppins', 'logo': None, 'info': {'web': 'scriptx/script', 'phone': '1' * 80}}, 'stored kit sanitised')
     ok('BRAND KIT' in c.ev("buildPrompt('free','x',true)") and '#123456' in c.ev("buildPrompt('free','x',true)"), 'Ask Claude knows the brand')
+    ok(not c.errors, c.errors); c.close()
+
+
+@test('brand_kit_setup_kits_work_check')
+def t_brand_kit2(B):
+    c = Ctx(B)
+    c.ev("()=>{useTemplate(TEMPLATES.findIndex(t=>t.key==='workshop'))}"); c.page.wait_for_timeout(200)
+    c.tab('brand'); ok(c.page.locator('.bprev').is_visible(), 'live brand preview shows')
+    # several kits: name, new kit, switch back, survives a reload
+    c.page.fill('#kitName', 'Bloom Bakery'); c.page.press('#kitName', 'Tab'); c.page.wait_for_timeout(100)
+    c.page.click('#brandPals'); c.page.click('[data-bpal="0"]'); c.page.wait_for_timeout(100)
+    pal0 = c.ev("DKB.palettes[0].c")
+    eq(c.ev('brand.roles.accent'), pal0['accent'].lower(), 'ready palette fills the colour roles')
+    first = c.ev('brand.id'); c.page.click('#kitNew'); c.page.wait_for_timeout(100)
+    eq(c.ev('KITS.kits.length'), 2, 'second kit made'); eq(c.ev('brand.roles'), {}, 'new kit starts empty')
+    c.page.fill('#kitName', 'Client X'); c.page.press('#kitName', 'Tab'); c.page.wait_for_timeout(100)
+    c.page.select_option('#kitSel', first); c.page.wait_for_timeout(100)
+    eq(c.ev('brand.name'), 'Bloom Bakery', 'switching kits brings the first one back')
+    c.goto(); c.page.wait_for_timeout(300); c.tab('brand')
+    eq(c.ev('[KITS.kits.length,brand.name]'), [2, 'Bloom Bakery'], 'kits kept on the device')
+    # colours from the logo: a red and navy logo gives a red main colour and dark text
+    c.ev("""()=>{const cv=document.createElement('canvas');cv.width=120;cv.height=60;const x=cv.getContext('2d');x.fillStyle='#e63946';x.fillRect(0,0,80,60);x.fillStyle='#1d3557';x.fillRect(80,0,40,60);brand.logo=cv.toDataURL('image/png');brand.roles={};saveBrand();renderDrawer();}""")
+    c.page.click('#brandFromLogo'); c.page.wait_for_timeout(300)
+    r = c.ev('brand.roles'); ok(c.ev("hslOf(brand.roles.accent).h<15||hslOf(brand.roles.accent).h>345"), f'main colour is the logo red {r}')
+    ok(c.ev('contrastOf(brand.roles.text,brand.roles.bg)') >= 7, f'text reads on the background {r}')
+    # apply with roles: background block takes the brand background, one undo step
+    c.page.click('[data-bpair]'); c.page.wait_for_timeout(300)
+    before = c.ev('JSON.stringify(doc)'); c.page.click('#brandApply'); c.page.wait_for_timeout(600)
+    eq(c.ev('hex6(bgBlock().fill)'), c.ev('brand.roles.bg'), 'page background is the brand background')
+    eq(c.ev("doc.elements.filter(e=>e.type==='text').sort((a,b)=>b.fontSize-a.fontSize)[0].fontFamily"), c.ev('brand.head'), 'heading font from the pair')
+    low = c.ev("doc.elements.map((e,i)=>e.type==='text'&&e.fill?contrastOf(e.fill,underColor(doc.pages[doc.page],i)||'#ffffff'):9).filter(r=>r<3).length")
+    eq(low, 0, 'text stays readable')
+    c.page.keyboard.press('Control+z'); c.page.wait_for_timeout(150); eq(c.ev('JSON.stringify(doc)'), before, 'one undo step')
+    c.page.click('#brandApply'); c.page.wait_for_timeout(500)
+    # logo on every page, in a corner, as one undo step; removable
+    c.ev("()=>{pageOp('add')}"); c.page.wait_for_timeout(200); c.tab('brand')
+    c.page.click('[data-corner="br"]'); c.page.wait_for_timeout(300)
+    logos = c.ev("doc.pages.map(p=>p.elements.filter(e=>e.role==='logo').map(e=>[e.x+e.width,e.y+e.height]))")
+    ok(len(logos) == 2 and all(len(l) == 1 and l[0][0] > c.ev('doc.width*0.9') and l[0][1] > c.ev('doc.height*0.9') for l in logos), f'logo bottom-right on every page {logos}')
+    c.page.click('[data-corner="tl"]'); c.page.wait_for_timeout(300)
+    eq(c.ev("doc.pages.map(p=>p.elements.filter(e=>e.role==='logo').length)"), [1, 1], 'moving the logo replaces it, no copies')
+    ok(c.ev("sanitizeDoc(JSON.parse(JSON.stringify(doc))).pages[0].elements.some(e=>e.role==='logo')"), 'logo role survives save and open')
+    c.page.click('#brandLogoOff'); c.page.wait_for_timeout(200); eq(c.ev("doc.pages.flatMap(p=>p.elements).filter(e=>e.role==='logo').length"), 0, 'logo removed')
+    # brand details: saved once, added with +
+    c.page.fill('#bi_web', 'bloombakery.com'); c.page.fill('#bi_handle', '@bloom'); c.page.press('#bi_handle', 'Tab'); c.page.wait_for_timeout(100)
+    eq(c.ev('brand.info'), {'web': 'bloombakery.com', 'handle': '@bloom'}, 'details saved')
+    c.page.click('#brandContact'); c.page.wait_for_timeout(200)
+    ok(c.ev("doc.elements.some(e=>e.type==='text'&&/bloombakery\\.com.+@bloom/.test(e.text))"), 'contact line added')
+    # brand check: a colour from outside the brand is found and fixed
+    c.ev('gotoPage(0)'); c.page.wait_for_timeout(150)
+    c.ev("()=>{const e=doc.elements.filter(x=>x.type!=='text'&&x.role!=='bg'&&x.role!=='logo'&&typeof x.fill==='string'&&x.fill).sort((a,b)=>b.width*b.height-a.width*a.height)[0];delete e.fillGradient;e.fill='#00c853';fullRender();commit();}")
+    c.page.click('#brandCheck'); c.page.wait_for_timeout(200)
+    ok(c.page.locator('.bcheck').is_visible() and c.page.locator('#brandCheckFix').is_visible(), 'off-brand colour reported')
+    ok(any(i['id'].startswith('brand:') for i in c.ev("bdIssues().map(x=>({id:x.id}))")), 'Shoofy notices the drift after the brand was applied')
+    c.page.click('#brandCheckFix'); c.page.wait_for_timeout(600)
+    ok(c.ev('brandCheck().ok'), f'fixed: {c.ev("JSON.stringify(brandCheck())")}')
+    # Shoofy answers "is this on brand" on the device
+    c.ev("()=>{const e=doc.elements.filter(x=>x.type!=='text'&&x.role!=='bg'&&x.role!=='logo'&&typeof x.fill==='string'&&x.fill).sort((a,b)=>b.width*b.height-a.width*a.height)[0];delete e.fillGradient;e.fill='#00c853';fullRender();commit();}")
+    c.ev("shOpen()"); c.page.fill('#shIn', 'is this on brand?'); c.page.press('#shIn', 'Enter'); c.page.wait_for_timeout(400)
+    ok(c.page.locator('#shMsgs [data-sha="brandfix"]').count() >= 1, 'Shoofy offers to fix the brand')
+    c.ev("shClose()")
+    # six posts in the brand: brand fonts, brand background, logo
+    c.ev("()=>{brand.info.tag='Fresh bread every morning';saveBrand();}")
+    c.ev("brandMakePosts()"); c.page.wait_for_function("document.querySelectorAll('#dgPick .dggrid button').length>=6", timeout=30000)
+    fonts = c.ev("DG.pick.map(d=>d.doc.pages[0].elements.filter(e=>e.type==='text').sort((a,b)=>b.fontSize-a.fontSize)[0].fontFamily)")
+    ok(all(f == c.ev('brand.head') for f in fonts), f'headlines use the brand heading font {fonts}')
+    ok(c.ev("DG.pick.filter(d=>d.doc.pages[0].elements.some(e=>e.role==='logo')).length") >= 4, 'most posts carry the logo')
+    ok(c.ev("DG.pick.every(d=>hex6(d.doc.pages[0].elements[0].fill)===brand.roles.bg)"), 'posts use the brand background')
+    # delete a kit
+    c.ev("dgPickHide()"); c.tab('brand'); c.page.click('#kitDel'); c.page.click('#kitDelOk'); c.page.wait_for_timeout(100)
+    eq(c.ev('KITS.kits.length'), 1, 'kit deleted')
     ok(not c.errors, c.errors); c.close()
 
 
