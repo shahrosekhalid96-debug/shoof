@@ -32,12 +32,14 @@
 html{scroll-behavior:smooth;background:var(--bg)}
 body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.6 Inter,system-ui,-apple-system,Segoe UI,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
 /* film grain over everything, very faint */
-body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:50;opacity:.06;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E")}
+.replay{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);z-index:8;display:inline-flex;gap:8px;align-items:center;font:600 14px Inter,sans-serif;color:#fff;background:rgba(14,12,26,.85);border:1px solid rgba(255,255,255,.25);padding:9px 16px;border-radius:999px;cursor:pointer;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.replay:hover{background:#6c4cf5}.replay svg{width:16px;height:16px}.replay[hidden]{display:none}
+/* film grain removed 2026-11-18 (it made every frame repaint) */
 h1,h2,h3{font-family:Syne,Inter,system-ui,sans-serif;font-weight:700;line-height:1.02;margin:0;letter-spacing:-.025em}
 a{color:inherit}
 .wrap{width:min(1180px,100% - 40px);margin-inline:auto}
 :focus-visible{outline:3px solid var(--hi);outline-offset:3px;border-radius:6px}
-.holo{background:var(--holo);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:sheen 9s linear infinite}
+.holo{background:var(--holo);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:none}
 @keyframes sheen{to{background-position:-300% 0}}
 
 /* buttons: one style, three fills */
@@ -46,14 +48,15 @@ a{color:inherit}
 .btn:active{transform:translateY(0) scale(.98)}
 .btn.primary{background:var(--accent);border-color:transparent;color:#fff;box-shadow:0 0 0 1px rgba(255,255,255,.14) inset,0 10px 34px rgba(108,76,245,.45)}
 .btn.primary:hover{background:#5d3ee6;box-shadow:0 0 0 1px rgba(255,255,255,.2) inset,0 14px 44px rgba(108,76,245,.6)}
-.btn.lum{background:var(--holo);background-size:200% 100%;color:#07060c;border-color:transparent;animation:sheen 9s linear infinite}
+.btn.lum:hover{animation:sheen 2.4s linear 1}
+.btn.lum{background:var(--holo);background-size:200% 100%;color:#07060c;border-color:transparent;animation:none}
 .btn.small{padding:9px 18px;font-size:15px}
 .btn svg{width:18px;height:18px}
 
 /* top bar */
 .top{display:flex;align-items:center;gap:14px;padding:22px 0;position:relative;z-index:3}
 .logo{height:30px;width:auto;color:var(--ink);display:block}
-.logo .pupil{animation:look 7s ease-in-out infinite}
+.logo .pupil{animation:look 7s ease-in-out 2}
 @keyframes look{0%,38%,100%{transform:translate(0,0)}44%,60%{transform:translate(-2px,-1px)}66%,82%{transform:translate(1px,-3px)}88%{transform:translate(0,0)}}
 .top .sp{flex:1}
 .top a.link{font-size:15px;color:var(--muted);text-decoration:none;padding:8px 12px;border-radius:999px}
@@ -80,7 +83,7 @@ h1 .l2{display:block}
 /* the film: a Shoof editor window where a real template builds and edits itself */
 .film{position:relative;animation:rise 1.1s .25s var(--ease) both}
 .app{position:relative;border-radius:20px;background:rgba(16,14,30,.72);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);box-shadow:0 40px 120px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.08) inset;overflow:hidden}
-.app::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;background:var(--holo);background-size:300% 100%;animation:sheen 9s linear infinite;-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:.75;pointer-events:none;z-index:4}
+.app::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;background:var(--holo);background-size:300% 100%;animation:none;-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:.75;pointer-events:none;z-index:4}
 .tb{display:flex;align-items:center;gap:10px;height:46px;padding:0 14px;border-bottom:1px solid rgba(255,255,255,.07);font:600 13px Inter,sans-serif;color:var(--muted)}
 .tb i{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.16)}
 .tb .ttl{margin-left:10px;padding:5px 12px;border-radius:8px;background:rgba(255,255,255,.06);color:var(--ink)}
@@ -106,7 +109,7 @@ h1 .l2{display:block}
 .cur::after{content:"";position:absolute;left:-10px;top:-10px;width:22px;height:22px;border-radius:50%;border:2px solid #fff;opacity:0}
 .cur.tap::after{animation:tap .5s ease-out}
 @keyframes tap{from{opacity:.9;transform:scale(.3)}to{opacity:0;transform:scale(1.6)}}
-.fchip{position:absolute;z-index:7;display:flex;gap:9px;align-items:center;font:600 13.5px Inter,sans-serif;color:var(--ink);padding:10px 14px;border-radius:14px;background:rgba(20,18,36,.78);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.14);box-shadow:0 18px 40px rgba(0,0,0,.45);white-space:nowrap;animation:float 7s ease-in-out infinite}
+.fchip{position:absolute;z-index:7;display:flex;gap:9px;align-items:center;font:600 13.5px Inter,sans-serif;color:var(--ink);padding:10px 14px;border-radius:14px;background:rgba(20,18,36,.78);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.14);box-shadow:0 18px 40px rgba(0,0,0,.45);white-space:nowrap;animation:none}
 .fchip .d{width:8px;height:8px;border-radius:50%;background:#53e0a1;box-shadow:0 0 10px #53e0a1}
 .fchip.c1{left:-34px;top:22%}
 .fchip.c2{right:-22px;top:6%;animation-delay:-2.5s}
@@ -125,14 +128,13 @@ h2{font-size:clamp(34px,4.6vw,62px);margin-bottom:16px}
 .head .sub{margin:0;max-width:30em}
 
 /* moving wall of real templates */
-.strip{overflow:hidden;padding:10px 0 30px;-webkit-mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent);mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent)}
-.track{display:flex;gap:22px;width:max-content;animation:slide 52s linear infinite}
-.strip:hover .track{animation-play-state:paused}
+.strip{overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:none;cursor:grab;padding:10px 0 30px;-webkit-mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent);mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent)}
+.strip::-webkit-scrollbar{display:none}.strip.grab{cursor:grabbing}.strip.grab a{pointer-events:none}
+.track{display:flex;gap:22px;width:max-content;padding:0 7vw}
 .track a{display:block;flex:none;border-radius:16px;position:relative;overflow:hidden;transition:transform .25s var(--ease);box-shadow:0 20px 50px rgba(0,0,0,.45)}
 .track a:hover{transform:translateY(-6px)}
 .track img{height:320px;width:auto;display:block;background:#1b1930;transition:transform .35s var(--ease)}
 .track a:hover img{transform:scale(1.03)}
-@keyframes slide{to{transform:translateX(calc(-50% - 11px))}}
 /* holographic foil: a light that follows the pointer over cards and pictures */
 .foil::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;transition:opacity .3s ease;mix-blend-mode:color-dodge;
  background:radial-gradient(260px circle at var(--mx,50%) var(--my,50%),rgba(255,255,255,.28),transparent 60%),conic-gradient(from calc(var(--mx,50%) * 3.6deg) at var(--mx,50%) var(--my,50%),rgba(111,243,255,.35),rgba(155,123,255,.35),rgba(255,111,216,.35),rgba(255,210,122,.35),rgba(111,243,255,.35))}
@@ -158,34 +160,34 @@ textarea.inp{height:auto;padding:12px 14px;resize:vertical;line-height:1.5}
 @media(max-width:480px){.row{flex-direction:column}.row .inp{flex:none}}
 
 /* background remover */
-.spot{display:grid;grid-template-columns:1fr 1.1fr;gap:64px;align-items:center}
+.spot{display:grid;grid-template-columns:1.1fr .9fr;gap:64px;align-items:center}
 .spot .tag{display:inline-flex;gap:8px;align-items:center;font:700 12.5px Inter,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#ffb48f;border:1px solid rgba(255,122,61,.35);background:rgba(255,122,61,.08);padding:7px 14px;border-radius:999px;margin-bottom:18px}
 .spot ul{list-style:none;padding:0;margin:0 0 30px;display:grid;gap:10px}
 .spot li{display:flex;gap:12px;align-items:center;font-size:16px}
 .spot li::before{content:"";width:22px;height:22px;flex:none;border-radius:50%;background:rgba(194,179,255,.14) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23c2b3ff' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 12.5l4 4 8-9'/%3E%3C/svg%3E") center/13px no-repeat}
-.demo{position:relative;aspect-ratio:5/4;border-radius:24px;overflow:hidden;box-shadow:0 0 0 1px rgba(255,255,255,.1),0 40px 100px rgba(0,0,0,.5)}
+.demo{position:relative;width:100%;max-width:500px;justify-self:center;aspect-ratio:5/4;border-radius:24px;overflow:hidden;box-shadow:0 0 0 1px rgba(255,255,255,.1),0 40px 100px rgba(0,0,0,.5)}
 .demo .lay{position:absolute;inset:0}
 .demo .lay svg{position:absolute;inset:0;width:100%;height:100%}
 .demo .cut{background:#16141f;background-image:linear-gradient(45deg,#24212f 25%,transparent 25%,transparent 75%,#24212f 75%),linear-gradient(45deg,#24212f 25%,transparent 25%,transparent 75%,#24212f 75%);background-size:28px 28px;background-position:0 0,14px 14px}
-.demo .orig{clip-path:inset(0 0 0 50%);animation:wipe 6s ease-in-out infinite}
+.demo .orig{clip-path:inset(0 0 0 var(--p,50%))}
 /* the divider is a beam of holographic light */
-.demo .bar{position:absolute;top:0;bottom:0;left:50%;width:3px;margin-left:-1.5px;background:linear-gradient(180deg,#6ff3ff,#9b7bff,#ff6fd8,#ffd27a);box-shadow:0 0 16px #9b7bff,0 0 42px rgba(111,243,255,.6);animation:bar 6s ease-in-out infinite}
+.demo .bar{position:absolute;top:0;bottom:0;left:50%;width:3px;margin-left:-1.5px;background:linear-gradient(180deg,#6ff3ff,#9b7bff,#ff6fd8,#ffd27a);box-shadow:0 0 16px #9b7bff,0 0 42px rgba(111,243,255,.6);left:var(--p,50%)}
 .demo .bar::after{content:"";position:absolute;top:50%;left:50%;width:42px;height:42px;margin:-21px 0 0 -21px;border-radius:50%;background:rgba(14,12,26,.85) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 7l-5 5 5 5M15 7l5 5-5 5'/%3E%3C/svg%3E") center/20px no-repeat;box-shadow:0 0 0 1px rgba(255,255,255,.3),0 6px 20px rgba(0,0,0,.5)}
 .demo .lbl{position:absolute;top:14px;font:700 12px Inter,sans-serif;letter-spacing:.08em;text-transform:uppercase;padding:6px 12px;border-radius:999px;background:rgba(14,12,26,.82);color:#fff;border:1px solid rgba(255,255,255,.18)}
 .demo .lbl.l{left:14px}.demo .lbl.r{right:14px}
-@keyframes wipe{0%,100%{clip-path:inset(0 0 0 78%)}50%{clip-path:inset(0 0 0 22%)}}
-@keyframes bar{0%,100%{left:78%}50%{left:22%}}
 .demo input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:ew-resize;z-index:2;touch-action:pan-y}
 .demo:focus-within{outline:3px solid var(--hi);outline-offset:3px}
-.demo.drag .orig{animation:none;clip-path:inset(0 0 0 var(--p))}
-.demo.drag .bar{animation:none;left:var(--p)}
+.demo .hint{position:absolute;top:calc(50% + 32px);left:var(--p,50%);transform:translateX(-50%);z-index:1;font:600 12px Inter,sans-serif;color:#fff;background:rgba(14,12,26,.82);border:1px solid rgba(255,255,255,.2);padding:4px 10px;border-radius:999px;pointer-events:none;transition:opacity .3s}
+.demo.used .hint{opacity:0}
+.demo.seen .bar::after{animation:nudge 1.4s ease-in-out 1}
+@keyframes nudge{0%,100%{transform:translateX(0);box-shadow:0 0 0 1px rgba(255,255,255,.3),0 6px 20px rgba(0,0,0,.5)}30%{transform:translateX(-10px)}60%{transform:translateX(10px);box-shadow:0 0 0 6px rgba(155,123,255,.35),0 6px 20px rgba(0,0,0,.5)}}
 @media(max-width:860px){.spot{grid-template-columns:1fr;gap:32px}}
 
 /* what's inside: glass cards with holographic edges */
 .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
 .card{position:relative;background:var(--glass);border:1px solid var(--line);border-radius:22px;padding:28px;overflow:hidden;transition:transform .25s var(--ease),border-color .25s ease,background .25s ease}
 .card:hover{transform:translateY(-2px);border-color:rgba(194,179,255,.4);background:rgba(255,255,255,.065)}
-.card .ic{width:50px;height:50px;border-radius:16px;display:grid;place-items:center;margin-bottom:20px;color:#07060c;background:var(--holo);background-size:300% 100%;animation:sheen 9s linear infinite}
+.card .ic{width:50px;height:50px;border-radius:16px;display:grid;place-items:center;margin-bottom:20px;color:#07060c;background:var(--holo);background-size:300% 100%;animation:none}
 .card .ic svg{width:25px;height:25px}
 .card h3{font-size:22px;margin-bottom:10px;letter-spacing:-.01em}
 .card p{margin:0;color:var(--muted);font-size:15.5px;line-height:1.6}
@@ -198,8 +200,8 @@ textarea.inp{height:auto;padding:12px 14px;resize:vertical;line-height:1.5}
 .steps h3{font-size:22px;margin-bottom:8px}
 .steps p{margin:0;color:var(--muted);font-size:15.5px}
 .band{position:relative;border-radius:32px;padding:104px 40px;text-align:center;overflow:hidden;isolation:isolate;border:1px solid var(--line);background:radial-gradient(80% 110% at 50% 125%,rgba(155,123,255,.5),transparent 62%),radial-gradient(55% 80% at 0% 0%,rgba(111,243,255,.16),transparent 62%),radial-gradient(55% 80% at 100% 0%,rgba(255,111,216,.18),transparent 62%),#0c0a16}
-.band::before{content:"";position:absolute;left:0;right:0;top:0;height:1px;background:var(--holo);background-size:300% 100%;animation:sheen 9s linear infinite}
-.band::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.07) 45%,transparent 60%) 0 0/250% 100%;animation:glide 7s ease-in-out infinite}
+.band::before{content:"";position:absolute;left:0;right:0;top:0;height:1px;background:var(--holo);background-size:300% 100%;animation:none}
+.band::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.07) 45%,transparent 60%) 0 0/250% 100%;animation:none}
 @keyframes glide{0%{background-position:120% 0}100%{background-position:-120% 0}}
 .band h2{font-size:clamp(44px,7vw,104px);margin-bottom:18px}
 .band p{color:#d6d2ec;margin:0 auto 34px;max-width:32em;font-size:18px}
@@ -298,8 +300,8 @@ html,body{overflow-x:clip}
    </div>
    <p class="note rise">No sign-up. Your designs stay on your device.</p>
   </div>
-  <div class="film" role="img" aria-label="A Shoof template building itself in the editor, then being edited and downloaded">
-   <div class="app" id="heroApp" aria-hidden="true">
+  <div class="film">
+   <div class="app" id="heroApp" role="img" aria-label="A Shoof template building itself in the editor, then being edited and downloaded">
     <div class="tb"><i></i><i></i><i></i><span class="ttl">Instagram post · 1080 × 1080</span><span class="sp"></span><span class="dl" id="heroDl">Download</span></div>
     <div class="bd">
      <div class="rail"><b></b><b></b><b></b><b></b><b></b><b></b></div>
@@ -308,6 +310,7 @@ html,body{overflow-x:clip}
     <div class="sel" id="heroSel"><i></i><i></i><i></i><i></i></div>
     <svg class="cur" id="heroCur" viewBox="0 0 24 24"><path d="M4 2.5l15 8.2-6.6 1.6 3.9 7.3-2.7 1.4-3.9-7.3-4.8 4.6z" fill="#fff" stroke="#07060c" stroke-width="1.4" stroke-linejoin="round"/></svg>
    </div>
+   <button type="button" class="replay" id="heroReplay" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>Replay</button>
    <div class="fchip c1" aria-hidden="true"><span class="d"></span>441 icons · 446 fonts</div>
    <div class="fchip c2 pop" id="chipSave" aria-hidden="true"><span class="d"></span>Saved: PNG, PDF, PowerPoint</div>
    <div class="fchip c3 pop" id="chipShoofy" aria-hidden="true"><svg class="mascot" viewBox="0 0 22 24"><path d="M11 1.5C7 6 3 9.8 3 14.4A8 8 0 0 0 19 14.4C19 9.8 15 6 11 1.5z" fill="#7b5cf5"/><circle cx="8.2" cy="14" r="2.6" fill="#fff"/><circle cx="13.8" cy="14" r="2.6" fill="#fff"/><circle cx="8.6" cy="14.4" r="1.2" fill="#07060c"/><circle cx="14.2" cy="14.4" r="1.2" fill="#07060c"/></svg>Shoofy: want to try another look?</div>
@@ -322,20 +325,13 @@ html,body{overflow-x:clip}
  </div>
  <div class="strip" aria-label="Example designs made with Shoof templates. Choose one to open it.">
  <div class="track">
-  <a href="./editor?tpl=neon_open" title="Use this template"><img src="welcome/neon_open.webp" width="440" height="440" alt="Neon sign post: Open late" loading="lazy"></a>
-  <a href="./editor?tpl=min_wedding" title="Use this template"><img src="welcome/min_wedding.webp" width="360" height="640" alt="Wedding invitation with an arch photo" loading="lazy"></a>
-  <a href="./editor?tpl=show_app" title="Use this template"><img src="welcome/show_app.webp" width="440" height="440" alt="App launch post with three phones" loading="lazy"></a>
-  <a href="./editor?tpl=retro_market" title="Use this template"><img src="welcome/retro_market.webp" width="440" height="440" alt="Retro farmers market badge" loading="lazy"></a>
-  <a href="./editor?tpl=hand_bake" title="Use this template"><img src="welcome/hand_bake.webp" width="440" height="440" alt="Handwritten bake sale post" loading="lazy"></a>
-  <a href="./editor?tpl=big_hiring" title="Use this template"><img src="welcome/big_hiring.webp" width="440" height="440" alt="Big type hiring post" loading="lazy"></a>
-  <a href="./editor?tpl=app_launch" title="Use this template"><img src="welcome/app_launch.webp" width="440" height="440" alt="App launch post with a phone mockup" loading="lazy"></a>
-  <a href="./editor?tpl=neon_open" tabindex="-1" aria-hidden="true"><img src="welcome/neon_open.webp" width="440" height="440" alt="" loading="lazy"></a>
-  <a href="./editor?tpl=min_wedding" tabindex="-1" aria-hidden="true"><img src="welcome/min_wedding.webp" width="360" height="640" alt="" loading="lazy"></a>
-  <a href="./editor?tpl=show_app" tabindex="-1" aria-hidden="true"><img src="welcome/show_app.webp" width="440" height="440" alt="" loading="lazy"></a>
-  <a href="./editor?tpl=retro_market" tabindex="-1" aria-hidden="true"><img src="welcome/retro_market.webp" width="440" height="440" alt="" loading="lazy"></a>
-  <a href="./editor?tpl=hand_bake" tabindex="-1" aria-hidden="true"><img src="welcome/hand_bake.webp" width="440" height="440" alt="" loading="lazy"></a>
-  <a href="./editor?tpl=big_hiring" tabindex="-1" aria-hidden="true"><img src="welcome/big_hiring.webp" width="440" height="440" alt="" loading="lazy"></a>
-  <a href="./editor?tpl=app_launch" tabindex="-1" aria-hidden="true"><img src="welcome/app_launch.webp" width="440" height="440" alt="" loading="lazy"></a>
+  <a href="./editor?tpl=neon_open" title="Use this template"><img src="welcome/neon_open.webp" width="440" height="440" alt="Neon sign post: Open late" loading="lazy" decoding="async"></a>
+  <a href="./editor?tpl=min_wedding" title="Use this template"><img src="welcome/min_wedding.webp" width="360" height="640" alt="Wedding invitation with an arch photo" loading="lazy" decoding="async"></a>
+  <a href="./editor?tpl=show_app" title="Use this template"><img src="welcome/show_app.webp" width="440" height="440" alt="App launch post with three phones" loading="lazy" decoding="async"></a>
+  <a href="./editor?tpl=retro_market" title="Use this template"><img src="welcome/retro_market.webp" width="440" height="440" alt="Retro farmers market badge" loading="lazy" decoding="async"></a>
+  <a href="./editor?tpl=hand_bake" title="Use this template"><img src="welcome/hand_bake.webp" width="440" height="440" alt="Handwritten bake sale post" loading="lazy" decoding="async"></a>
+  <a href="./editor?tpl=big_hiring" title="Use this template"><img src="welcome/big_hiring.webp" width="440" height="440" alt="Big type hiring post" loading="lazy" decoding="async"></a>
+  <a href="./editor?tpl=app_launch" title="Use this template"><img src="welcome/app_launch.webp" width="440" height="440" alt="App launch post with a phone mockup" loading="lazy" decoding="async"></a>
  </div>
  </div>
 </section>
@@ -373,7 +369,7 @@ html,body{overflow-x:clip}
    <div class="lay orig"><svg viewBox="0 0 360 288" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#bfe3ff"/><stop offset="1" stop-color="#fdf1dc"/></linearGradient></defs><rect width="360" height="288" fill="url(#sky)"/><circle cx="292" cy="62" r="30" fill="#ffd27a"/><path d="M0 196q60-40 120-10t130-6 110 14v94H0z" fill="#9fd3a8"/><path d="M0 230q80-26 170 0t190-6v64H0z" fill="#d9b991"/><rect x="24" y="112" width="18" height="96" fill="#8a6748"/><circle cx="33" cy="104" r="34" fill="#5fb072"/><g transform="translate(0,-122)"><g><path d="M170 300c-6-40-38-70-78-74 10 38 40 66 78 74z" fill="#2f9e5b"/><path d="M178 296c10-46 46-80 92-84-8 44-46 78-92 84z" fill="#3cb46d"/><path d="M174 302c-20-52-10-112 26-150 18 52 8 110-26 150z" fill="#27894e"/><path d="M174 300c-2-30 4-62 22-90" stroke="#1f6e3f" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M118 296h124l-14 96a14 14 0 0 1-14 12h-68a14 14 0 0 1-14-12z" fill="#e8590c"/><rect x="110" y="288" width="140" height="22" rx="8" fill="#c94d0a"/><path d="M150 330h60" stroke="#ffb07a" stroke-width="6" stroke-linecap="round"/></g></g></svg></div>
    </div>
    <div class="bar" aria-hidden="true"></div>
-   <span class="lbl l" aria-hidden="true">After</span><span class="lbl r" aria-hidden="true">Before</span>
+   <span class="hint" aria-hidden="true">Drag</span><span class="lbl l" aria-hidden="true">After</span><span class="lbl r" aria-hidden="true">Before</span>
    <input type="range" id="cutRange" min="4" max="96" value="50" aria-label="Drag to compare before and after">
   </div>
  </section>
@@ -446,6 +442,8 @@ html,body{overflow-x:clip}
 <script>
 try{if('serviceWorker'in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(function(){});}catch(e){}
 var RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+/* low-power mode: data saver, slow or small devices get still versions of the moving parts */
+var NC=navigator.connection||{},LITE=RM||!!NC.saveData||matchMedia('(prefers-reduced-data: reduce)').matches||(navigator.hardwareConcurrency||8)<=4||(navigator.deviceMemory||8)<=4;if(LITE)document.documentElement.classList.add('lite');
 function $(id){return document.getElementById(id);}
 /* fade sections in as they scroll into view; skipped entirely for reduced motion or old browsers */
 (function(){if(!('IntersectionObserver' in window)||RM)return;document.documentElement.classList.add('js');
@@ -479,13 +477,26 @@ document.querySelectorAll('.reveal').forEach(function(n){io.observe(n);});})();
  function size(){var k=Math.min(window.devicePixelRatio||1,2)*.5;c.width=Math.max(1,Math.round(c.clientWidth*k));c.height=Math.max(1,Math.round(c.clientHeight*k));gl.viewport(0,0,c.width,c.height);}
  addEventListener('resize',size);size();
  addEventListener('pointermove',function(e){tx=e.clientX/innerWidth;ty=1-e.clientY/innerHeight;},{passive:true});
- if('IntersectionObserver' in window)new IntersectionObserver(function(es){on=es[0].isIntersecting;},{threshold:0}).observe(c);
- function frame(now){requestAnimationFrame(frame);if(!on||document.hidden||now-last<33)return;last=now;mx+=(tx-mx)*.04;my+=(ty-my)*.04;gl.uniform2f(ur,c.width,c.height);gl.uniform1f(ut,(now-t0)/1000);gl.uniform2f(um,mx,my);gl.drawArrays(gl.TRIANGLES,0,3);if(!c.classList.contains('on'))c.classList.add('on');}
- requestAnimationFrame(frame);})();
+ /* draws only when needed: a short drift when the page opens, then only while the pointer moves; still on low-power devices */
+ var raf=0,tt=0,lt=0,until=0;
+ function draw(){gl.uniform2f(ur,c.width,c.height);gl.uniform1f(ut,tt);gl.uniform2f(um,mx,my);gl.drawArrays(gl.TRIANGLES,0,3);if(!c.classList.contains('on'))c.classList.add('on');}
+ function frame(now){raf=0;if(!on||window.HERO_OFF||document.hidden)return;var dt=lt?Math.min(now-lt,50):16;lt=now;mx+=(tx-mx)*.06;my+=(ty-my)*.06;var moving=Math.abs(tx-mx)+Math.abs(ty-my)>.002;tt+=dt/1000;draw();if(moving||now<until)raf=requestAnimationFrame(frame);else lt=0;}
+ function kick(ms){until=Math.max(until,performance.now()+(ms||0));if(!raf&&on&&!window.HERO_OFF&&!LITE)raf=requestAnimationFrame(frame);}
+ addEventListener('pointermove',function(){kick(400);},{passive:true});
+ addEventListener('resize',function(){draw();});
+ if('IntersectionObserver' in window)new IntersectionObserver(function(es){on=es[0].isIntersecting;if(on)kick(0);},{threshold:0}).observe(c);
+ tt=7.3;draw();if(!LITE)kick(2200);})();
 
 /* holographic foil: the light on cards and pictures follows the pointer */
 document.addEventListener('pointermove',function(e){var f=e.target.closest&&e.target.closest('.foil,.track a');if(!f)return;var r=f.getBoundingClientRect();f.style.setProperty('--mx',((e.clientX-r.left)/r.width*100).toFixed(1)+'%');f.style.setProperty('--my',((e.clientY-r.top)/r.height*100).toFixed(1)+'%');},{passive:true});
 [].forEach.call(document.querySelectorAll('.track a'),function(a){a.classList.add('foil');});
+/* template row: swipe on touch, drag or wheel with a mouse; a drag never opens a template by accident */
+(function(){var st=document.querySelector('.strip');if(!st)return;var x0=0,s0=0,down=false,moved=false;
+ st.addEventListener('pointerdown',function(e){if(e.pointerType!=='mouse'||e.button)return;down=true;moved=false;x0=e.clientX;s0=st.scrollLeft;});
+ addEventListener('pointermove',function(e){if(!down)return;var dx=e.clientX-x0;if(Math.abs(dx)>5){moved=true;st.classList.add('grab');}if(moved)st.scrollLeft=s0-dx;});
+ addEventListener('pointerup',function(){if(!down)return;down=false;setTimeout(function(){st.classList.remove('grab');},0);});
+ st.addEventListener('dragstart',function(e){e.preventDefault();});
+ st.scrollLeft=0;})();
 
 /* real Shoof templates, copied from the editor by tools/landing_try.py, redrawn with plain HTML */
 var T=/*@try*/[{"k":"neon_open","n":"Neon","els":[{"type":"rect","width":1080,"height":1080,"fill":"#0b0714","fillGradient":{"type":"radial","stops":[{"offset":0,"color":"#2b1248"},{"offset":1,"color":"#07040d"}]}},{"type":"rect","x":80,"y":80,"width":920,"height":920,"stroke":"#ff3d9a","strokeWidth":7,"radius":44,"shadowColor":"#ff3d9a","shadowBlur":36,"shadowOpacity":1},{"type":"rect","x":106,"y":106,"width":868,"height":868,"stroke":"#35e0ff","strokeWidth":3,"radius":28,"opacity":0.9,"shadowColor":"#35e0ff","shadowBlur":22,"shadowOpacity":1},{"type":"icon","x":480,"y":138,"width":120,"height":120,"stroke":"#35e0ff","strokeWidth":1.6,"shadowColor":"#35e0ff","shadowBlur":24,"shadowOpacity":1,"d":"M6 8l1.75 12.28a2 2 0 0 0 2 1.72h4.54a2 2 0 0 0 2-1.72L18 8M5 8h14M7 15a6.47 6.47 0 0 1 5 0 6.47 6.47 0 0 0 5 0M12 8l1-6h2"},{"type":"text","x":120,"y":288,"width":840,"fill":"#35e0ff","text":"COFFEE · DESSERTS · MUSIC","fontFamily":"Montserrat","fontSize":28,"bold":true,"align":"center","lineHeight":1.15,"letterSpacing":8},{"type":"text","x":120,"y":352,"width":840,"fill":"#ffffff","text":"OPEN\nLATE","fontFamily":"Righteous","fontSize":190,"align":"center","lineHeight":1.0,"shadowColor":"#ff3d9a","shadowBlur":46,"shadowOpacity":1},{"type":"text","x":120,"y":766,"width":840,"fill":"#35e0ff","text":"Every night until 2 am","fontFamily":"Fredoka","fontSize":48,"bold":true,"align":"center","lineHeight":1.15,"shadowColor":"#35e0ff","shadowBlur":22,"shadowOpacity":1},{"type":"text","x":120,"y":850,"width":840,"fill":"#d9cfee","text":"King Road, next to the park","fontFamily":"Open Sans","fontSize":28,"align":"center","lineHeight":1.15}]},{"k":"big_hiring","n":"Bold","els":[{"type":"rect","width":1080,"height":1080,"fill":"#e9e4ff"},{"type":"rect","x":-389,"y":606,"width":1836,"height":300,"fill":"#a493ff","rotation":-12},{"type":"rect","width":1080,"height":96,"fill":"#1d1640"},{"type":"text","y":24,"width":1080,"fill":"#e9e4ff","text":"JOIN THE TEAM · JOIN THE TEAM · JOIN THE TEAM","fontFamily":"Anton","fontSize":38,"align":"center","lineHeight":1.15,"letterSpacing":8},{"type":"rect","y":984,"width":1080,"height":96,"fill":"#1d1640"},{"type":"text","y":1008,"width":1080,"fill":"#e9e4ff","text":"JOIN THE TEAM · JOIN THE TEAM · JOIN THE TEAM","fontFamily":"Anton","fontSize":38,"align":"center","lineHeight":1.15,"letterSpacing":8},{"type":"text","x":40,"y":266,"width":1000,"fill":"#1d1640","text":"WE ARE\nHIRING","fontFamily":"Anton","fontSize":228,"align":"center","lineHeight":1.0},{"type":"text","x":100,"y":744,"width":880,"fill":"#1d1640","text":"Designers, baristas and store staff","fontFamily":"Space Grotesk","fontSize":36,"bold":true,"align":"center","lineHeight":1.15},{"type":"ellipse","x":806,"y":118,"width":230,"height":230,"fill":"#1d1640","shadowColor":"#000000","shadowBlur":18,"shadowY":8,"shadowOpacity":0.25},{"type":"ellipse","x":818,"y":130,"width":206,"height":206,"stroke":"#e9e4ff","strokeWidth":3},{"type":"text","x":826,"y":179,"width":190,"fill":"#e9e4ff","text":"3 NEW\nROLES","fontFamily":"Anton","fontSize":50,"align":"center","lineHeight":1.08},{"type":"rect","x":402,"y":893,"width":275,"height":69,"fill":"#1d1640","radius":34},{"type":"text","x":402,"y":910,"width":275,"fill":"#e9e4ff","text":"Apply today","fontFamily":"Inter","fontSize":30,"bold":true,"align":"center","lineHeight":1.2}]},{"k":"min_spa","n":"Elegant","els":[{"type":"rect","width":1080,"height":1080,"fill":"#eef1ec"},{"type":"rect","x":40,"y":40,"width":1000,"height":1000,"stroke":"#7d9a84","strokeWidth":2},{"type":"ellipse","x":316,"y":420,"width":120,"height":120,"fill":"#7d9a84","opacity":0.35},{"type":"placeholder","x":350,"y":100,"width":380,"height":470,"fill":"#cfd9d0","mask":"arch"},{"type":"text","x":90,"y":618,"width":900,"fill":"#2f3b33","text":"NOW OPEN","fontFamily":"Montserrat","fontSize":22,"bold":true,"align":"center","lineHeight":1.15,"letterSpacing":7},{"type":"text","x":90,"y":676,"width":900,"fill":"#2f3b33","text":"Calm Studio","fontFamily":"Cormorant Garamond","fontSize":104,"bold":true,"align":"center","lineHeight":1.05},{"type":"rect","x":490,"y":815,"width":100,"height":2,"fill":"#7d9a84"},{"type":"text","x":90,"y":845,"width":900,"fill":"#2f3b33","text":"MASSAGE · FACIALS · STEAM","fontFamily":"Montserrat","fontSize":23,"bold":true,"align":"center","lineHeight":1.15,"letterSpacing":4},{"type":"text","x":90,"y":891,"width":900,"fill":"#2f3b33","text":"Book your first visit, 20% off","fontFamily":"Cormorant Garamond","fontSize":36,"align":"center","lineHeight":1.15}]}]/*@try*/;
@@ -506,16 +517,18 @@ function fitText(big,v){if(!big)return '';var e=big.e,n=big.n,up=e.text===e.text
    Runs only while it is on screen; for reduced motion it shows the finished design and stays still. */
 (function(){var st=$('heroStage'),pg=$('heroPage'),app=$('heroApp');if(!st||!T.length)return;
  function size(){st.style.transform='scale('+pg.clientWidth/1080+')';}size();addEventListener('resize',size);
- var i=0,big=paint(st,0);if(RM||!window.Promise)return;
+ var i=0,big=paint(st,0);if(LITE||!window.Promise)return;
  var PH={neon_open:'NIGHT\nMARKET',big_hiring:'JOIN\nTHE TEAM',min_spa:'Slow Sundays'},cur=$('heroCur'),sel=$('heroSel'),dl=$('heroDl'),scan=$('heroScan'),save=$('chipSave'),shy=$('chipShoofy'),vis=true;
  if('IntersectionObserver' in window)new IntersectionObserver(function(es){vis=es[0].isIntersecting;},{threshold:.15}).observe(app);
- function wait(ms){return new Promise(function(res){var left=ms,last=Date.now();(function tick(){var n=Date.now();if(vis&&!document.hidden)left-=n-last;last=n;if(left<=0)res();else setTimeout(tick,40);})();});}
+ function wait(ms){return new Promise(function(res){var left=ms,last=Date.now();(function tick(){var n=Date.now();if(vis&&!window.HERO_OFF&&!document.hidden)left-=n-last;last=n;if(left<=0)res();else setTimeout(tick,40);})();});}
  function rel(node){var r=node.getBoundingClientRect(),a=app.getBoundingClientRect();return {x:r.left-a.left,y:r.top-a.top,w:r.width,h:r.height};}
  function go(x,y){cur.style.transform='translate('+Math.round(x)+'px,'+Math.round(y)+'px)';}
  function box(){var b=rel(big.n);sel.style.left=(b.x-6)+'px';sel.style.top=(b.y-6)+'px';sel.style.width=(b.w+12)+'px';sel.style.height=(b.h+12)+'px';}
  function tap(){cur.classList.remove('tap');void cur.offsetWidth;cur.classList.add('tap');}
  function parts(show){[].forEach.call(st.children,function(n){if(!show){n.dataset.o=n.style.opacity||'';n.style.transition='opacity .6s ease,filter .6s ease';n.style.opacity=0;n.style.filter='blur(12px)';}});}
- async function run(){var a=app.getBoundingClientRect();go(a.width*.82,a.height*.86);
+ var rp=$('heroReplay'),busy=false;
+ /* plays two looks, then stops on the finished design with a Replay button */
+ async function run(){if(busy)return;busy=true;if(rp)rp.hidden=true;var a=app.getBoundingClientRect(),runs=0;go(a.width*.82,a.height*.86);
   for(;;){var L=T[i];big=paint(st,i);parts(false);scan.classList.remove('go');void scan.offsetWidth;scan.classList.add('go');await wait(350);
    for(var k=0;k<st.children.length;k++){var n=st.children[k];n.style.opacity=n.dataset.o;n.style.filter='';await wait(75);}
    await wait(700);var b=rel(big.n);go(b.x+b.w*.72,b.y+b.h*.55);await wait(1000);tap();box();sel.classList.add('on');await wait(500);
@@ -524,7 +537,9 @@ function fitText(big,v){if(!big)return '';var e=big.e,n=big.n,up=e.text===e.text
    for(var j=0;j<want.length;j++){txt+=want[j];fitText(big,txt);box();await wait(want[j]==='\n'?160:85);}
    await wait(1100);sel.classList.remove('on');var d=rel(dl);go(d.x+d.w*.55,d.y+d.h*.65);await wait(1000);tap();dl.classList.add('press');save.classList.add('on');await wait(260);dl.classList.remove('press');
    await wait(1300);shy.classList.add('on');await wait(1500);save.classList.remove('on');a=app.getBoundingClientRect();go(a.width*.84,a.height*.84);await wait(900);
+   if(++runs>=2){await wait(1200);shy.classList.remove('on');i=(i+1)%T.length;busy=false;if(rp)rp.hidden=false;return;}
    [].forEach.call(st.children,function(n){n.style.opacity=0;n.style.filter='blur(12px)';});await wait(650);shy.classList.remove('on');i=(i+1)%T.length;}}
+ if(rp)rp.addEventListener('click',run);
  if(document.fonts&&document.fonts.ready)document.fonts.ready.then(run);else run();})();
 
 /* Try it: the visitor's own headline goes into a real template; the button opens that template with the same words */
@@ -537,7 +552,8 @@ T.forEach(function(t,i){var b=document.createElement('button');b.type='button';b
 inp.addEventListener('input',fit);addEventListener('resize',size);if(document.fonts&&document.fonts.addEventListener)document.fonts.addEventListener('loadingdone',fit);draw();size();
 $('tryDescForm').addEventListener('submit',function(ev){ev.preventDefault();var d=$('tryDesc').value.replace(/\s+/g,' ').trim();if(d.length<3){$('tryDesc').focus();return;}location.href='./editor?describe='+encodeURIComponent(d.slice(0,300));});})();
 /* before / after: dragging (or the arrow keys) moves the divider and stops the automatic wipe */
-(function(){var r=$('cutRange');if(!r)return;var d=r.parentNode;r.addEventListener('input',function(){d.classList.add('drag');d.style.setProperty('--p',r.value+'%');});})();
+(function(){var r=$('cutRange');if(!r)return;var d=r.parentNode;r.addEventListener('input',function(){d.classList.add('used');d.style.setProperty('--p',r.value+'%');});
+ if(!RM&&'IntersectionObserver' in window){var io=new IntersectionObserver(function(es){if(es[0].isIntersecting){d.classList.add('seen');io.disconnect();}},{threshold:.6});io.observe(d);}})();
 /* dialogs: close buttons and a click on the dark area close them */
 [].forEach.call(document.querySelectorAll('dialog'),function(d){d.addEventListener('click',function(ev){if(ev.target===d||ev.target.closest('[data-x]'))d.close();});});
 /* Feedback: the message goes to api/feedback (saved in Shoof's own database). Nothing is sent until Send is pressed. Where that is not available the visitor gets the GitHub link instead. */
@@ -567,7 +583,7 @@ document.addEventListener('focusin',function(e){var el=e.target;if(!H.classList.
 var nav=document.createElement('nav');nav.className='rdots';nav.setAttribute('aria-label','Sections');
 secs.forEach(function(s,i){if(!s.id)s.id='sec'+i;var a=document.createElement('a');a.href='#'+s.id;a.setAttribute('aria-label',i===0?'Top':(names[s.id]||'Get started'));a.addEventListener('click',function(e){e.preventDefault();go(s,'start');});nav.appendChild(a);});
 document.body.appendChild(nav);var dots=[].slice.call(nav.children);
-var on=!RM;if(on){document.documentElement.classList.add('stk');secs.forEach(function(s,i){s.classList.add('pnl');if(i){var b=document.createElement('i');b.className='rbg';b.setAttribute('aria-hidden','true');s.appendChild(b);}var d=document.createElement('i');d.className='rdim';d.setAttribute('aria-hidden','true');s.appendChild(d);s._dim=d;});
+var on=!RM,lite=LITE;if(on){document.documentElement.classList.add('stk');secs.forEach(function(s,i){s.classList.add('pnl');if(i){var b=document.createElement('i');b.className='rbg';b.setAttribute('aria-hidden','true');s.appendChild(b);}var d=document.createElement('i');d.className='rdim';d.setAttribute('aria-hidden','true');s.appendChild(d);s._dim=d;});
  var ft=document.querySelector('footer');if(ft){ft.classList.add('pft');var fb=document.createElement('i');fb.className='rbg';fb.setAttribute('aria-hidden','true');ft.appendChild(fb);}}
 var tick=0,mob=matchMedia('(max-width:700px)');
 function cl(v){return v<0?0:v>1?1:v}
@@ -575,10 +591,10 @@ function tops(){var vh=innerHeight;secs.forEach(function(s){s.style.top=Math.min
 function run(){tick=0;var vh=innerHeight,vis=secs.filter(function(s){return !s.hidden;}),best=0,R=vis.map(function(s){return s.getBoundingClientRect();});
  secs.forEach(function(s,i){dots[i].hidden=s.hidden;});
  vis.forEach(function(s,k){var r=R[k],nx=R[k+1];if(r.top<vh*.5)best=secs.indexOf(s);
-  if(!on)return;var t='',dim=0,A=mob.matches?6:10;
-  var p=nx?cl((vh-nx.top)/vh):0;
-  if(p>0){t='scale('+(1-.1*p).toFixed(4)+') translateY('+(-p*3).toFixed(2)+'%)';dim=p*.7;}
-  else if(k&&r.top>0){var q=cl(r.top/vh);t='perspective(1200px) rotateX('+(q*A).toFixed(2)+'deg) scale('+(1-.04*q).toFixed(4)+')';}
+  if(!on)return;var t='',dim=0,A=lite?0:mob.matches?6:10;
+  var p=nx?cl((vh-nx.top)/vh):0;if(k===0)window.HERO_OFF=p>.9;
+  if(p>0){if(!lite)t='scale('+(1-.1*p).toFixed(4)+') translateY('+(-p*3).toFixed(2)+'%)';dim=p*.7;}
+  else if(k&&r.top>0&&!lite){var q=cl(r.top/vh);t='perspective(1200px) rotateX('+(q*A).toFixed(2)+'deg) scale('+(1-.04*q).toFixed(4)+')';}
   s.style.transform=t;if(s._dim)s._dim.style.opacity=dim?dim.toFixed(3):'0';});
  dots.forEach(function(d,i){d.setAttribute('aria-current',String(i===best));});
  [].forEach.call(document.querySelectorAll('.reveal:not(.in)'),function(n){if(n.getBoundingClientRect().top<vh*.92)n.classList.add('in');});}
