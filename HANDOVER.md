@@ -6,6 +6,7 @@ Shoof is Shary's free, browser-only design editor (posts, posters, slides, logos
 
 ## Status
 - Done (all pushed, full suite 117/117 green locally on 2026-11-17):
+  - **Landing page redesign (2026-11-17):** dark holographic look; the hero has a live light field (WebGL) and a real Shoof editor window in which a template builds itself, gets its headline retyped and is downloaded, on a loop. Reduced motion shows it still.
   - **Shoofy hands presentations to the maker (2026-11-17):** asking Shoofy for a ppt / slides / deck now opens the Presentation maker with a topic filled in, instead of making single-page designs.
   - **Presentation maker (2026-11-17):** home tile → type a topic (free AI writes the slides) or paste own text → six looks → opens as an editable 16:9 deck. PowerPoint export as before.
   - **Logo maker upgrade (2026-11-17):** 441 icons, 18 abstract marks, symbol picker, kinds (any / with a symbol / name only / initials), 18 layouts, logo pack download (PNG + SVG for light and dark backgrounds, square icon).

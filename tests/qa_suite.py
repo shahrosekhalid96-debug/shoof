@@ -3081,7 +3081,7 @@ def t_landing(B):
         pg.add_script_tag(path=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'vendor', 'axe.min.js'))
         bad = pg.evaluate("axe.run(document,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21a','wcag21aa']}}).then(r=>r.violations.map(v=>v.id+': '+v.nodes.length))")
         eq(bad, [], f'accessibility at {w}'); ok(not errs, errs); pg.close()
-    ok(os.path.getsize(os.path.join(APP_DIR, 'welcome.html')) < 60000, 'page stays light')  # raised from 30 KB on 2026-11-16: live preview, feedback box, install button
+    ok(os.path.getsize(os.path.join(APP_DIR, 'welcome.html')) < 70000, 'page stays light')  # 30 KB → 60 KB on 2026-11-16 (live preview, feedback, install), 70 KB on 2026-11-17 (holographic hero film)
     ok(sum(os.path.getsize(os.path.join(APP_DIR, 'welcome', f)) for f in os.listdir(os.path.join(APP_DIR, 'welcome'))) < 200000, 'pictures stay light')
     pg = c.page.context.new_page(); pg.emulate_media(reduced_motion='reduce'); pg.goto(base + '/welcome.html'); pg.wait_for_timeout(300)
     ok(pg.evaluate("getComputedStyle(document.querySelector('.track')).animationName==='none'&&!document.documentElement.classList.contains('js')"), 'motion is off when the visitor asks for less motion'); pg.close()
@@ -3141,7 +3141,7 @@ def t_pwa(B):
     out = os.path.join(APP_DIR, '_site'); shutil.rmtree(out, ignore_errors=True)
     r = subprocess.run(['bash', os.path.join(APP_DIR, 'tools', 'build-site.sh')], capture_output=True, text=True); eq(r.returncode, 0, r.stderr)
     try:
-        ok('Designs that look' in open(os.path.join(out, 'index.html'), encoding='utf-8').read(), 'home page is the landing page')
+        ok('Posts, posters, slides, logos.' in open(os.path.join(out, 'index.html'), encoding='utf-8').read(), 'home page is the landing page')
         eq(open(os.path.join(out, 'editor.html'), encoding='utf-8').read(), open(APP, encoding='utf-8').read(), 'editor at /editor')
         for f in ['sw.js', 'manifest.webmanifest', 'icons/icon-512.png', 'welcome/big_sale.webp', 'vendor/ai/u2netp.onnx', 'fonts/fonts.css']: ok(os.path.exists(os.path.join(out, f)), f)
         for f in ['tests', 'tools', 'functions', 'CLAUDE.md']: ok(not os.path.exists(os.path.join(out, f)), f'{f} not published')
