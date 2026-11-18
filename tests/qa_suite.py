@@ -1076,7 +1076,7 @@ def t_a11y(B):
     c = Ctx(B); c.ev("()=>{addShape('rect')}"); c.tab('layers')
     missing = c.ev("""()=>[...document.querySelectorAll('button')].filter(b=>b.getClientRects().length&&!(b.textContent.trim().replace(/[^\\p{L}\\p{N}]/gu,'').length>1)&&!b.getAttribute('aria-label')).map(b=>b.outerHTML.slice(0,80))""")
     ok(not missing, f'icon-only buttons without aria-label: {missing[:5]}')
-    ok(c.ev("getComputedStyle(document.querySelector('.menu small')).color") == 'rgb(107, 114, 128)', 'export note colour must be --muted (#6b7280, 4.8:1)')
+    ok(c.ev("getComputedStyle(document.querySelector('.menu small')).color") == 'rgb(169, 167, 191)', 'export note colour must be --muted (#a9a7bf on the dark menu, 7:1)')
     ok('focus-visible' in open(APP, encoding='utf-8').read(), 'no :focus-visible style')
     eq(c.ev("getComputedStyle(document.querySelector('#rail button')).display"), 'flex', 'rail')
     c.tab('uploads'); eq(c.ev("getComputedStyle(document.querySelector('.drop')).display"), 'block', '.drop must be display:block')
