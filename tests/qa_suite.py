@@ -1572,7 +1572,7 @@ def t_home(B):
     c = Ctx(B, home=True)
     ok(_home_visible(c), 'home screen should show on boot')
     eq(c.ev("['#undoBtn','#redoBtn','#exportBtn','#saveBtn','#sizeSel','#homeBtn'].filter(s=>$(s).getClientRects().length)"), [], 'editor-only header controls hidden on home')
-    eq(c.page.locator('#home .tile').count(), 8, 'category tiles')
+    eq(c.page.locator('#home .tile').count(), 10, 'category tiles')
     eq(c.ev("[...document.querySelectorAll('#home .hsec h2')].map(h=>h.textContent)"), ['Trending', 'Picks for you'], 'rows')
     c.page.wait_for_function("document.querySelectorAll('#home .hrow .hthumb img').length>=12", timeout=10000)
     eq(c.ev("$('#homeGo').textContent"), 'Open the editor', 'first-visit primary action')
@@ -2557,6 +2557,68 @@ def t_bg_remove(B):
     ok(not c.errors, c.errors); c.close()
 
 
+@test('upscaler_and_magic_layers')
+def t_up_magic(B):
+    import base64
+    c = Ctx(B, home=True)
+    for k in ['magic', 'upscale']:
+        tl = c.page.locator('#home [data-tile="%s"]' % k)
+        ok(tl.is_visible() and 'Free AI' in tl.text_content(), k + ' tile on the home screen with the Free AI badge')
+    c.ev("hideHome()"); c.blank(1080, 1080)
+    # a flat poster: gradient, a red circle (the subject), a bold headline and a smaller line
+    src = c.ev("""async()=>{await document.fonts.load('bold 120px Inter');await document.fonts.load('44px Inter');const k=document.createElement('canvas');k.width=1080;k.height=1080;const x=k.getContext('2d');
+     const g=x.createLinearGradient(0,0,0,1080);g.addColorStop(0,'#ffe9c7');g.addColorStop(1,'#ffc38a');x.fillStyle=g;x.fillRect(0,0,1080,1080);
+     x.fillStyle='#c83c32';x.beginPath();x.arc(540,700,220,0,7);x.fill();x.fillStyle='#1d2330';x.font='bold 120px Inter';x.textAlign='center';x.fillText('SUMMER SALE',540,230);
+     x.font='44px Inter';x.fillStyle='#5a3a1a';x.fillText('Everything 50% off this weekend',540,320);
+     const im=x.getImageData(0,0,1080,1080),q=im.data;let r=7;for(let i=0;i<q.length;i+=4){r=(r*1103515245+12345)&0x7fffffff;const n=(r%61)-30;q[i]+=n;q[i+1]+=n;q[i+2]+=n;}x.putImageData(im,0,0);return k.toDataURL('image/jpeg',0.92);}""")
+    c.ev("s=>{const e=el('image',{src:s,x:0,y:0,width:1080,height:1080,radius:0});doc.elements.push(e);selId=e.id;fullRender();commit();renderProps();}", src)
+    ok(c.page.locator('#pUpscale').is_visible() and c.page.locator('#pMagic').is_visible(), 'photo panel offers Upscale and Magic layers')
+    n0 = c.ev("doc.elements.length"); u0 = c.ev("undoStack.length")
+    c.page.click('#pMagic')
+    c.page.wait_for_function("!mlBusy", timeout=240000)
+    tx = c.ev("doc.elements.filter(e=>e.type==='text').map(e=>({t:e.text,fs:e.fontSize,x:e.x,w:e.width,y:e.y,fill:e.fill,bold:e.bold,f:e.fontFamily}))")
+    eq(len(tx), 2, 'two editable text layers')
+    head = [x for x in tx if 'SUMMER' in x['t'].upper()]; sub = [x for x in tx if '50%' in x['t']]
+    ok(head and sub, 'both lines read: %s' % [x['t'] for x in tx])
+    ok(abs(head[0]['fs'] - 120) < 10 and head[0]['bold'], 'headline size and weight match (%s)' % head[0])
+    ok(abs(sub[0]['fs'] - 44) < 5, 'subline size matches (%s)' % sub[0]['fs'])
+    ok(abs(head[0]['x'] + head[0]['w'] / 2 - 540) < 20, 'headline stays centred %s' % head[0])
+    imgs = c.ev("doc.elements.filter(e=>e.type==='image').map(e=>[Math.round(e.x),Math.round(e.y),Math.round(e.width),Math.round(e.height)])")
+    eq(len(imgs), 2, 'background + lifted subject')
+    sx, sy, sw, sh = imgs[1]; ok(abs(sx - 320) < 20 and abs(sy - 480) < 20 and abs(sw - 440) < 30, 'subject is the circle: %s' % imgs[1])
+    eq(c.ev("undoStack.length") - u0, 1, 'one undo step')
+    ok(c.ev("(()=>{const ids=sel();return ids.length===3})()"), 'new layers are selected')
+    # the background has no text left where the headline was, and the result still looks like the original
+    stats = c.ev("""s=>new Promise(r=>{const bg=doc.elements.find(e=>e.type==='image');const a=new Image(),b=new Image();let n=0;const go=()=>{if(++n<2)return;const k=document.createElement('canvas');k.width=k.height=1080;const x=k.getContext('2d',{willReadFrequently:true});
+      x.drawImage(b,0,0,1080,1080);const d=x.getImageData(140,130,800,110).data;let m=0,q=0;for(let i=0;i<d.length;i+=4){const v=(d[i]+d[i+1]+d[i+2])/3;m+=v;q+=v*v;}const N=d.length/4,sd=Math.sqrt(q/N-(m/N)**2);
+      selId=null;fullRender();const out=new Image();out.onload=()=>{const S=180;x.imageSmoothingQuality='high';x.drawImage(a,0,0,S,S);const A=x.getImageData(0,0,S,S).data;x.drawImage(out,0,0,S,S);const O=x.getImageData(0,0,S,S).data;let df=0;for(let i=0;i<A.length;i+=4)df+=(Math.abs(A[i]-O[i])+Math.abs(A[i+1]-O[i+1])+Math.abs(A[i+2]-O[i+2]))/3;r([sd,df/(S*S)]);};out.src=renderExport('image/png');};
+      a.onload=b.onload=go;a.src=s;b.src=bg.src;})""", src)
+    ok(stats[0] < 16, 'text erased from the background (spread %.1f)' % stats[0])
+    ok(stats[1] < 5, 'rebuilt design looks like the original (mean diff %.1f)' % stats[1])
+    c.ev("undo()"); eq(c.ev("doc.elements.length"), n0, 'undo brings the flat picture back')
+    # a plain photo with no text and no subject changes nothing
+    c.ev("()=>{const k=document.createElement('canvas');k.width=k.height=600;const x=k.getContext('2d');x.fillStyle='#7aa0c8';x.fillRect(0,0,600,600);const e=el('image',{src:k.toDataURL('image/jpeg',0.9),x:0,y:0,width:1080,height:1080,radius:0});doc.elements=[e];selId=e.id;fullRender();commit();}")
+    u1 = c.ev("undoStack.length"); c.ev("magicLayers(selId)"); c.page.wait_for_function("!mlBusy", timeout=120000)
+    eq(c.ev("undoStack.length"), u1, 'nothing found: nothing changes')
+    # upscaler: 200x150 -> 800x600, same size on the page, one undo step
+    s2 = c.ev("()=>{const k=document.createElement('canvas');k.width=200;k.height=150;const x=k.getContext('2d');x.fillStyle='#345';x.fillRect(0,0,200,150);x.fillStyle='#fc6';x.font='bold 30px Inter';x.fillText('Shoof',30,80);return k.toDataURL('image/jpeg',0.8)}")
+    c.ev("s=>{const e=el('image',{src:s,x:100,y:100,width:800,height:600,radius:0});doc.elements=[e];selId=e.id;fullRender();commit();renderProps();}", s2)
+    u2 = c.ev("undoStack.length"); c.page.click('#pUpscale'); c.page.wait_for_function("!upBusy", timeout=180000)
+    eq(c.ev("new Promise(r=>{const i=new Image();i.onload=()=>r([i.naturalWidth,i.naturalHeight]);i.src=byId(selId).src})"), [800, 600], 'photo now has 4x the pixels')
+    eq([c.ev("byId(selId).width"), c.ev("byId(selId).height")], [800, 600], 'same size on the page')
+    eq(c.ev("undoStack.length") - u2, 1, 'one undo step')
+    big = c.ev("()=>{const k=document.createElement('canvas');k.width=2600;k.height=400;return k.toDataURL('image/jpeg',0.5)}")
+    c.ev("s=>{const e=el('image',{src:s,x:0,y:0,width:800,height:123,radius:0});doc.elements=[e];selId=e.id;fullRender();commit();}", big)
+    u3 = c.ev("undoStack.length"); c.ev("upscaleImg(selId)"); c.page.wait_for_function("!upBusy", timeout=60000)
+    eq(c.ev("undoStack.length"), u3, 'already big photos are left alone')
+    # Photos tab + Shoofy
+    c.tab('photos'); ok(c.page.locator('#drawer [data-upgo]').is_visible() and c.page.locator('#drawer [data-mlgo]').is_visible(), 'Photos tab has both tools')
+    eq(c.ev("shLocal('can you make this photo sharper').actions[0].do"), 'upscale', 'Shoofy: sharper → upscaler')
+    eq(c.ev("shLocal('turn this poster into layers').actions[0].do"), 'magic_layers', 'Shoofy: layers → Magic layers')
+    eq(c.ev("shLocal('make the text in this picture editable').actions[0].do"), 'magic_layers', 'Shoofy: editable text → Magic layers')
+    ok(not c.errors, c.errors); c.close()
+
+
 @test('background_remover_from_home')
 def t_bg_home(B):
     c = Ctx(B, home=True)
@@ -3218,7 +3280,7 @@ def t_pwa(B):
     try:
         ok('Posts, posters, slides, logos.' in open(os.path.join(out, 'index.html'), encoding='utf-8').read(), 'home page is the landing page')
         eq(open(os.path.join(out, 'editor.html'), encoding='utf-8').read(), open(APP, encoding='utf-8').read(), 'editor at /editor')
-        for f in ['sw.js', 'manifest.webmanifest', 'icons/icon-512.png', 'welcome/big_sale.webp', 'vendor/ai/u2netp.onnx', 'fonts/fonts.css']: ok(os.path.exists(os.path.join(out, f)), f)
+        for f in ['sw.js', 'manifest.webmanifest', 'icons/icon-512.png', 'welcome/big_sale.webp', 'vendor/ai/u2netp.onnx', 'vendor/ai/realesr-general-x4v3.onnx', 'vendor/ocr/eng.traineddata.gz', 'vendor/ocr/worker.min.js', 'fonts/fonts.css']: ok(os.path.exists(os.path.join(out, f)), f)
         for f in ['tests', 'tools', 'functions', 'CLAUDE.md']: ok(not os.path.exists(os.path.join(out, f)), f'{f} not published')
     finally: shutil.rmtree(out, ignore_errors=True)
 

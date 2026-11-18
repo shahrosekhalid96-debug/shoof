@@ -37,6 +37,8 @@ Arabic is fully supported, not added as an afterthought. The interface switches 
 - **Presentation maker (free)**: type a topic and the free AI writes the slides, or paste your own text (nothing is sent anywhere in that case); Shoof designs every slide in six looks to choose from, everything stays editable, and Download → PowerPoint gives a real .pptx
 - **Bulk create (free)**: paste rows from Excel or Google Sheets, drop `{Column}` tags into a design, and get one page per row or a zip of PNGs (name cards, price tags, certificates, one post per product)
 - **Background remover (free, private)**: a small AI model runs in your browser, so photos never leave your device
+- **Photo upscaler (free, private)**: Real-ESRGAN runs in your browser and gives a small or blurry photo up to 4× the detail
+- **Magic layers (free, private)**: turns a flat picture (a poster, a screenshot) into layers. The text is read on your device and becomes editable text, the main subject is lifted out, and the background behind them is filled in
 - **Text effects and curved text**: one-click soft shadow, retro, hollow, neon, sticker and marker looks; bend any line into an arc
 - **Share and animate**: copy a link that carries the whole design (nothing uploaded), free public-domain photo search (Openverse), animated video or GIF export
 - **Handy tools**: QR code maker (always scannable), photo duotone and tint, copy style / paste style, text that fits its box
