@@ -467,7 +467,9 @@ header{background:#17161f}
 .rail{background:#0e0d14}
 .rail button.on,.rail button:hover{background:#262438}
 .drawer,.props{background:var(--panel)}
-#stage{box-shadow:0 0 0 1px rgba(255,255,255,.06),0 10px 40px rgba(0,0,0,.55)}
+/* work area is a lighter mid-grey so dark AND light pages both stand out (2026-11-18) */
+.stage-area{background-color:#3a3948;background-image:radial-gradient(rgba(255,255,255,.07) 1px,transparent 1.2px);background-size:22px 22px}
+#stage{box-shadow:0 0 0 1px rgba(255,255,255,.18),0 6px 24px rgba(0,0,0,.35)}
 .hint{background:var(--accent-soft);color:#ddd4ff}
 .shm.bot p{background:#2b2448;color:#ece8ff}
 .shchips button{background:var(--card);border-color:#4a3f80;color:#d9d0ff}
