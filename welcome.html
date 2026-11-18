@@ -252,6 +252,16 @@ dialog .msg a{color:var(--hi)}
  *,*::before,*::after{animation:none!important;transition:none!important}
  .js .reveal{opacity:1;transform:none}
 }
+
+/* Rolling scroll (2026-11-18): each section tilts in from below like a turning drum, flattens in the middle and rolls away at the top; dots on the right show where you are */
+.rl{transform-origin:50% 50%}
+html,body{overflow-x:clip}
+.rdots{position:fixed;right:18px;top:50%;transform:translateY(-50%);z-index:30;display:flex;flex-direction:column;gap:12px}
+.rdots a{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.22);display:block;transition:transform .3s,background .3s}
+.rdots a:hover{background:rgba(255,255,255,.5)}
+.rdots a[aria-current=true]{background:var(--holo);background-size:300% 100%;transform:scale(1.5);box-shadow:0 0 12px rgba(155,123,255,.7)}
+@media (max-width:700px){.rdots{right:8px;gap:10px}.rdots a{width:8px;height:8px}}
+@media (prefers-reduced-motion:reduce){.rdots a{transition:none}}
 </style>
 </head>
 <body>
@@ -537,6 +547,30 @@ $('fbForm').addEventListener('submit',function(ev){ev.preventDefault();if(busy)r
 function show(){var on=!alone&&(!!ev||(ios&&!!(d&&d.showModal)));btns.forEach(function(b){b.hidden=!on;});}
 addEventListener('beforeinstallprompt',function(e){e.preventDefault();ev=e;show();});addEventListener('appinstalled',function(){ev=null;alone=true;show();});
 btns.forEach(function(b){b.addEventListener('click',function(){if(ev){var e=ev;ev=null;e.prompt();if(e.userChoice)e.userChoice.then(show,show);else show();}else if(d&&d.showModal)d.showModal();});});show();})();
+
+(function(){var secs=[].slice.call(document.querySelectorAll('.hero,body>section,body>.wrap>section'));if(!secs.length)return;
+var names={examples:'Made in Shoof',try:'Try it',cutout:'Background remover',inside:"What's inside"};
+var nav=document.createElement('nav');nav.className='rdots';nav.setAttribute('aria-label','Sections');
+secs.forEach(function(s,i){if(!s.id)s.id='sec'+i;var a=document.createElement('a');a.href='#'+s.id;a.setAttribute('aria-label',i===0?'Top':(names[s.id]||'Get started'));a.addEventListener('click',function(e){e.preventDefault();s.scrollIntoView({behavior:RM?'auto':'smooth'});});nav.appendChild(a);});
+document.body.appendChild(nav);var dots=[].slice.call(nav.children);
+var mob=matchMedia('(max-width:700px)'),tick=0;
+function cl(v){return v<0?0:v>1?1:v}function ez(t){return 1-Math.pow(1-t,3)}
+function run(){tick=0;var vh=innerHeight,best=-1,bd=1e9,A=mob.matches?16:30;
+ secs.forEach(function(s,i){if(s.hidden){dots[i].hidden=true;return;}dots[i].hidden=false;var r=s.getBoundingClientRect();
+  var d=Math.abs(r.top+Math.min(r.height,vh)/2-vh/2);if(d<bd){bd=d;best=i;}
+  if(RM){s.style.transform='';return;}
+  if(!s.classList.contains('rl'))s.classList.add('rl');
+  var a=cl((vh-r.top)/(vh*.95)),b=cl(r.bottom/(vh*.95));a=a*a*(3-2*a);b=b*b*(3-2*b);
+  if(i===0)a=1;
+  var rot=0,y=0,sc=1,op=1;
+  if(a<1){var k=1-a;rot=-A*k;y=k*24;sc=1-.12*k;op=.25+.75*a;}
+  else if(b<1){var k2=1-b;rot=A*k2;y=-k2*24;sc=1-.12*k2;op=.25+.75*b;}
+  s.style.transform=(rot||y||sc!==1)?'perspective(1100px) translateY('+y.toFixed(1)+'px) rotateX('+rot.toFixed(2)+'deg) scale('+sc.toFixed(3)+')':'';
+  });
+ [].forEach.call(document.querySelectorAll('.reveal:not(.in)'),function(n){if(n.getBoundingClientRect().top<vh*.92)n.classList.add('in');});
+ dots.forEach(function(d,i){d.setAttribute('aria-current',String(i===best));});}
+function req(){if(!tick){tick=1;requestAnimationFrame(run);}}
+addEventListener('scroll',req,{passive:true});addEventListener('resize',req);new MutationObserver(req).observe(document.body,{attributes:true,subtree:true,attributeFilter:['hidden']});run();})();
 </script>
 </body>
 </html>
