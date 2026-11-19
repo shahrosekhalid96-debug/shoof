@@ -2557,6 +2557,64 @@ def t_bg_remove(B):
     ok(not c.errors, c.errors); c.close()
 
 
+@test('magic_layers_exact_shapes_fonts_fill')
+def t_magic_more(B):
+    c = Ctx(B)
+    # 1) Shoof pictures carry their layers: PNG and JPEG round trip is exact
+    c.ev("k=>{const i=TEMPLATES.findIndex(x=>x.key===k);useTemplate(i)}", 'big_sale'); c.page.wait_for_timeout(1200)
+    for kind in ['image/png', 'image/jpeg']:
+        r = c.ev("""async k=>{const b=await embBlob(dataURLtoBlob(renderExport(k)));const u8=new Uint8Array(await b.arrayBuffer());const code=embRead(u8);
+          const url=await new Promise(r=>{const f=new FileReader();f.onload=()=>r(f.result);f.readAsDataURL(b)});const W=doc.width,H=doc.height,n=doc.elements.length,
+          sig=JSON.stringify(doc.elements.map(e=>[e.type,e.text||'',Math.round(e.x),Math.round(e.y)]));applyDoc(withBgBlocks(blankDoc(W,H)));const e=el('image',{src:url,x:0,y:0,width:W,height:H,radius:0});doc.elements.push(e);selId=e.id;fullRender();commit();const u0=undoStack.length;
+          await magicLayers(e.id);return [code.length>100,doc.elements.length-1===n,sig===JSON.stringify(doc.elements.slice(1).map(e=>[e.type,e.text||'',Math.round(e.x),Math.round(e.y)])),undoStack.length-u0]}""", kind)
+        eq(r, [True, True, True, 1], kind + ': layers inside the file come back exactly, one undo step')
+        c.ev("k=>{const i=TEMPLATES.findIndex(x=>x.key===k);useTemplate(i)}", 'big_sale'); c.page.wait_for_timeout(500)
+    ok(c.ev("embRead(new Uint8Array([137,80,78,71,13,10,26,10]))") == '', 'a plain PNG has no layers')
+    c.ev("localStorage.setItem('shoof.embed','off')")
+    ok(c.ev("(async()=>{const b=await embBlob(dataURLtoBlob(renderExport('image/png')));return embRead(new Uint8Array(await b.arrayBuffer()))==='';})()"), 'switch off: no layers in the file')
+    c.ev("localStorage.removeItem('shoof.embed')")
+    # 2) flat graphic → real shapes; the label on the pill moves with it
+    c.blank(1080, 1080)
+    src = c.ev("""async()=>{await document.fonts.load('bold 150px Inter');await document.fonts.load('bold 46px Inter');const k=document.createElement('canvas');k.width=k.height=1080;const x=k.getContext('2d');
+      x.fillStyle='#ffd60a';x.fillRect(0,0,1080,1080);x.fillStyle='#ff3b6b';x.beginPath();x.moveTo(0,520);x.lineTo(1080,380);x.lineTo(1080,560);x.lineTo(0,700);x.closePath();x.fill();
+      x.fillStyle='#ffffff';x.beginPath();x.arc(880,170,110,0,7);x.fill();x.fillStyle='#111111';x.font='bold 150px Inter';x.textAlign='center';x.fillText('SUMMER',500,330);
+      x.beginPath();x.roundRect(340,820,400,110,55);x.fill();x.fillStyle='#ffd60a';x.font='bold 46px Inter';x.fillText('SHOP NOW',540,892);return k.toDataURL('image/png');}""")
+    c.ev("s=>{const e=el('image',{src:s,x:0,y:0,width:1080,height:1080,radius:0});doc.elements.push(e);selId=e.id;fullRender();commit();}", src)
+    c.ev("magicLayers(selId)"); c.page.wait_for_function("!mlBusy", timeout=240000)
+    els = c.ev("doc.elements.map(e=>({t:e.type,x:Math.round(e.x),y:Math.round(e.y),w:Math.round(e.width),h:Math.round(e.height),fill:e.fill,r:e.radius||0,g:e.groupId||'',text:e.text||''}))")
+    txt = [e for e in els if e['t'] == 'text']
+    ok(any('SUMMER' in e['text'] for e in txt) and any('SHOP' in e['text'] for e in txt), 'both texts read: %s' % [e['text'] for e in txt])
+    pill = [e for e in els if e['t'] == 'rect' and abs(e['x'] - 340) < 14 and abs(e['y'] - 820) < 14 and abs(e['w'] - 400) < 20 and e['r'] > 30]
+    ok(pill, 'the pill is a rounded rectangle')
+    badge = [e for e in els if e['t'] == 'ellipse' and abs(e['x'] - 770) < 14 and abs(e['w'] - 220) < 20]
+    ok(badge, 'the badge is a circle')
+    ok(any(e['t'] == 'path' and e['w'] > 1000 for e in els), 'the slanted band is a traced shape')
+    ok(any(e['t'] == 'rect' and e['w'] >= 1079 and (e['fill'] or '').lower().startswith('#ff') for e in els), 'page colour underneath')
+    shop = [e for e in txt if 'SHOP' in e['text']][0]
+    ok(pill and shop['g'] and shop['g'] == pill[0]['g'], 'label grouped with its pill')
+    under = c.ev("""()=>{doc.elements.forEach(e=>{if(e.type==='text'||(e.type==='rect'&&e.radius>30))e.hidden=true;});selId=null;fullRender();return new Promise(r=>{const i=new Image();i.onload=()=>{const k=document.createElement('canvas');k.width=k.height=1080;const x=k.getContext('2d');x.drawImage(i,0,0,1080,1080);r(Array.from(x.getImageData(540,875,1,1).data.slice(0,3)));};i.src=renderExport('image/png');});}""")
+    ok(under[0] > 200 and under[1] > 170 and under[2] < 90, 'nothing left behind under the pill: %s' % under)
+    # 3) similar fonts on a rebuilt text, one tap = one undo step
+    c.ev("doc.elements.forEach(e=>e.hidden=false);fullRender()")
+    tid = c.ev("doc.elements.find(e=>e.type==='text'&&/SUMMER/.test(e.text)).id")
+    ok(c.ev("id=>(ML_ALTS.get(id)||[]).length>=2", tid), 'alternatives kept for the text')
+    c.ev("id=>{selId=id;setSel([id]);renderProps();}", tid)
+    n = c.page.locator('#props [data-mlalt]').count(); ok(n >= 3, 'Similar fonts row shown (%d)' % n)
+    u = c.ev("undoStack.length"); f0 = c.ev("id=>byId(id).fontFamily", tid)
+    c.page.locator('#props [data-mlalt]').nth(1).click(); c.page.wait_for_timeout(800)
+    ok(c.ev("id=>byId(id).fontFamily", tid) != f0 and c.ev("undoStack.length") == u + 1, 'tap switches the font in one undo step')
+    # 4) the patch fill copies texture instead of blurring
+    sd = c.ev("""()=>{const W=200,H=200,d=new Uint8ClampedArray(W*H*4),m=new Uint8Array(W*H);for(let y=0;y<H;y++)for(let x=0;x<W;x++){const i=(y*W+x)*4,v=((x>>3)&1)?40:220;d[i]=d[i+1]=d[i+2]=v;d[i+3]=255;if(x>=70&&x<130&&y>=70&&y<130){m[y*W+x]=1;d[i]=d[i+1]=d[i+2]=128;}}
+      mlPatchFill(d,m,W,H,400);const sdv=(x0,y0)=>{let a=0,q=0,n=0;for(let y=y0;y<y0+40;y++)for(let x=x0;x<x0+40;x++){const v=d[(y*W+x)*4];a+=v;q+=v*v;n++;}return Math.sqrt(q/n-(a/n)**2);};return [sdv(80,80),sdv(10,10)];}""")
+    ok(sd[0] > sd[1] * 0.55, 'filled hole keeps the stripes (%.0f vs %.0f)' % tuple(sd))
+    import subprocess
+    r = subprocess.run([sys.executable, os.path.join(APP_DIR, 'tools', 'font_features.py'), '--check'], capture_output=True, text=True)
+    ok(r.returncode == 0, 'font measurements in sync with the font files: ' + (r.stdout + r.stderr).strip())
+    # 5) the new path type is validated
+    ok(c.ev("!sanitizeEl({type:'path',x:0,y:0,width:10,height:10,d:'M0 0L10 10Z<script>'})") and c.ev("!!sanitizeEl({type:'path',x:0,y:0,width:10,height:10,d:'M0 0L1000 0L1000 1000Z',fill:'#ff0000'})"), 'path outlines are allow-listed strictly')
+    ok(not c.errors, c.errors); c.close()
+
+
 @test('upscaler_and_magic_layers')
 def t_up_magic(B):
     import base64
@@ -3280,7 +3338,7 @@ def t_pwa(B):
     try:
         ok('Posts, posters, slides, logos.' in open(os.path.join(out, 'index.html'), encoding='utf-8').read(), 'home page is the landing page')
         eq(open(os.path.join(out, 'editor.html'), encoding='utf-8').read(), open(APP, encoding='utf-8').read(), 'editor at /editor')
-        for f in ['sw.js', 'manifest.webmanifest', 'icons/icon-512.png', 'welcome/big_sale.webp', 'vendor/ai/u2netp.onnx', 'vendor/ai/realesr-general-x4v3.onnx', 'vendor/ocr/eng.traineddata.gz', 'vendor/ocr/worker.min.js', 'fonts/fonts.css']: ok(os.path.exists(os.path.join(out, f)), f)
+        for f in ['sw.js', 'manifest.webmanifest', 'icons/icon-512.png', 'welcome/big_sale.webp', 'vendor/ai/u2netp.onnx', 'vendor/ai/realesr-general-x4v3.onnx', 'vendor/ai/ppocr-det.onnx', 'vendor/ai/ppocr-rec.onnx', 'vendor/ai/ppocr-keys.txt', 'fonts/fonts.css']: ok(os.path.exists(os.path.join(out, f)), f)
         for f in ['tests', 'tools', 'functions', 'CLAUDE.md']: ok(not os.path.exists(os.path.join(out, f)), f'{f} not published')
     finally: shutil.rmtree(out, ignore_errors=True)
 
