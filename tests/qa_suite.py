@@ -2633,7 +2633,7 @@ def t_lift(B):
     eq(c.ev("doc.elements.length"), n0 + 1, 'object is now its own layer'); eq(c.ev("undoStack.length") - u0, 1, 'one undo step')
     box = c.ev("(()=>{const o=doc.elements[doc.elements.length-1];return [o.type,Math.round(o.x),Math.round(o.y),Math.round(o.width),Math.round(o.height)]})()")
     ok(box[0] == 'image' and abs(box[1] - 660) < 40 and abs(box[2] - 230) < 40 and abs(box[3] - 380) < 50, 'the circle was lifted: %s' % box)
-    under = c.ev("""()=>new Promise(r=>{const b=doc.elements[doc.elements.length-2];const i=new Image();i.onload=()=>{const k=document.createElement('canvas');k.width=1200;k.height=800;const x=k.getContext('2d');x.drawImage(i,0,0,1200,800);r(Array.from(x.getImageData(850,420,1,1).data.slice(0,3)));};i.src=b.src;})""")
+    under = c.ev("""()=>new Promise(r=>{const b=doc.elements[doc.elements.length-2];const i=new Image();i.onload=()=>{const k=document.createElement('canvas');k.width=1200;k.height=800;const x=k.getContext('2d');x.drawImage(i,0,0,1200,800);const q=x.getImageData(750,320,200,200).data;const a=[0,0,0];for(let j=0;j<q.length;j+=4){a[0]+=q[j];a[1]+=q[j+1];a[2]+=q[j+2];}r(a.map(v=>Math.round(v/(q.length/4))));};i.src=b.src;})""")
     ok(under[0] < 150 and under[2] > under[0], 'gap behind it filled with the background: %s' % under)
     c.ev("undo()"); eq(c.ev("doc.elements.length"), n0, 'undo puts the photo back')
     c.ev("()=>{selId=doc.elements[doc.elements.length-1].id;startGrab(selId);}"); c.page.wait_for_function("GRAB&&!GRAB.busy", timeout=120000)
@@ -3364,7 +3364,7 @@ def t_pwa(B):
     try:
         ok('Posts, posters, slides, logos.' in open(os.path.join(out, 'index.html'), encoding='utf-8').read(), 'home page is the landing page')
         eq(open(os.path.join(out, 'editor.html'), encoding='utf-8').read(), open(APP, encoding='utf-8').read(), 'editor at /editor')
-        for f in ['sw.js', 'manifest.webmanifest', 'icons/icon-512.png', 'welcome/big_sale.webp', 'vendor/ai/u2netp.onnx', 'vendor/ai/realesr-x4v3-dn30.onnx', 'vendor/ai/ppocr-det.onnx', 'vendor/ai/ppocr-rec.onnx', 'vendor/ai/ppocr-keys.txt', 'vendor/ai/sam-enc.0', 'vendor/ai/sam-enc.1', 'vendor/ai/sam-dec.onnx', 'fonts/fonts.css']: ok(os.path.exists(os.path.join(out, f)), f)
+        for f in ['sw.js', 'manifest.webmanifest', 'icons/icon-512.png', 'welcome/big_sale.webp', 'vendor/ai/u2netp.onnx', 'vendor/ai/realesr-x4v3-dn30.onnx', 'vendor/ai/ppocr-det.onnx', 'vendor/ai/ppocr-rec.onnx', 'vendor/ai/ppocr-keys.txt', 'vendor/ai/sam-enc.0', 'vendor/ai/sam-enc.1', 'vendor/ai/sam-dec.onnx', 'vendor/ai/migan.onnx', 'fonts/fonts.css']: ok(os.path.exists(os.path.join(out, f)), f)
         for f in ['tests', 'tools', 'functions', 'CLAUDE.md']: ok(not os.path.exists(os.path.join(out, f)), f'{f} not published')
     finally: shutil.rmtree(out, ignore_errors=True)
 
