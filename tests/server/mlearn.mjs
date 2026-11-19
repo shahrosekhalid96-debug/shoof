@@ -1,0 +1,23 @@
+/* Unit test for functions/api/mlearn.js (no network): fake D1, fake edge cache. Run: node tests/server/mlearn.mjs */
+import { readFileSync, writeFileSync, mkdtempSync } from 'node:fs'; import { tmpdir } from 'node:os'; import { join } from 'node:path';
+const here = new URL('.', import.meta.url).pathname, dir = mkdtempSync(join(tmpdir(), 'shoof-ml-'));
+writeFileSync(join(dir, 'f.mjs'), readFileSync(join(here, '../../functions/api/mlearn.js')));
+const store = new Map(); globalThis.caches = { default: { match: async k => store.has(k.url) ? new Response(store.get(k.url).b, { headers: store.get(k.url).h }) : undefined, put: async (k, r) => store.set(k.url, { b: await r.text(), h: { 'content-type': r.headers.get('content-type') || '' } }) } };
+const tab = new Map();
+const st = sql => ({ bind(...a) { this.a = a; return this; }, async run() { if (sql.startsWith('INSERT')) tab.set(this.a[0], (tab.get(this.a[0]) || 0) + 1); return { meta: {} }; }, async all() { return { results: [...tab].filter(([k, n]) => k.startsWith('fx:') && n >= 2).map(([key, n]) => ({ key, n })) }; } });
+const DB = { prepare: st, async batch(list) { for (const s of list) await s.run(); } };
+const { onRequestPost, onRequestGet } = await import(join(dir, 'f.mjs'));
+const post = (b, h = {}, env = { DB }) => onRequestPost({ request: new Request('https://shoof.pages.dev/api/mlearn', { method: 'POST', headers: { 'content-type': 'application/json', 'CF-Connecting-IP': '1.2.3.4', ...h }, body: JSON.stringify(b) }), env });
+const ok = (c, m) => { if (!c) { console.error('FAIL ' + m); process.exit(1); } };
+let r = await post({ keys: ['fx:Inter|Montserrat!|m', 'ev:del_text', 'why:ghost', 'rate:bad', 'rq:bad:4', 'ev:del_text', '<script>', 'fx:Inter|x<y|m', 'free text here'] });
+ok(r.status === 200 && (await r.json()).stored === 5, 'only whitelisted keys, each once');
+ok(tab.get('ev:del_text') === 1 && !tab.has('<script>'), 'counted');
+ok((await post({ keys: ['nope'] })).status === 400, 'no valid key refused');
+ok((await post({ keys: ['ev:run'] }, { Origin: 'https://evil.example' })).status === 403, 'other sites refused');
+await post({ keys: ['fx:Inter|Montserrat!|m'] }, { 'CF-Connecting-IP': '9.9.9.9' });
+const g = await onRequestGet({ request: new Request('https://shoof.pages.dev/api/mlearn'), env: { DB } }); const j = await g.json();
+ok(j.fx['fx:Inter|Montserrat!|m'] === 2 && !j.fx['ev:del_text'], 'GET returns learned font swaps only');
+for (let i = 0; i < 40; i++) r = await post({ keys: ['ev:run'] }, { 'CF-Connecting-IP': '7.7.7.7' });
+ok(r.status === 429, 'daily limit per visitor');
+ok((await post({ keys: ['ev:run'] }, {}, {})).status === 200, 'no database: accepted, nothing stored');
+console.log('mlearn: ok');

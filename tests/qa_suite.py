@@ -2720,6 +2720,53 @@ def t_up_magic(B):
     ok(not c.errors, c.errors); c.close()
 
 
+@test('magic_layers_learns_and_checks')
+def t_ml_learn(B):
+    import subprocess, shutil
+    if shutil.which('node'):
+        r = subprocess.run(['node', os.path.join(ROOT, 'tests', 'server', 'mlearn.mjs')], capture_output=True, text=True, timeout=60)
+        ok(r.returncode == 0, 'server unit test: ' + (r.stdout + r.stderr).strip())
+    c = Ctx(B); c.blank(1080, 1080); posts = []
+    c.ev("localStorage.setItem('shoof.shAI','1');localStorage.removeItem('shoof.mlLearn')")
+    def api(r):
+        if r.request.method == 'POST': posts.append(json.loads(r.request.post_data)['keys'])
+        r.fulfill(status=200, content_type='application/json', body=json.dumps({'ok': True, 'fx': {'fx:Poppins!|Montserrat!|l': 9}}))
+    c.page.route('**/api/mlearn**', api)
+    src = c.ev("""async()=>{await document.fonts.load('bold 120px Inter');const k=document.createElement('canvas');k.width=1080;k.height=1080;const x=k.getContext('2d');x.fillStyle='#ffe0b8';x.fillRect(0,0,1080,1080);
+     x.fillStyle='#1d2330';x.font='bold 120px Inter';x.textAlign='center';x.fillText('SUMMER SALE',540,260);return k.toDataURL('image/jpeg',0.92);}""")
+    c.ev("s=>{const e=el('image',{src:s,x:0,y:0,width:1080,height:1080,radius:0});doc.elements.push(e);selId=e.id;fullRender();commit();}", src)
+    u0 = c.ev("undoStack.length"); c.ev("magicLayers(selId,{tap:false})"); c.page.wait_for_function("!mlBusy", timeout=240000)
+    eq(c.ev("undoStack.length") - u0, 1, 'self-check stays inside the one undo step')
+    tx = c.ev("doc.elements.filter(e=>e.type==='text').map(e=>[e.fontFamily,e.bold,Math.round(e.fontSize)])")
+    ok(tx and tx[0][0] == 'Inter' and tx[0][1] and abs(tx[0][2] - 120) < 10, 'self-check keeps the right font and size: %s' % tx)
+    ok(c.ev("ML_SESS&&ML_SESS.q>=0&&ML_SESS.q<=4"), 'self-check score is good for a clean poster (%s)' % c.ev("ML_SESS&&ML_SESS.q"))
+    c.page.wait_for_selector('#mlRate:not([hidden]) [data-mr=down]', timeout=5000)
+    ok('never the picture' in c.page.inner_text('#mlRate'), 'rating bar says the picture is never sent')
+    c.page.click('#mlRate [data-mr=down]'); c.page.click('#mlRate [data-mr="why:font"]'); c.page.wait_for_timeout(200)
+    flat = [k for p in posts for k in p]
+    ok('rate:bad' in flat and 'why:font' in flat and any(k.startswith('rq:bad:') for k in flat), 'rating and reason sent: %s' % flat)
+    # what people fix afterwards is learned
+    c.ev("()=>{const t=doc.elements.find(e=>e.type==='text');t.fontFamily='Montserrat';t.bold=true;t.text='SUMMER SALE!';fullRender();commit();}")
+    posts.clear(); c.ev("showHome()"); c.page.wait_for_timeout(400)
+    flat = [k for p in posts for k in p]
+    ok('ev:run' in flat and 'ev:text_fix' in flat and any(k.startswith('fx:Inter!|Montserrat!|') for k in flat), 'font swap and text fix counted: %s' % flat)
+    ok(not any('SUMMER' in k for k in flat), 'no words from the picture are sent')
+    ok(c.ev("mlLB('Montserrat',true,100)") > 0 and c.ev("mlLB('Inter',true,100)") < 0, 'the swap becomes a bonus / penalty in the font search')
+    c.ev("hideHome()"); c.ev("mlShFetched=false"); c.ev("mlFetchShared()"); c.page.wait_for_function("ML_SHARED['fx:Poppins!|Montserrat!|l']===9", timeout=5000)
+    ok(c.ev("mlLB('Poppins',true,100)") < 0, 'swaps shared by other people count too')
+    # undo right away = a failed split
+    c.ev("s=>{const e=el('image',{src:s,x:0,y:0,width:1080,height:1080,radius:0});doc.elements=[e];selId=e.id;fullRender();commit();}", src)
+    c.ev("magicLayers(selId,{tap:false,rate:false})"); c.page.wait_for_function("!mlBusy", timeout=240000)
+    ok(c.ev("!!ML_SESS"), 'second split started a session')
+    posts.clear(); c.ev("undo();mlSettle()"); c.page.wait_for_timeout(400); flat = [k for p in posts for k in p]
+    ok('ev:undone' in flat, 'undo right after a split is counted: %s' % flat)
+    # ghost check: letters still visible after a fill are erased again
+    g = c.ev("""(async()=>{const W=120,H=60,d0=new Uint8ClampedArray(W*H*4),d=new Uint8ClampedArray(W*H*4),m=new Uint8Array(W*H);for(let i=0;i<W*H;i++){const x=i%W,y=(i/W)|0,ink=x>30&&x<90&&y>20&&y<40;const v=ink?20:230;for(const a of[d0,d]){a[i*4]=a[i*4+1]=a[i*4+2]=v;a[i*4+3]=255;}if(ink)m[i]=1;}
+      const fits=[{r:{box:{x:0,y:0,w:W,h:H},fill:'#141414',fs:20}}];const n=await mlGhostFix(d,d0,m,fits,W,H);return [n,d[(30*W+60)*4]];})()""")
+    ok(g[0] == 1 and g[1] > 150, 'leftover letters are erased again: %s' % g)
+    ok(not [e for e in c.errors if 'mlearn' not in e], c.errors); c.close()
+
+
 @test('photo_upload_chooser_and_subjects')
 def t_photo_choose(B):
     import base64, tempfile
