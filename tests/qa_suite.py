@@ -2622,9 +2622,9 @@ def t_lift(B):
     src = c.ev("""()=>{const k=document.createElement('canvas');k.width=1200;k.height=800;const x=k.getContext('2d');const g=x.createLinearGradient(0,0,0,800);g.addColorStop(0,'#2b4a7a');g.addColorStop(1,'#0e1a2e');x.fillStyle=g;x.fillRect(0,0,1200,800);
       x.fillStyle='#e8a23a';x.beginPath();x.arc(850,420,190,0,7);x.fill();x.fillStyle='#d9d4c7';x.fillRect(150,250,260,420);const im=x.getImageData(0,0,1200,800),q=im.data;let r=5;for(let i=0;i<q.length;i+=4){r=(r*1103515245+12345)&0x7fffffff;const n=(r%21)-10;q[i]+=n;q[i+1]+=n;q[i+2]+=n;}x.putImageData(im,0,0);return k.toDataURL('image/jpeg',0.92);}""")
     c.ev("s=>{const e=el('image',{src:s,x:0,y:0,width:1200,height:800,radius:0});doc.elements.push(e);selId=e.id;setSel([e.id]);fullRender();commit();renderProps();}", src)
-    ok(c.page.locator('#pGrab').is_visible(), 'photo panel offers Lift an object')
+    ok(not c.page.locator('#pGrab').count() and 'objects' in c.page.locator('#pMagic').inner_text(), 'Lift an object is part of Magic layers (one button)')
     n0 = c.ev("doc.elements.length"); u0 = c.ev("undoStack.length")
-    c.page.click('#pGrab'); c.page.wait_for_function("GRAB&&GRAB.E&&!GRAB.busy", timeout=240000)
+    c.ev("startGrab(selId)"); c.page.wait_for_function("GRAB&&GRAB.E&&!GRAB.busy", timeout=240000)
     r = c.ev("()=>{const b=GRAB.ov.getBoundingClientRect();return [b.x,b.y,b.width,b.height]}")
     c.page.mouse.click(r[0] + r[2] * 850 / 1200, r[1] + r[3] * 420 / 800)
     c.page.wait_for_function("GRAB&&!GRAB.busy&&GRAB.list.length", timeout=60000)
@@ -2672,6 +2672,8 @@ def t_up_magic(B):
     sx, sy, sw, sh = imgs[1]; ok(abs(sx - 320) < 20 and abs(sy - 480) < 20 and abs(sw - 440) < 30, 'subject is the circle: %s' % imgs[1])
     eq(c.ev("undoStack.length") - u0, 1, 'one undo step')
     ok(c.ev("(()=>{const ids=sel();return ids.length===3})()"), 'new layers are selected')
+    c.page.wait_for_function("GRAB&&GRAB.after&&!GRAB.busy", timeout=240000)
+    ok('anything else' in c.page.locator('#grabBar').inner_text() and c.page.locator('#grabBar [data-gr="cancel"]').inner_text() == 'Done', 'Magic layers ends in tap-to-lift mode with Done')
     # the background has no text left where the headline was, and the result still looks like the original
     stats = c.ev("""s=>new Promise(r=>{const bg=doc.elements.find(e=>e.type==='image');const a=new Image(),b=new Image();let n=0;const go=()=>{if(++n<2)return;const k=document.createElement('canvas');k.width=k.height=1080;const x=k.getContext('2d',{willReadFrequently:true});
       x.drawImage(b,0,0,1080,1080);const d=x.getImageData(140,130,800,110).data;let m=0,q=0;for(let i=0;i<d.length;i+=4){const v=(d[i]+d[i+1]+d[i+2])/3;m+=v;q+=v*v;}const N=d.length/4,sd=Math.sqrt(q/N-(m/N)**2);
@@ -2684,6 +2686,8 @@ def t_up_magic(B):
     c.ev("()=>{const k=document.createElement('canvas');k.width=k.height=600;const x=k.getContext('2d');x.fillStyle='#7aa0c8';x.fillRect(0,0,600,600);const e=el('image',{src:k.toDataURL('image/jpeg',0.9),x:0,y:0,width:1080,height:1080,radius:0});doc.elements=[e];selId=e.id;fullRender();commit();}")
     u1 = c.ev("undoStack.length"); c.ev("magicLayers(selId)"); c.page.wait_for_function("!mlBusy", timeout=120000)
     eq(c.ev("undoStack.length"), u1, 'nothing found: nothing changes')
+    c.page.wait_for_function("GRAB&&GRAB.none&&!GRAB.busy", timeout=120000); ok(True, 'nothing found: offers tap to lift')
+    c.ev("grabEnd()")
     # upscaler: 200x150 -> 800x600, same size on the page, one undo step
     s2 = c.ev("()=>{const k=document.createElement('canvas');k.width=200;k.height=150;const x=k.getContext('2d');x.fillStyle='#345';x.fillRect(0,0,200,150);x.fillStyle='#fc6';x.font='bold 30px Inter';x.fillText('Shoof',30,80);return k.toDataURL('image/jpeg',0.8)}")
     c.ev("s=>{const e=el('image',{src:s,x:100,y:100,width:800,height:600,radius:0});doc.elements=[e];selId=e.id;fullRender();commit();renderProps();}", s2)
@@ -2700,6 +2704,33 @@ def t_up_magic(B):
     eq(c.ev("shLocal('can you make this photo sharper').actions[0].do"), 'upscale', 'Shoofy: sharper → upscaler')
     eq(c.ev("shLocal('turn this poster into layers').actions[0].do"), 'magic_layers', 'Shoofy: layers → Magic layers')
     eq(c.ev("shLocal('make the text in this picture editable').actions[0].do"), 'magic_layers', 'Shoofy: editable text → Magic layers')
+    ok(not c.errors, c.errors); c.close()
+
+
+@test('photo_upload_chooser_and_subjects')
+def t_photo_choose(B):
+    import base64, tempfile
+    c = Ctx(B); c.blank(1080, 1080); c.tab('photos')
+    ok(c.page.locator('#drawer [data-ptgo]').is_visible(), 'Photos tab starts with Upload a photo')
+    src = c.ev("""()=>{const k=document.createElement('canvas');k.width=900;k.height=600;const x=k.getContext('2d');const g=x.createLinearGradient(0,0,0,600);g.addColorStop(0,'#2b4a7a');g.addColorStop(1,'#0e1a2e');x.fillStyle=g;x.fillRect(0,0,900,600);x.fillStyle='#e8a23a';x.beginPath();x.arc(250,320,150,0,7);x.fill();x.fillStyle='#d9d4c7';x.beginPath();x.roundRect(560,170,200,300,30);x.fill();const im=x.getImageData(0,0,900,600),q=im.data;let r=5;for(let i=0;i<q.length;i+=4){r=(r*1103515245+12345)&0x7fffffff;const n=(r%21)-10;q[i]+=n;q[i+1]+=n;q[i+2]+=n;}x.putImageData(im,0,0);return k.toDataURL('image/jpeg',0.92);}""")
+    fp = os.path.join(tempfile.mkdtemp(), 'two.jpg'); open(fp, 'wb').write(base64.b64decode(src.split(',', 1)[1]))
+    with c.page.expect_file_chooser() as fc: c.page.click('#drawer [data-ptgo]')
+    fc.value.set_files(fp)
+    c.page.wait_for_selector('#modalBox [data-pto="ml"]', timeout=10000)
+    eq(c.ev("[...document.querySelectorAll('#modalBox [data-pto]')].map(b=>b.dataset.pto)"), ['cut', 'up', 'ml', 'add'], 'four choices after upload')
+    c.page.click('#modalBox [data-pto="add"]'); c.page.wait_for_function("doc.elements.some(e=>e.type==='image')", timeout=10000)
+    eq([c.ev('doc.width'), c.ev('doc.height')], [900, 600], 'empty page takes the photo size')
+    # on a page with content the photo is added, not a new page
+    c.ev("()=>{doc.elements.push(el('text',{text:'Hi',x:10,y:10,width:200}));fullRender();commit();}")
+    with c.page.expect_file_chooser() as fc: c.page.click('#drawer [data-ptgo]')
+    fc.value.set_files(fp); c.page.wait_for_selector('#modalBox [data-pto="ml"]', timeout=10000)
+    n = c.ev("doc.elements.length"); c.page.click('#modalBox [data-pto="ml"]')
+    c.page.wait_for_function("doc.elements.length>%d" % n, timeout=10000)
+    c.page.wait_for_function("!mlBusy&&doc.elements.filter(e=>e.type==='image').length>2", timeout=240000)
+    eq(c.ev("bgKind"), 'isnet', 'remover uses IS-Net')
+    subs = c.ev("doc.elements.filter(e=>e.type==='image').slice(2).map(e=>[Math.round(e.x),Math.round(e.width)])")
+    eq(len(subs), 2, 'two objects become two separate layers: %s' % subs)
+    c.page.wait_for_function("GRAB&&!GRAB.busy", timeout=240000); c.ev("grabEnd()")
     ok(not c.errors, c.errors); c.close()
 
 
@@ -3364,7 +3395,7 @@ def t_pwa(B):
     try:
         ok('Posts, posters, slides, logos.' in open(os.path.join(out, 'index.html'), encoding='utf-8').read(), 'home page is the landing page')
         eq(open(os.path.join(out, 'editor.html'), encoding='utf-8').read(), open(APP, encoding='utf-8').read(), 'editor at /editor')
-        for f in ['sw.js', 'manifest.webmanifest', 'icons/icon-512.png', 'welcome/big_sale.webp', 'vendor/ai/u2netp.onnx', 'vendor/ai/realesr-x4v3-dn30.onnx', 'vendor/ai/ppocr-det.onnx', 'vendor/ai/ppocr-rec.onnx', 'vendor/ai/ppocr-keys.txt', 'vendor/ai/sam-enc.0', 'vendor/ai/sam-enc.1', 'vendor/ai/sam-dec.onnx', 'vendor/ai/migan.onnx', 'fonts/fonts.css']: ok(os.path.exists(os.path.join(out, f)), f)
+        for f in ['sw.js', 'manifest.webmanifest', 'icons/icon-512.png', 'welcome/big_sale.webp', 'vendor/ai/u2netp.onnx', 'vendor/ai/realesr-x4v3-dn30.onnx', 'vendor/ai/ppocr-det.onnx', 'vendor/ai/ppocr-rec.onnx', 'vendor/ai/ppocr-keys.txt', 'vendor/ai/sam-enc.0', 'vendor/ai/sam-enc.1', 'vendor/ai/sam-dec.onnx', 'vendor/ai/migan.onnx', 'vendor/ai/isnet.0', 'vendor/ai/isnet.1', 'fonts/fonts.css']: ok(os.path.exists(os.path.join(out, f)), f)
         for f in ['tests', 'tools', 'functions', 'CLAUDE.md']: ok(not os.path.exists(os.path.join(out, f)), f'{f} not published')
     finally: shutil.rmtree(out, ignore_errors=True)
 
