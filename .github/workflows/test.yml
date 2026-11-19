@@ -16,7 +16,7 @@ jobs:
           python-version: "3.12"
       - name: Install dependencies
         run: |
-          pip install playwright pillow
+          pip install playwright pillow fonttools brotli
           python -m playwright install --with-deps chromium
       # The suite auto-detects Chrome (/usr/bin/google-chrome is preinstalled on ubuntu-latest)
       # and otherwise falls back to Playwright's Chromium. Fonts come from fonts/ in the repo.

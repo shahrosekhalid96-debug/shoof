@@ -2479,10 +2479,23 @@ def t_photo_search(B):
     eq(c.page.locator('#psGrid [data-ps]').count(), 1, 'only CC0 results with a valid id are shown'); ok(c.ev("!document.querySelector('#psGrid b')"), 'titles are text, not HTML')
     n = c.ev("doc.elements.length"); c.page.click('#psGrid [data-ps] >> nth=0'); c.page.wait_for_function(f"doc.elements.length>{n}||doc.elements.some(e=>e.type==='image')", timeout=6000)
     ok(c.ev("doc.elements.filter(e=>e.type==='image').every(e=>/^data:image\\//.test(e.src))"), 'the photo is stored inside the design, not linked')
+    # blocked by an ad blocker: Shoof's own server answers instead (api/photos), photos still added
+    c.page.unroute('https://api.openverse.org/**'); c.page.route('https://api.openverse.org/**', lambda r: r.abort())
+    via = []
+    def proxy(r):
+        u = r.request.url; via.append(u)
+        if 'thumb=' in u: r.fulfill(status=200, content_type='image/png', body=png)
+        else: r.fulfill(status=200, content_type='application/json', body=json.dumps({'results': [{'id': '33333333-3333-4333-8333-333333333333', 'title': 'Car', 'license': 'pdm'}]}))
+    c.page.route('**/api/photos**', proxy)
+    c.page.click('.rail [data-tab=photos]'); c.page.fill('#psIn', 'a car'); c.page.press('#psIn', 'Enter'); c.page.wait_for_selector('#psGrid [data-ps]')
+    ok(any('q=a%20car' in u for u in via) and c.ev("PS_VIA") == 'proxy', 'blocked direct search falls back to the Shoof server')
+    n = c.ev("doc.elements.length"); c.page.click('#psGrid [data-ps] >> nth=0'); c.page.wait_for_function(f"doc.elements.length>{n}", timeout=6000)
+    ok(any('thumb=33333333' in u for u in via), 'photo fetched through the Shoof server too')
+    c.page.unroute('**/api/photos**'); c.ev("PS_VIA=''")
     c.page.unroute('https://api.openverse.org/**'); c.page.route('https://api.openverse.org/**', lambda r: r.fulfill(status=429, body='', headers={'access-control-allow-origin': '*'}))
     c.page.click('.rail [data-tab=photos]'); c.page.fill('#psIn', 'tea'); c.page.click('[data-psgo]'); c.page.wait_for_function("PS.msg&&!PS.busy")
     ok('while' in c.page.inner_text('#psGrid'), 'rate limit is explained')
-    ok(not [e for e in c.errors if '429' not in e], c.errors); c.close()
+    ok(not [e for e in c.errors if '429' not in e and 'ERR_FAILED' not in e and '404' not in e], c.errors); c.close()
 
 
 @test('animation_video_and_gif')
@@ -3395,7 +3408,9 @@ def t_pwa(B):
     try:
         ok('Posts, posters, slides, logos.' in open(os.path.join(out, 'index.html'), encoding='utf-8').read(), 'home page is the landing page')
         eq(open(os.path.join(out, 'editor.html'), encoding='utf-8').read(), open(APP, encoding='utf-8').read(), 'editor at /editor')
-        for f in ['sw.js', 'manifest.webmanifest', 'icons/icon-512.png', 'welcome/big_sale.webp', 'vendor/ai/u2netp.onnx', 'vendor/ai/realesr-x4v3-dn30.onnx', 'vendor/ai/ppocr-det.onnx', 'vendor/ai/ppocr-rec.onnx', 'vendor/ai/ppocr-keys.txt', 'vendor/ai/sam-enc.0', 'vendor/ai/sam-enc.1', 'vendor/ai/sam-dec.onnx', 'vendor/ai/migan.onnx', 'vendor/ai/isnet.0', 'vendor/ai/isnet.1', 'fonts/fonts.css']: ok(os.path.exists(os.path.join(out, f)), f)
+        for f in ['sw.js', 'manifest.webmanifest', 'icons/icon-512.png', 'welcome/big_sale.webp', 'vendor/ai/u2netp.onnx', 'vendor/ai/realesr-x4v3-dn30.onnx', 'vendor/ai/ppocr-det.onnx', 'vendor/ai/ppocr-rec.onnx', 'vendor/ai/ppocr-keys.txt', 'vendor/ai/sam-enc.0', 'vendor/ai/sam-enc.1', 'vendor/ai/sam-dec.onnx', 'vendor/ai/migan.0', 'vendor/ai/migan.1', 'vendor/ai/isnet.0', 'vendor/ai/isnet.1', 'fonts/fonts.css']: ok(os.path.exists(os.path.join(out, f)), f)
+        big = [os.path.relpath(os.path.join(dp, f), out) for dp, _, fs in os.walk(out) for f in fs if os.path.getsize(os.path.join(dp, f)) > 25 * 1024 * 1024]
+        ok(not big, 'every site file is under the 25 MiB Cloudflare Pages limit: %s' % big)
         for f in ['tests', 'tools', 'functions', 'CLAUDE.md']: ok(not os.path.exists(os.path.join(out, f)), f'{f} not published')
     finally: shutil.rmtree(out, ignore_errors=True)
 
