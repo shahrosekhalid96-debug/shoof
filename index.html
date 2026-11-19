@@ -2748,13 +2748,13 @@ function mlPatchFill(d,mask,W,H,budget){let any=0;for(let i=0;i<mask.length;i++)
   const dist=(p,q,lim)=>{const px=p%w,py=(p-px)/w,qx=q%w,qy=(q-qx)/w;let s=0;for(let dy=-R;dy<=R;dy++){const ay=py+dy;if(ay<0||ay>=h)continue;for(let dx=-R;dx<=R;dx++){const ax=px+dx;if(ax<0||ax>=w)continue;const a=(ay*w+ax)*3,b=((qy+dy)*w+qx+dx)*3,e0=img[a]-img[b],e1=img[a+1]-img[b+1],e2=img[a+2]-img[b+2];s+=e0*e0+e1*e1+e2*e2;if(s>lim)return s;}}return s;};
   const nd=new Float32Array(N);
   for(const p of T){let q=-1;if(prevNN){const px=p%w,py=(p-px)/w,cp=Math.min(pw*((L[li+1]||{h:1}).h)-1,(py>>1)*pw+(px>>1)),cq=prevNN[cp];if(cq>=0){const qx=Math.min(w-1-R,Math.max(R,(cq%pw)*2+(px&1))),qy=Math.min(h-1-R,Math.max(R,((cq/pw)|0)*2+(py&1))),c=qy*w+qx;if(ok[c])q=c;}}if(q<0)q=okL[(rnd()*okL.length)|0];nn[p]=q;nd[p]=dist(p,q,1e18);}
-  const iters=li===0?3:5;
+  const iters=li===0?4:6;
   for(let it=0;it<iters;it++){const rev=it&1;
    for(let k=0;k<T.length;k++){const p=T[rev?T.length-1-k:k],px=p%w,py=(p-px)/w,st=rev?1:-1;
     for(const[nx,ny]of[[px+st,py],[px,py+st]]){if(nx<0||ny<0||nx>=w||ny>=h)continue;const n=ny*w+nx,qn=nn[n];if(qn<0)continue;const qx=(qn%w)-st*(nx-px),qy=((qn/w)|0)-st*(ny-py);if(qx<R||qy<R||qx>=w-R||qy>=h-R)continue;const c=qy*w+qx;if(!ok[c]||c===nn[p])continue;const dd=dist(p,c,nd[p]);if(dd<nd[p]){nd[p]=dd;nn[p]=c;}}
     let rad=Math.max(w,h);const bx=nn[p]%w,by=(nn[p]/w)|0;while(rad>=1){const qx=Math.round(bx+(rnd()*2-1)*rad),qy=Math.round(by+(rnd()*2-1)*rad);if(qx>=R&&qy>=R&&qx<w-R&&qy<h-R){const c=qy*w+qx;if(ok[c]){const dd=dist(p,c,nd[p]);if(dd<nd[p]){nd[p]=dd;nn[p]=c;}}}rad>>=1;}}
    /* vote: every hole pixel = average of what the patches covering it say */
-   const acc=new Float32Array(N*4);for(const p of T){const q=nn[p];if(q<0)continue;const px=p%w,py=(p-px)/w,qx=q%w,qy=(q-qx)/w,wt=Math.exp(-nd[p]/(49*3*400));for(let dy=-R;dy<=R;dy++){const ay=py+dy;if(ay<0||ay>=h)continue;for(let dx=-R;dx<=R;dx++){const ax=px+dx;if(ax<0||ax>=w)continue;const a=ay*w+ax;if(!m[a])continue;const b=((qy+dy)*w+qx+dx)*3;acc[a*4]+=img[b]*wt;acc[a*4+1]+=img[b+1]*wt;acc[a*4+2]+=img[b+2]*wt;acc[a*4+3]+=wt;}}}
+   const acc=new Float32Array(N*4);for(const p of T){const q=nn[p];if(q<0)continue;const px=p%w,py=(p-px)/w,qx=q%w,qy=(q-qx)/w,wt=Math.exp(-nd[p]/(49*3*60));for(let dy=-R;dy<=R;dy++){const ay=py+dy;if(ay<0||ay>=h)continue;for(let dx=-R;dx<=R;dx++){const ax=px+dx;if(ax<0||ax>=w)continue;const a=ay*w+ax;if(!m[a])continue;const b=((qy+dy)*w+qx+dx)*3;acc[a*4]+=img[b]*wt;acc[a*4+1]+=img[b+1]*wt;acc[a*4+2]+=img[b+2]*wt;acc[a*4+3]+=wt;}}}
    for(let i=0;i<N;i++)if(m[i]&&acc[i*4+3]>0){img[i*3]=acc[i*4]/acc[i*4+3];img[i*3+1]=acc[i*4+1]/acc[i*4+3];img[i*3+2]=acc[i*4+2]/acc[i*4+3];}
    for(const p of T)if(nn[p]>=0)nd[p]=dist(p,nn[p],1e18);}
   /* next finer level: upsample colours into its holes */
@@ -2803,7 +2803,7 @@ function mlMetric(f,b){const k=f+b;if(mlFM[k])return mlFM[k];const tx=new Konva.
  let top=-1,bot=-1;for(let y=0;y<cv.height;y++)for(let x=0;x<cv.width;x++)if(q[(y*cv.width+x)*4+3]>128){if(top<0)top=y;bot=y;break;}return mlFM[k]={top:Math.max(0,top)/100,cap:Math.max(30,bot-top+1)/100};}
 /* ink of the picture inside a block: pixels nearer the text colour than the colour around it */
 function mlInkMask(b,d,W,H,box){const m=new Uint8Array(box.w*box.h);for(const l of b.lines){const dd=mlD([...l.ink,0],0,l.bg);for(const w of l.ws){const p=Math.max(1,Math.round(l.capH*0.08));
-  for(let y=Math.max(box.y,w.bbox.y0-p);y<Math.min(box.y+box.h,w.bbox.y1+p);y++)for(let x=Math.max(box.x,w.bbox.x0-p);x<Math.min(box.x+box.w,w.bbox.x1+p);x++){const i=(y*W+x)*4,a=mlD(d,i,l.ink),g=mlD(d,i,l.bg);if(a<g&&g>dd*0.35)m[(y-box.y)*box.w+x-box.x]=1;}}}return m;}
+  for(let y=Math.max(box.y,w.bbox.y0-p);y<Math.min(box.y+box.h,w.bbox.y1+p);y++)for(let x=Math.max(box.x,w.bbox.x0-p);x<Math.min(box.x+box.w,w.bbox.x1+p);x++){const i=(y*W+x)*4,a=mlD(d,i,l.ink),g=mlD(d,i,l.bg);if(a<g&&g>dd*0.35&&a<dd*0.3)m[(y-box.y)*box.w+x-box.x]=1;}}}return m;}
 function mlTry(b,font,bold,box,orig,sc=1,lsOn=true){const L=b.lines,M=mlMetric(font,bold),x0=Math.min(...L.map(l=>l.x0)),x1=Math.max(...L.map(l=>l.x1)),capH=L.map(l=>l.capH).sort((a,c)=>a-c)[L.length>>1],text=L.map(l=>l.text).join('\n'),fst=bold?'bold':'normal';
  let fs=capH*sc/M.cap,ls=0;const mm=new Konva.Text({fontSize:fs,fontFamily:font,fontStyle:fst}),widths=()=>L.map(l=>{mm.text(l.text);mm.fontSize(fs);mm.letterSpacing(ls);return mm.width();});
  const li=L.reduce((a,l,i)=>l.x1-l.x0>L[a].x1-L[a].x0?i:a,0),wide=L[li].x1-L[li].x0,chars=Math.max(1,L[li].text.length-1);let mw=widths()[li],ratio=wide/Math.max(1,mw);
@@ -2855,7 +2855,7 @@ function mlPhotoLike(d,W,H){const m=new Map();let n=0;for(let y=0;y<H;y+=3)for(l
 /* the subject = the biggest blob plus any blob at least a tenth of its size (stray bits elsewhere are dropped) */
 function mlMainBlobs(m,W,H){const lab=new Int32Array(W*H),st=new Int32Array(W*H),sizes=[0];let n=0;for(let s0=0;s0<W*H;s0++){if(!m[s0]||lab[s0])continue;n++;let sp=0,c=0;st[sp++]=s0;lab[s0]=n;
   while(sp){const i=st[--sp];c++;const x=i%W;if(x>0&&m[i-1]&&!lab[i-1]){lab[i-1]=n;st[sp++]=i-1;}if(x<W-1&&m[i+1]&&!lab[i+1]){lab[i+1]=n;st[sp++]=i+1;}if(i>=W&&m[i-W]&&!lab[i-W]){lab[i-W]=n;st[sp++]=i-W;}if(i+W<W*H&&m[i+W]&&!lab[i+W]){lab[i+W]=n;st[sp++]=i+W;}}sizes.push(c);}
- const big=Math.max(0,...sizes),o=new Uint8Array(W*H);for(let i=0;i<W*H;i++)if(lab[i]&&sizes[lab[i]]>=big*0.1)o[i]=1;return o;}
+ const big=Math.max(0,...sizes),o=new Uint8Array(W*H);for(let i=0;i<W*H;i++)if(lab[i]&&sizes[lab[i]]>=big*0.05)o[i]=1;return o;}
 /* whole original letters to erase: ink blobs that the fitted text covers by at least a quarter (a badge or shape next to the word is left alone) */
 function mlLetters(orig,cover,W,H){const lab=new Int32Array(W*H),out=new Uint8Array(W*H),st=new Int32Array(W*H);let n=0;
  for(let s0=0;s0<W*H;s0++){if(!orig[s0]||lab[s0])continue;n++;let sp=0,cnt=0,hit=0;st[sp++]=s0;lab[s0]=n;const mem=[];
@@ -2987,10 +2987,21 @@ async function magicLayers(id,opt={}){const e=byId(id);if(!e||e.type!=='image'||
   /* erase only the letters (pixels nearer the text colour, inside each word), then fill them in */
   let mask=new Uint8Array(W*H);for(const{r}of fits){const B=r.box,er=mlLetters(r.orig,mlDilate(r.rm,B.w,B.h,r.tol),B.w,B.h),inw=new Uint8Array(B.w*B.h);for(const l of r.L)for(const w of l.ws){for(let y=Math.max(B.y,w.bbox.y0-2);y<Math.min(B.y+B.h,w.bbox.y1+2);y++)for(let x=Math.max(B.x,w.bbox.x0-2);x<Math.min(B.x+B.w,w.bbox.x1+2);x++)inw[(y-B.y)*B.w+x-B.x]=1;}
    for(let i=0;i<er.length;i++)if(!inw[i])er[i]=0;for(let y=0;y<B.h;y++)for(let x=0;x<B.w;x++)if(er[y*B.w+x])mask[(B.y+y)*W+B.x+x]=1;}
-  mask=mlDilate(mask,W,H,Math.max(3,Math.round(Math.min(W,H)/300)+1));const photo=mlPhotoLike(d,W,H);if(blocks.length){if(opt.fill!=='smooth')mlPatchFill(d,mask,W,H,900);else mlFill(d,mask,W,H);}cx.putImageData(img,0,0);
+  /* glows, soft shadows and outlines: pixels near the letters that differ clearly from the background estimated from further out */
+  if(fits.length){const zone=new Uint8Array(W*H),own=new Int32Array(W*H).fill(-1);fits.forEach(({r},k)=>{const B=r.box,lm=new Uint8Array(B.w*B.h);for(let y=0;y<B.h;y++)for(let x=0;x<B.w;x++)if(mask[(B.y+y)*W+B.x+x])lm[y*B.w+x]=1;
+    const z=mlDilate(lm,B.w,B.h,Math.max(3,Math.round(r.fs*0.3)));for(let y=0;y<B.h;y++)for(let x=0;x<B.w;x++)if(z[y*B.w+x]){const i=(B.y+y)*W+B.x+x;zone[i]=1;if(own[i]<0)own[i]=k;}});
+   const est=new Uint8ClampedArray(d);mlFill(est,zone,W,H);const st=fits.map(()=>({n:0,c:[0,0,0],e:[0,0,0],x:0,y:0}));
+   for(let i=0;i<W*H;i++){if(!zone[i]||mask[i])continue;const dv=mlD(d,i*4,[est[i*4],est[i*4+1],est[i*4+2]]);if(dv<30)continue;mask[i]=1;const k=own[i];if(k<0)continue;const S=st[k];S.n++;for(let c=0;c<3;c++){S.c[c]+=d[i*4+c];S.e[c]+=est[i*4+c];}S.x+=i%W;S.y+=(i/W)|0;}
+   fits.forEach(({r},k)=>{const S=st[k],B=r.box;let n=0,lx=0,ly=0,top=[0,0,0,0],bot=[0,0,0,0],y0=1e9,y1=-1;for(let y=0;y<B.h;y++)for(let x=0;x<B.w;x++)if(r.orig[y*B.w+x]){n++;lx+=x;ly+=y;if(y<y0)y0=y;if(y>y1)y1=y;}if(!n)return;lx=B.x+lx/n;ly=B.y+ly/n;
+    const q=(y1-y0)/4;for(let y=0;y<B.h;y++)for(let x=0;x<B.w;x++)if(r.orig[y*B.w+x]&&(y<=y0+q||y>=y1-q)){const T=y<=y0+q?top:bot,i=((B.y+y)*W+B.x+x)*4;T[0]+=d[i];T[1]+=d[i+1];T[2]+=d[i+2];T[3]++;}
+    const sty={};if(top[3]>20&&bot[3]>20){const a=top.slice(0,3).map(v=>v/top[3]),b=bot.slice(0,3).map(v=>v/bot[3]);if(Math.hypot(a[0]-b[0],a[1]-b[1],a[2]-b[2])>36)sty.grad={type:'linear',angle:90,stops:[{offset:0,color:mlHex(a)},{offset:1,color:mlHex(b)}]};}
+    if(S.n>n*0.2){const hc=S.c.map(v=>v/S.n),he=S.e.map(v=>v/S.n),hx=S.x/S.n,hy=S.y/S.n,dx=hx-lx,dy=hy-ly,off=Math.hypot(dx,dy);
+     const glow=hc.map((v,c)=>Math.max(0,Math.min(255,he[c]+(v-he[c])*2.2)));sty.shadow={color:mlHex(glow),blur:Math.max(4,r.fs*0.3),x:off>r.fs*0.06?dx*1.6:0,y:off>r.fs*0.06?dy*1.6:0,op:0.9};}
+    r.sty=sty;});}
+  mask=mlDilate(mask,W,H,Math.max(3,Math.round(Math.min(W,H)/300)+1));const photo=mlPhotoLike(d,W,H);if(blocks.length){if(opt.fill!=='smooth')mlPatchFill(d,mask,W,H,1100);else mlFill(d,mask,W,H);}cx.putImageData(img,0,0);
   let bgSrc=src.c.toDataURL('image/jpeg',0.92),subj=null,segEls=null;
   if(opt.subject!==false&&photo){say(t('mlSubject'));try{const cut=await cutout(bgSrc),ci=await loadImg(cut),sc=mkCanvas(W,H),sx=sc.getContext('2d',{willReadFrequently:true});sx.drawImage(ci,0,0,W,H);const ad=sx.getImageData(0,0,W,H).data;
-    let sm=new Uint8Array(W*H);for(let i=0;i<W*H;i++)if(ad[i*4+3]>110)sm[i]=1;sm=mlMainBlobs(sm,W,H);let on=0;for(let i=0;i<W*H;i++)if(sm[i])on++;const cov=on/(W*H);
+    let sm=new Uint8Array(W*H);for(let i=0;i<W*H;i++)if(ad[i*4+3]>70)sm[i]=1;sm=mlMainBlobs(sm,W,H);let on=0;for(let i=0;i<W*H;i++)if(sm[i])on++;const cov=on/(W*H);
     let onTxt=0;if(fits.length){const T=new Uint8Array(W*H);for(const{r}of fits){const B=r.box;for(let y=0;y<B.h;y++)for(let x=0;x<B.w;x++)if(r.orig[y*B.w+x])T[(B.y+y)*W+B.x+x]=1;}for(let i=0;i<W*H;i++)if(sm[i]&&T[i])onTxt++;}
     if(cov>0.03&&cov<0.75&&onTxt<on*0.15){let x0=W,y0=H,x1=0,y1=0;for(let y=0;y<H;y++)for(let x=0;x<W;x++)if(sm[y*W+x]){if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y;}
      const bw=x1-x0+1,bh=y1-y0+1,tc=mkCanvas(bw,bh),tx=tc.getContext('2d',{willReadFrequently:true});tx.drawImage(ci,x0*ci.naturalWidth/W,y0*ci.naturalHeight/H,bw*ci.naturalWidth/W,bh*ci.naturalHeight/H,0,0,bw,bh);
@@ -3002,7 +3013,7 @@ async function magicLayers(id,opt={}){const e=byId(id);if(!e||e.type!=='image'||
   const keep={};['opacity','brightness','contrast','grayscale','blur','duo','tint','tintAmt'].forEach(k=>{if(e[k]!==undefined&&e[k]!==null&&e[k]!=='')keep[k]=e[k];});
   const R=src.R,news=segEls||[el('image',{...keep,src:bgSrc,x:src.x,y:src.y,width:src.w,height:src.h,radius:e.fit==='fit'?0:(e.radius||0)})];
   if(subj)news.push(el('image',{...keep,src:subj.src,x:src.x+subj.x*R,y:src.y+subj.y*R,width:subj.w*R,height:subj.h*R,radius:0}));
-  const txs=fits.map(f=>{const te=mlTextEl(f.r,src);if(f.r.alts&&f.r.alts.length)ML_ALTS.set(te.id,f.r.alts);return te;});if(segEls)segLink(news,txs);news.push(...txs);
+  const txs=fits.map(f=>{const te=mlTextEl(f.r,src),S=f.r.sty||{},Rk=src.R;if(S.grad)te.fillGradient=S.grad;if(S.shadow){te.shadowColor=S.shadow.color;te.shadowBlur=Math.round(S.shadow.blur*Rk);te.shadowX=Math.round(S.shadow.x*Rk);te.shadowY=Math.round(S.shadow.y*Rk);te.shadowOpacity=S.shadow.op;}if(f.r.alts&&f.r.alts.length)ML_ALTS.set(te.id,f.r.alts);return te;});if(segEls)segLink(news,txs);news.push(...txs);
   const i0=doc.elements.findIndex(x=>x.id===id);if(i0<0)return;if(e.groupId)news.forEach(n=>n.groupId=e.groupId);doc.elements.splice(i0,1,...news);
   const pick=news.slice(1).map(n=>n.id);setSel(pick.length?pick:[news[0].id]);fullRender();commit();
   toast(t('mlDone').replace('{n}',news.length).replace('{t}',fits.length),6000);if(typeof bdAnim==='function')bdAnim('cheer');}
