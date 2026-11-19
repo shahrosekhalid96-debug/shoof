@@ -1,10 +1,10 @@
-"""Read Real-ESRGAN realesr-general-x4v3.pth without torch and write an ONNX model (SRVGGNetCompact)."""
+"""Read Real-ESRGAN realesr-general-x4v3.pth + realesr-general-wdn-x4v3.pth without torch, blend them (denoise strength DN, as Real-ESRGAN -dn does) and write an ONNX model.
+Usage: python3 tools/esrgan_to_onnx.py unused out.onnx 0.3  (expects /tmp/up/g.pth and /tmp/up/wdn.pth from the v0.2.5.0 release)"""
 import zipfile, pickle, numpy as np, collections, sys
 import onnx
 from onnx import helper, TensorProto, numpy_helper
 
-z = zipfile.ZipFile(sys.argv[1])
-pre = z.namelist()[0].split('/')[0]
+z = None; pre = None
 
 class Storage:
     def __init__(self, key, dtype): self.key, self.dtype = key, dtype
@@ -26,8 +26,13 @@ class U(pickle.Unpickler):
         _, dt, key, loc, n = pid
         return Storage(key, dt if isinstance(dt, type) else np.float32)
 
-sd = U(z.open(f'{pre}/data.pkl')).load()
-if 'params' in sd: sd = sd['params']
+def load(path):
+    global z,pre
+    z = zipfile.ZipFile(path); pre = z.namelist()[0].split('/')[0]
+    d = U(z.open(f'{pre}/data.pkl')).load()
+    return d.get('params', d)
+A = load('/tmp/up/g.pth'); Bw = load('/tmp/up/wdn.pth'); DN = float(sys.argv[3]) if len(sys.argv) > 3 else 0.5
+sd = collections.OrderedDict((k, DN * A[k] + (1 - DN) * Bw[k]) for k in A)
 keys = list(sd.keys())
 print(len(keys), keys[:6], keys[-4:])
 

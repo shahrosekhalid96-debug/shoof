@@ -2615,6 +2615,32 @@ def t_magic_more(B):
     ok(not c.errors, c.errors); c.close()
 
 
+@test('lift_an_object_and_upscaler_detail')
+def t_lift(B):
+    c = Ctx(B); c.blank(1200, 800)
+    # a photo-like picture with two clear objects
+    src = c.ev("""()=>{const k=document.createElement('canvas');k.width=1200;k.height=800;const x=k.getContext('2d');const g=x.createLinearGradient(0,0,0,800);g.addColorStop(0,'#2b4a7a');g.addColorStop(1,'#0e1a2e');x.fillStyle=g;x.fillRect(0,0,1200,800);
+      x.fillStyle='#e8a23a';x.beginPath();x.arc(850,420,190,0,7);x.fill();x.fillStyle='#d9d4c7';x.fillRect(150,250,260,420);const im=x.getImageData(0,0,1200,800),q=im.data;let r=5;for(let i=0;i<q.length;i+=4){r=(r*1103515245+12345)&0x7fffffff;const n=(r%21)-10;q[i]+=n;q[i+1]+=n;q[i+2]+=n;}x.putImageData(im,0,0);return k.toDataURL('image/jpeg',0.92);}""")
+    c.ev("s=>{const e=el('image',{src:s,x:0,y:0,width:1200,height:800,radius:0});doc.elements.push(e);selId=e.id;setSel([e.id]);fullRender();commit();renderProps();}", src)
+    ok(c.page.locator('#pGrab').is_visible(), 'photo panel offers Lift an object')
+    n0 = c.ev("doc.elements.length"); u0 = c.ev("undoStack.length")
+    c.page.click('#pGrab'); c.page.wait_for_function("GRAB&&GRAB.E&&!GRAB.busy", timeout=240000)
+    r = c.ev("()=>{const b=GRAB.ov.getBoundingClientRect();return [b.x,b.y,b.width,b.height]}")
+    c.page.mouse.click(r[0] + r[2] * 850 / 1200, r[1] + r[3] * 420 / 800)
+    c.page.wait_for_function("GRAB&&!GRAB.busy&&GRAB.list.length", timeout=60000)
+    ok(c.page.locator('#grabBar [data-gr="lift"]').is_visible(), 'outline shown with Lift it out')
+    c.page.click('#grabBar [data-gr="lift"]'); c.page.wait_for_function("!GRAB", timeout=120000)
+    eq(c.ev("doc.elements.length"), n0 + 1, 'object is now its own layer'); eq(c.ev("undoStack.length") - u0, 1, 'one undo step')
+    box = c.ev("(()=>{const o=doc.elements[doc.elements.length-1];return [o.type,Math.round(o.x),Math.round(o.y),Math.round(o.width),Math.round(o.height)]})()")
+    ok(box[0] == 'image' and abs(box[1] - 660) < 40 and abs(box[2] - 230) < 40 and abs(box[3] - 380) < 50, 'the circle was lifted: %s' % box)
+    under = c.ev("""()=>new Promise(r=>{const b=doc.elements[doc.elements.length-2];const i=new Image();i.onload=()=>{const k=document.createElement('canvas');k.width=1200;k.height=800;const x=k.getContext('2d');x.drawImage(i,0,0,1200,800);r(Array.from(x.getImageData(850,420,1,1).data.slice(0,3)));};i.src=b.src;})""")
+    ok(under[0] < 150 and under[2] > under[0], 'gap behind it filled with the background: %s' % under)
+    c.ev("undo()"); eq(c.ev("doc.elements.length"), n0, 'undo puts the photo back')
+    c.ev("()=>{selId=doc.elements[doc.elements.length-1].id;startGrab(selId);}"); c.page.wait_for_function("GRAB&&!GRAB.busy", timeout=120000)
+    c.page.keyboard.press('Escape'); ok(c.ev("!GRAB") and c.ev("!document.querySelector('.grabov')"), 'Esc leaves the picker')
+    ok(not c.errors, c.errors); c.close()
+
+
 @test('upscaler_and_magic_layers')
 def t_up_magic(B):
     import base64
@@ -3338,7 +3364,7 @@ def t_pwa(B):
     try:
         ok('Posts, posters, slides, logos.' in open(os.path.join(out, 'index.html'), encoding='utf-8').read(), 'home page is the landing page')
         eq(open(os.path.join(out, 'editor.html'), encoding='utf-8').read(), open(APP, encoding='utf-8').read(), 'editor at /editor')
-        for f in ['sw.js', 'manifest.webmanifest', 'icons/icon-512.png', 'welcome/big_sale.webp', 'vendor/ai/u2netp.onnx', 'vendor/ai/realesr-general-x4v3.onnx', 'vendor/ai/ppocr-det.onnx', 'vendor/ai/ppocr-rec.onnx', 'vendor/ai/ppocr-keys.txt', 'fonts/fonts.css']: ok(os.path.exists(os.path.join(out, f)), f)
+        for f in ['sw.js', 'manifest.webmanifest', 'icons/icon-512.png', 'welcome/big_sale.webp', 'vendor/ai/u2netp.onnx', 'vendor/ai/realesr-x4v3-dn30.onnx', 'vendor/ai/ppocr-det.onnx', 'vendor/ai/ppocr-rec.onnx', 'vendor/ai/ppocr-keys.txt', 'vendor/ai/sam-enc.0', 'vendor/ai/sam-enc.1', 'vendor/ai/sam-dec.onnx', 'fonts/fonts.css']: ok(os.path.exists(os.path.join(out, f)), f)
         for f in ['tests', 'tools', 'functions', 'CLAUDE.md']: ok(not os.path.exists(os.path.join(out, f)), f'{f} not published')
     finally: shutil.rmtree(out, ignore_errors=True)
 
