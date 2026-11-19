@@ -24,7 +24,8 @@ export async function onRequestGet({ request }) {
   } else {
     const q = String(url.searchParams.get('q') || '').replace(/[\u0000-\u001f<>]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 60);
     if (!q) return json({ error: 'bad_input' }, 400);
-    const r = await fetch(API + '?q=' + encodeURIComponent(q) + '&license=cc0,pdm&page_size=20&mature=false', { headers: { 'user-agent': 'Shoof (shoof.pages.dev)' } });
+    const ask = () => fetch(API + '?q=' + encodeURIComponent(q) + '&license=cc0,pdm&page_size=20&mature=false', { headers: { 'user-agent': 'Shoof (shoof.pages.dev)' } });
+    let r = await ask(); if (r.status >= 500) { await new Promise(z => setTimeout(z, 600)); r = await ask(); } // Openverse sometimes answers 5xx once
     if (r.status === 429) return json({ error: 'limit' }, 429);
     if (!r.ok) return json({ error: 'upstream', status: r.status, detail: (await r.text()).slice(0, 200) }, 502);
     const j = await r.json();
