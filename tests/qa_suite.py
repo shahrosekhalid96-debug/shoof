@@ -2635,9 +2635,9 @@ def t_lift(B):
     src = c.ev("""()=>{const k=document.createElement('canvas');k.width=1200;k.height=800;const x=k.getContext('2d');const g=x.createLinearGradient(0,0,0,800);g.addColorStop(0,'#2b4a7a');g.addColorStop(1,'#0e1a2e');x.fillStyle=g;x.fillRect(0,0,1200,800);
       x.fillStyle='#e8a23a';x.beginPath();x.arc(850,420,190,0,7);x.fill();x.fillStyle='#d9d4c7';x.fillRect(150,250,260,420);const im=x.getImageData(0,0,1200,800),q=im.data;let r=5;for(let i=0;i<q.length;i+=4){r=(r*1103515245+12345)&0x7fffffff;const n=(r%21)-10;q[i]+=n;q[i+1]+=n;q[i+2]+=n;}x.putImageData(im,0,0);return k.toDataURL('image/jpeg',0.92);}""")
     c.ev("s=>{const e=el('image',{src:s,x:0,y:0,width:1200,height:800,radius:0});doc.elements.push(e);selId=e.id;setSel([e.id]);fullRender();commit();renderProps();}", src)
-    ok(not c.page.locator('#pGrab').count() and 'objects' in c.page.locator('#pMagic').inner_text(), 'Lift an object is part of Magic layers (one button)')
+    ok(c.page.locator('#pGrab').is_visible() and 'objects' in c.page.locator('#pMagic').inner_text(), 'Magic layers + a separate by-hand lift button')
     n0 = c.ev("doc.elements.length"); u0 = c.ev("undoStack.length")
-    c.ev("startGrab(selId)"); c.page.wait_for_function("GRAB&&GRAB.E&&!GRAB.busy", timeout=240000)
+    c.ev("startGrab(selId)"); c.page.wait_for_function("GRAB&&GRAB.E&&!GRAB.busy&&!GRAB.loading", timeout=240000)
     r = c.ev("()=>{const b=GRAB.ov.getBoundingClientRect();return [b.x,b.y,b.width,b.height]}")
     c.page.mouse.click(r[0] + r[2] * 850 / 1200, r[1] + r[3] * 420 / 800)
     c.page.wait_for_function("GRAB&&!GRAB.busy&&GRAB.list.length", timeout=60000)
@@ -2651,6 +2651,27 @@ def t_lift(B):
     c.ev("undo()"); eq(c.ev("doc.elements.length"), n0, 'undo puts the photo back')
     c.ev("()=>{selId=doc.elements[doc.elements.length-1].id;startGrab(selId);}"); c.page.wait_for_function("GRAB&&!GRAB.busy", timeout=120000)
     c.page.keyboard.press('Escape'); ok(c.ev("!GRAB") and c.ev("!document.querySelector('.grabov')"), 'Esc leaves the picker')
+    # by hand: paint over the box with the brush, rub a strip out, lift it; then erase a leftover
+    c.ev("()=>{selId=doc.elements.find(e=>e.type==='image').id;}"); n1 = c.ev("doc.elements.length"); u1 = c.ev("undoStack.length")
+    c.ev("startGrab(selId,{mode:'brush',noAI:true})"); c.page.wait_for_function("GRAB&&!GRAB.loading", timeout=60000)
+    ok(c.page.locator('#grabBar [data-gr=m_brush].sel').count() == 1 and c.page.locator('#grabSize').count() == 1, 'brush mode with a size slider')
+    r = c.ev("()=>{const b=GRAB.ov.getBoundingClientRect();return [b.x,b.y,b.width,b.height]}"); X = lambda v: r[0] + r[2] * v / 1200; Y = lambda v: r[1] + r[3] * v / 800
+    c.ev("GRAB.bs=40")
+    for yy in range(270, 660, 40):
+        c.page.mouse.move(X(170), Y(yy)); c.page.mouse.down(); c.page.mouse.move(X(390), Y(yy), steps=6); c.page.mouse.up()
+    a1 = c.ev("grabCur().n"); c.page.click('#grabBar [data-gr=m_erase]'); c.page.mouse.move(X(170), Y(640)); c.page.mouse.down(); c.page.mouse.move(X(390), Y(640), steps=6); c.page.mouse.up()
+    a2 = c.ev("grabCur().n"); ok(a1 > 0 and a2 < a1, 'brush paints, eraser takes away (%s -> %s)' % (a1, a2))
+    c.page.click('#grabBar [data-gr=back]'); ok(c.ev("grabCur().n") == a1, 'Undo takes back the last stroke')
+    c.page.click('#grabBar [data-gr=lift]'); c.page.wait_for_function("doc.elements.length>%d" % n1, timeout=120000)
+    o = c.ev("(()=>{const o=doc.elements[doc.elements.length-1];return [o.type,Math.round(o.x),Math.round(o.width)]})()")
+    ok(o[0] == 'image' and abs(o[1] - 130) < 50 and abs(o[2] - 300) < 60, 'painted part lifted as its own layer: %s' % o)
+    eq(c.ev("undoStack.length") - u1, 1, 'one undo step')
+    c.page.wait_for_function("GRAB&&GRAB.mode==='brush'", timeout=20000); ok(True, 'stays in brush mode for the next part')
+    n2 = c.ev("doc.elements.length"); c.ev("GRAB.bs=30")
+    c.page.mouse.move(X(820), Y(400)); c.page.mouse.down(); c.page.mouse.move(X(880), Y(440), steps=4); c.page.mouse.up()
+    c.page.click('#grabBar [data-gr=wipe]'); c.page.wait_for_function("GRAB&&!GRAB.busy&&undoStack.length>%d" % (u1 + 1), timeout=120000)
+    eq(c.ev("doc.elements.length"), n2, 'Erase it removes a leftover without adding a layer')
+    c.ev("grabEnd()")
     ok(not c.errors, c.errors); c.close()
 
 
@@ -2685,7 +2706,7 @@ def t_up_magic(B):
     sx, sy, sw, sh = imgs[1]; ok(abs(sx - 320) < 20 and abs(sy - 480) < 20 and abs(sw - 440) < 30, 'subject is the circle: %s' % imgs[1])
     eq(c.ev("undoStack.length") - u0, 1, 'one undo step')
     ok(c.ev("(()=>{const ids=sel();return ids.length===3})()"), 'new layers are selected')
-    c.page.wait_for_function("GRAB&&GRAB.after&&!GRAB.busy", timeout=240000)
+    c.page.wait_for_function("GRAB&&GRAB.after&&GRAB.E&&!GRAB.busy&&!GRAB.loading", timeout=240000)
     ok('anything else' in c.page.locator('#grabBar').inner_text() and c.page.locator('#grabBar [data-gr="cancel"]').inner_text() == 'Done', 'Magic layers ends in tap-to-lift mode with Done')
     # the background has no text left where the headline was, and the result still looks like the original
     stats = c.ev("""s=>new Promise(r=>{const bg=doc.elements.find(e=>e.type==='image');const a=new Image(),b=new Image();let n=0;const go=()=>{if(++n<2)return;const k=document.createElement('canvas');k.width=k.height=1080;const x=k.getContext('2d',{willReadFrequently:true});
