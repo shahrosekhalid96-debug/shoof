@@ -26,7 +26,7 @@ export async function onRequestGet({ request }) {
     if (!q) return json({ error: 'bad_input' }, 400);
     const r = await fetch(API + '?q=' + encodeURIComponent(q) + '&license=cc0,pdm&page_size=20&mature=false', { headers: { 'user-agent': 'Shoof (shoof.pages.dev)' } });
     if (r.status === 429) return json({ error: 'limit' }, 429);
-    if (!r.ok) return json({ error: 'upstream' }, 502);
+    if (!r.ok) return json({ error: 'upstream', status: r.status, detail: (await r.text()).slice(0, 200) }, 502);
     const j = await r.json();
     const results = (Array.isArray(j.results) ? j.results : []).filter(x => x && UUID.test(String(x.id)) && (x.license === 'cc0' || x.license === 'pdm')).slice(0, 20).map(x => ({ id: x.id, title: String(x.title || 'Photo').slice(0, 80), license: x.license }));
     res = json({ results }, 200, 'public, max-age=86400');
