@@ -7,8 +7,9 @@
 <meta name="description" content="Shoof is a free, open-source design editor that runs in your browser. Posts, posters, logos and presentations, with no account and nothing uploaded.">
 <meta name="theme-color" content="#07060c">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" href="icons/icon-192.png" type="image/png">
-<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 48 48%22%3E%3Cdefs%3E%3ClinearGradient id=%22lgx%22 x1=%224%22 y1=%2216%22 x2=%2244%22 y2=%2232%22 gradientUnits=%22userSpaceOnUse%22%3E%3Cstop offset=%220%22 stop-color=%22%23a855f7%22/%3E%3Cstop offset=%22.42%22 stop-color=%22%23ec4899%22/%3E%3Cstop offset=%22.58%22 stop-color=%22%238b5cf6%22/%3E%3Cstop offset=%221%22 stop-color=%22%2322d3ee%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%2248%22 height=%2248%22 rx=%2211%22 fill=%22%2314112a%22/%3E%3Cg transform=%22translate(4.8 4.8) scale(.8)%22%3E%3Cpath d=%22M24 24C27.5 18.2 31.6 15.8 35.6 15.8C40.6 15.8 43.6 19.6 43.6 24C43.6 28.4 40.6 32.2 35.6 32.2C31.6 32.2 27.5 29.8 24 24C20.5 18.2 16.4 15.8 12.4 15.8C7.4 15.8 4.4 19.6 4.4 24C4.4 28.4 7.4 32.2 12.4 32.2C16.4 32.2 20.5 29.8 24 24Z%22 fill=%22none%22 stroke=%22url(%23lgx)%22 stroke-width=%225.6%22 stroke-linejoin=%22round%22/%3E%3C/g%3E%3C/svg%3E">
+<link rel="alternate icon" href="icons/icon-192.png?v=2" type="image/png">
+<link rel="apple-touch-icon" href="icons/icon-192.png?v=2">
 <style>
 /* Shoof landing page: one file, no libraries, no outside requests.
    The hero is a live film: a holographic light field (WebGL, drawn on the visitor's device) behind a real Shoof editor window in which a real template builds and edits itself.
@@ -359,7 +360,7 @@ html,body{overflow-x:clip}
 
 /* 2026-11-21 one-screen carousel + create section below */
 .deck{position:relative;z-index:2;flex:1;display:flex;flex-direction:column;min-height:0}
-.dtrack{display:flex;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;align-items:flex-start;transition:height .45s var(--ease)}
+.dtrack{display:flex;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;align-items:stretch}
 .dtrack::-webkit-scrollbar{display:none}
 .slide{flex:0 0 100%;min-width:0;scroll-snap-align:start;scroll-snap-stop:always;padding:0;box-sizing:border-box;display:flex;flex-direction:column;justify-content:center}
 .slide>.wrap{margin-left:auto;margin-right:auto}
@@ -402,8 +403,8 @@ footer.wrap{display:flex;flex-wrap:wrap;gap:14px 22px;align-items:center;padding
 footer.wrap a{color:var(--muted)}
 @media(max-width:1239px){.hero>.shy{display:none}}
 @media(max-width:860px){.ddots span{display:none}.ddots button{min-width:18px}.dmore{display:none}.slide{padding:12px 0 8px}}
-@media(max-width:600px){#inside .grid{grid-template-columns:1fr 1fr;gap:10px}#inside .card{padding:14px}#inside .card h3{font-size:15px}#inside .card p{font-size:12.5px;line-height:1.45}#inside .card .ic{width:34px;height:34px;border-radius:11px}#inside .card .ic svg{width:18px;height:18px}#inside .also{display:none}.qts{flex-wrap:nowrap;justify-content:flex-start;overflow-x:auto;margin:20px -20px 44px;padding:0 20px 4px;scrollbar-width:none}.qt{flex:none}.hub{padding-top:56px}}
-@media(prefers-reduced-motion:reduce){.dtrack{transition:none}.ddots button.run i::after{animation:none}}
+@media(max-width:600px){#studio .film,#studio .eyebrow,#studio .note,#inside .sub,#inside .card p,#cutout ul,#cutout .sub,#try .sub,#try .or{display:none}#studio h1{font-size:40px;margin:6px 0 14px}.slide h2{font-size:28px}#try .tryview{width:min(230px,100%)}#cutout .demo{max-width:300px;margin:0 auto}#inside .head{margin-bottom:14px}#inside .grid{grid-template-columns:1fr 1fr;gap:10px}#inside .card{padding:14px}#inside .card h3{font-size:15px}#inside .card p{font-size:12.5px;line-height:1.45}#inside .card .ic{width:34px;height:34px;border-radius:11px}#inside .card .ic svg{width:18px;height:18px}#inside .also{display:none}.qts{flex-wrap:nowrap;justify-content:flex-start;overflow-x:auto;margin:20px -20px 44px;padding:0 20px 4px;scrollbar-width:none}.qt{flex:none}.hub{padding-top:56px}}
+@media(prefers-reduced-motion:reduce){.ddots button.run i::after{animation:none}}
 </style>
 </head>
 <body>
@@ -814,7 +815,7 @@ btns.forEach(function(b){b.addEventListener('click',function(){if(ev){var e=ev;e
 /* the carousel: every part of Shoof on one screen, moving on by itself (paused while you hover, focus, swipe or press pause; never under reduced motion) */
 (function(){var tr=$('dtrack');if(!tr)return;var sl=[].slice.call(tr.children),dots=[].slice.call(document.querySelectorAll('#dDots [data-s]')),pb=$('dPause'),cur=0,timer=0,hold=0,user=false,hov=false,foc=false,vis=true;
  function idx(){return Math.max(0,Math.min(sl.length-1,Math.round(tr.scrollLeft/tr.clientWidth)));}
- function mark(i){cur=i;sl.forEach(function(x,k){if('inert' in x)x.inert=k!==i;x.setAttribute('aria-hidden',String(k!==i));});dots.forEach(function(d,k){d.setAttribute('aria-current',String(k===i));d.classList.remove('run');});tr.style.height=sl[i].offsetHeight+'px';window.HERO_OFF=i!==0;arm();}
+ function mark(i){cur=i;sl.forEach(function(x,k){if('inert' in x)x.inert=k!==i;x.setAttribute('aria-hidden',String(k!==i));});dots.forEach(function(d,k){d.setAttribute('aria-current',String(k===i));d.classList.remove('run');});window.HERO_OFF=i!==0;arm();}
  function show(i,inst){i=(i+sl.length)%sl.length;tr.scrollTo({left:i*tr.clientWidth,behavior:(RM||inst)?'instant':'smooth'});if(inst||RM)mark(i);else setTimeout(function(){if(idx()===i)mark(i);},650);}
  function paused(){return user||hov||foc||!vis||document.hidden||RM;}
  function arm(){clearTimeout(timer);var d=dots[cur];if(!d)return;if(paused()){d.classList.remove('run');return;}var ms=+(sl[cur].getAttribute('data-dwell')||7000);d.style.setProperty('--dw',ms+'ms');d.classList.remove('run');void d.offsetWidth;d.classList.add('run');timer=setTimeout(function(){show(cur+1);},ms);}
@@ -824,12 +825,14 @@ btns.forEach(function(b){b.addEventListener('click',function(){if(ev){var e=ev;e
  pb.addEventListener('click',function(){setUser(!user);});
  var deck=$('deck');deck.addEventListener('pointerenter',function(e){if(e.pointerType==='mouse'){hov=true;arm();}});deck.addEventListener('pointerleave',function(){hov=false;arm();});
  deck.addEventListener('focusin',function(e){if(e.target.closest('.dctl'))return;foc=true;arm();});deck.addEventListener('focusout',function(){foc=false;arm();});
- var st=0;tr.addEventListener('scroll',function(){clearTimeout(st);st=setTimeout(function(){var i=idx();if(i!==cur||tr.style.height!==sl[i].offsetHeight+'px')mark(i);},90);},{passive:true});
+ var st=0;tr.addEventListener('scroll',function(){clearTimeout(st);st=setTimeout(function(){var i=idx();if(i!==cur)mark(i);},90);},{passive:true});
  deck.addEventListener('keydown',function(e){if(e.target.matches('input,textarea'))return;if(e.key==='ArrowRight'){show(cur+1);e.preventDefault();}else if(e.key==='ArrowLeft'){show(cur-1);e.preventDefault();}});
  if('IntersectionObserver' in window)new IntersectionObserver(function(es){vis=es[0].isIntersecting;arm();},{threshold:.35}).observe(deck);
  document.addEventListener('visibilitychange',arm);
- if('ResizeObserver' in window)new ResizeObserver(function(){tr.style.height=sl[cur].offsetHeight+'px';}).observe(sl[0].parentNode);
- addEventListener('resize',function(){tr.scrollTo({left:cur*tr.clientWidth,behavior:'instant'});tr.style.height=sl[cur].offsetHeight+'px';});
+ /* every slide gets the height of the tallest one, so the carousel never grows or shrinks as it moves */
+ var fz=0,lw=0;function fit(){fz=0;sl.forEach(function(x){x.style.height='';});var h=0;sl.forEach(function(x){h=Math.max(h,x.offsetHeight);});sl.forEach(function(x){x.style.height=h+'px';});tr.style.height=h+'px';if(tr.clientWidth!==lw){lw=tr.clientWidth;tr.scrollTo({left:cur*lw,behavior:'instant'});}}
+ function refit(){if(!fz){fz=1;requestAnimationFrame(fit);}}
+ addEventListener('resize',refit);addEventListener('load',refit);if(document.fonts&&document.fonts.ready)document.fonts.ready.then(refit);[].forEach.call(tr.querySelectorAll('img'),function(im){if(!im.complete)im.addEventListener('load',refit,{once:true});});fit();
  window.shoofSlide=function(id){var i=typeof id==='number'?id:sl.findIndex(function(x){return x.id===id;});if(i>=0){setUser(true);show(i,true);}};
  if(RM)setUser(true);mark(0);})();
 window.shoofGo=function(el,blk){el.scrollIntoView({block:blk||'start',behavior:'instant'});};

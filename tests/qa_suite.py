@@ -3427,6 +3427,8 @@ def t_landing(B):
         eq(pg.evaluate("[...document.querySelectorAll('a.btn')].map(a=>a.getAttribute('href')).filter(x=>x!=='#examples')"), ['#create', '#create', '#templates', './editor?tool=cutout', './editor?tpl=neon_open', '#create', './editor?cat=all'], 'buttons lead to the create section or the editor')
         eq(pg.evaluate("[...document.querySelectorAll('#dtrack>.slide')].map(s=>s.id)"), ['studio', 'ai', 'inside', 'cutout', 'try', 'examples', 'how'], 'one carousel holds every part')
         ok(pg.evaluate("[...document.querySelectorAll('#dtrack>.slide')].filter(s=>!s.inert).length===1"), 'only the shown slide can be used')
+        eq(len(set(pg.evaluate("[...document.querySelectorAll('#dtrack>.slide')].map(s=>s.offsetHeight)"))), 1, 'every slide is the same size')
+        ok(pg.evaluate("document.querySelector('link[rel=icon]').href.startsWith('data:image/svg+xml')&&document.querySelector('link[rel=icon]').href.includes('lgx')"), 'tab icon is the new logo')
         pg.click('#dNext'); pg.wait_for_timeout(900); eq(pg.evaluate("document.querySelector('#dDots [aria-current=true]').dataset.s"), '1', 'next slide')
         eq(pg.evaluate("[...document.querySelectorAll('#create .qt')].map(a=>a.getAttribute('href'))"), ['./editor?new=' + k for k in ['ig', 'story', 'a4', 'flyer', 'slides', 'logo', 'yt', 'card', 'blank']], 'one click into a new design')
         ok(pg.evaluate("!!document.querySelector('#create form.ask input[name=describe]')&&document.querySelectorAll('#create #gal a').length>=12"), 'create section: describe box and templates')

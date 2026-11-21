@@ -1,7 +1,7 @@
 /* Shoof offline support. Pages: network first, so updates arrive at once; the saved copy is used when offline.
    Files (scripts, fonts, pictures, the AI model): served from the saved copy, refreshed in the background.
    Never caches the AI writer (api/) or other sites. */
-const CACHE = 'shoof-v1';
+const CACHE = 'shoof-v2';
 const CORE = ['./editor', './', 'vendor/konva.min.js', 'fonts/fonts.css', 'manifest.webmanifest', 'icons/icon-192.png'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => Promise.all(CORE.map(u => fetch(u).then(r => r.ok && c.put(u, copy(r))).catch(() => {})))).then(() => self.skipWaiting())); });
 self.addEventListener('activate', e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim())); });
