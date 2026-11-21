@@ -407,11 +407,26 @@ footer.wrap a{color:var(--muted)}
 @media(prefers-reduced-motion:reduce){.ddots button.run i::after{animation:none}}
 .mine{margin-bottom:56px}.mine .mh{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:16px}.mine h2{font-size:clamp(24px,2.6vw,34px);margin:0}.mine .mh p{margin:0;color:var(--muted);font-size:15px}
 .mrow{display:flex;gap:14px;overflow-x:auto;padding:4px 2px 10px;scrollbar-width:thin}
-.mrow a{flex:0 0 170px;display:flex;flex-direction:column;gap:8px;text-decoration:none;color:var(--ink);font:600 14px Inter,sans-serif}
+.mrow a{display:flex;flex-direction:column;gap:8px;text-decoration:none;color:var(--ink);font:600 14px Inter,sans-serif}
 .mrow .mt{display:grid;place-items:center;height:150px;border-radius:14px;background:rgba(255,255,255,.05);box-shadow:0 0 0 1px rgba(255,255,255,.1);overflow:hidden;transition:transform .2s var(--ease),box-shadow .2s}
 .mrow img{max-width:100%;max-height:100%;display:block}
 .mrow a:hover .mt{transform:translateY(-2px);box-shadow:0 0 0 1px rgba(168,85,247,.6),0 0 20px rgba(124,58,237,.35)}
 .mrow .mn{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mine .mh{justify-content:space-between;align-items:flex-end}.mine .mh>div{display:flex;flex-direction:column;gap:6px}
+.msrch{position:relative;display:flex;align-items:center}.msrch svg{position:absolute;left:12px;width:16px;height:16px;color:var(--muted)}.msrch input{width:260px;height:42px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.05);color:var(--ink);font:400 15px Inter,sans-serif;padding:0 14px 0 36px}.msrch input:focus{outline:2px solid var(--hi);outline-offset:1px}
+.pchips{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 12px;scrollbar-width:none}
+.pchip{flex:none;display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--ink);font:600 14px Inter,sans-serif;cursor:pointer}
+.pchip i{width:10px;height:10px;border-radius:3px}.pchip small{color:var(--muted);font-weight:600}
+.pchip[aria-pressed=true]{background:rgba(139,92,246,.25);border-color:rgba(196,160,255,.6);box-shadow:0 0 16px rgba(124,58,237,.3)}
+.pchip.add{border-style:dashed;color:#c4b5fd}
+.pbar{display:flex;align-items:center;flex-wrap:wrap;gap:10px;padding:12px 14px;margin-bottom:14px;border-radius:16px;background:rgba(255,255,255,.04);box-shadow:inset 0 0 0 1px var(--line)}
+.pbar i{width:12px;height:12px;border-radius:4px}.pbar b{font:700 16px Inter,sans-serif}.pbar span{color:var(--muted);font-size:14px}.pbar .sp{flex:1}
+.mcard{flex:0 0 170px;display:flex;flex-direction:column;gap:6px;position:relative}
+.mtag{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--muted)}.mtag i{width:8px;height:8px;border-radius:2px}
+.mmove{font:500 12.5px Inter,sans-serif;color:var(--ink);background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:8px;padding:5px 6px}
+.mempty{color:var(--muted);margin:4px 0 0}
+dialog select.inp{height:46px}
+@media(max-width:600px){.msrch,.msrch input{width:100%}.pbar .sp{display:none}}
 </style>
 </head>
 <body>
@@ -606,13 +621,17 @@ footer.wrap a{color:var(--muted)}
   <p class="csub">Start with an idea, choose a template, or begin from scratch. One click opens the editor.</p>
   <form class="ask big" action="./editor">
    <label class="lab sr" for="crDesc">Describe what you want to design</label>
-   <div class="askrow"><span class="spark" aria-hidden="true">✦</span><input class="inp" id="crDesc" name="describe" maxlength="300" autocomplete="off" dir="auto" placeholder="Describe what you want to design… e.g. Instagram post for my bakery: 20% off cakes this Friday."><button class="btn primary" type="submit">Make it ✦</button></div>
+   <div class="askrow"><span class="spark" aria-hidden="true">✦</span><input type="hidden" name="project" id="crProj" value="" disabled><input class="inp" id="crDesc" name="describe" maxlength="300" autocomplete="off" dir="auto" placeholder="Describe what you want to design… e.g. Instagram post for my bakery: 20% off cakes this Friday."><button class="btn primary" type="submit">Make it ✦</button></div>
   </form>
   <div class="qts" role="group" aria-label="Start a new design"><a class="qt" href="./editor?new=ig"><span class="qi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="3.5"/><circle cx="12" cy="12" r="3.5"/></svg></span>Instagram post</a><a class="qt" href="./editor?new=story"><span class="qi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="2.5" width="10" height="19" rx="2.5"/></svg></span>Instagram story</a><a class="qt" href="./editor?new=a4"><span class="qi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="1.5"/><path d="M8 7h8M8 10h5"/></svg></span>Poster</a><a class="qt" href="./editor?new=flyer"><span class="qi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4"/></svg></span>Flyer</a><a class="qt" href="./editor?new=slides"><span class="qi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M12 16v4M8 20h8"/></svg></span>Presentation</a><a class="qt" href="./editor?new=logo"><span class="qi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5l1.4 2.9 3.2.4-2.3 2.2.6 3.1-2.9-1.5-2.9 1.5.6-3.1-2.3-2.2 3.2-.4z"/></svg></span>Logo</a><a class="qt" href="./editor?new=yt"><span class="qi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="3.5"/><path d="M10 9.2v5.6l4.8-2.8z"/></svg></span>YouTube thumbnail</a><a class="qt" href="./editor?new=card"><span class="qi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="6" width="19" height="12" rx="2"/><circle cx="8" cy="12" r="2.2"/></svg></span>Business card</a><a class="qt" href="./editor?new=blank"><span class="qi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span>Blank design</a></div>
  </div>
- <div class="wrap mine" id="mine" hidden>
-  <div class="mh"><h2 id="mineH">My designs</h2><p>Saved on this device. Click one to keep editing.</p></div>
+ <div class="wrap mine" id="mine">
+  <div class="mh"><div><h2 id="mineH">My projects</h2><p>Keep each client or brand in its own project. Everything stays on this device.</p></div>
+   <label class="msrch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="mineQ" type="search" maxlength="60" placeholder="Find a design" aria-label="Find a design"></label></div>
+  <div class="pchips" id="prjChips" role="group" aria-label="Projects"></div>
+  <div class="pbar" id="prjBar" hidden><i id="prjDot"></i><b id="prjNm"></b><span id="prjInfo"></span><span class="sp"></span><a class="btn primary small" id="prjGo" href="./editor?new=ig">New design here</a><button class="btn small" type="button" id="prjRen">Rename</button><button class="btn small" type="button" id="prjDel">Delete</button></div>
   <div class="mrow" id="mineRow" role="list" aria-labelledby="mineH"></div>
+  <p class="mempty" id="mineEmpty" hidden></p>
  </div>
  <div id="templates">
  <div class="wrap">
@@ -682,6 +701,14 @@ footer.wrap a{color:var(--muted)}
  </form>
 </dialog>
 
+<dialog id="prjDlg" aria-labelledby="prjDlgH">
+ <h2 id="prjDlgH">New project</h2>
+ <p>For example one per client, brand or event. Projects are saved on this device.</p>
+ <label class="lab" for="prjIn">Project name</label><input class="inp" id="prjIn" maxlength="40" autocomplete="off" dir="auto">
+ <label class="lab" for="prjKitIn" style="margin-top:14px">Brand kit (optional)</label><select class="inp" id="prjKitIn"><option value="">No brand kit</option></select>
+ <p class="msg" id="prjMsg" aria-live="polite"></p>
+ <div class="foot"><button class="btn small" type="button" data-x>Cancel</button><button class="btn primary small" type="button" id="prjOk">Create</button></div>
+</dialog>
 <dialog id="instDlg" aria-labelledby="instH">
  <h2 id="instH">Install Shoof as an app</h2>
  <p>Shoof then opens in its own window and works offline.</p>
@@ -822,13 +849,51 @@ function show(){var on=!alone&&(!!ev||(ios&&!!(d&&d.showModal)));btns.forEach(fu
 addEventListener('beforeinstallprompt',function(e){e.preventDefault();ev=e;show();});addEventListener('appinstalled',function(){ev=null;alone=true;show();});
 btns.forEach(function(b){b.addEventListener('click',function(){if(ev){var e=ev;ev=null;e.prompt();if(e.userChoice)e.userChoice.then(show,show);else show();}else if(d&&d.showModal)d.showModal();});});show();})();
 
-/* My designs: the editor keeps every design on this device (IndexedDB 'shoof' / 'designs'); show them here so one click opens one straight in the editor. Nothing leaves the device. */
-(function(){var box=$('mine'),row=$('mineRow');if(!box||!row||!window.indexedDB)return;var r;try{r=indexedDB.open('shoof',1);}catch(e){return;}
- r.onupgradeneeded=function(){try{r.result.createObjectStore('designs',{keyPath:'id'});}catch(e){}};
- r.onsuccess=function(){var db=r.result,q;try{q=db.transaction('designs','readonly').objectStore('designs').getAll();}catch(e){db.close();return;}
-  q.onsuccess=function(){db.close();var l=(q.result||[]).filter(function(x){return x&&/^d[a-z0-9]{6,20}$/.test(x.id);}).sort(function(a,b){return (b.updated||0)-(a.updated||0);}).slice(0,12);if(!l.length)return;
-   l.forEach(function(m){var a=document.createElement('a');a.href='./editor?open='+m.id;a.setAttribute('role','listitem');var f=document.createElement('span');f.className='mt';if(typeof m.thumb==='string'&&/^data:image\/(jpeg|png);base64,[A-Za-z0-9+\/=]+$/.test(m.thumb)){var im=new Image();im.alt='';im.src=m.thumb;f.appendChild(im);}var n=document.createElement('span');n.className='mn';n.textContent=String(m.name||m.auto||'Untitled design').slice(0,60);a.appendChild(f);a.appendChild(n);row.appendChild(a);});
-   box.hidden=false;var sm=$('sideMine');if(sm)sm.setAttribute('href','#mine');};};})();
+/* My projects + designs: the editor keeps every design on this device (IndexedDB 'shoof'/'designs', record.project) and the project list in localStorage 'shoof.projects'.
+   Here they can be filtered, searched, moved between projects and opened straight in the editor. Nothing leaves the device. */
+(function(){var box=$('mine'),row=$('mineRow'),chips=$('prjChips'),bar=$('prjBar'),qi=$('mineQ'),empty=$('mineEmpty');if(!box||!row)return;
+ var DS=[],PJ=[],sel='all',ID=/^p[a-z0-9]{6,20}$/,DID=/^d[a-z0-9]{6,20}$/,COL=['#8b5cf6','#ec4899','#22d3ee','#f59e0b','#10b981','#6366f1'];
+ function txt(v,n){return String(v==null?'':v).replace(/[\u0000-\u001f<>]/g,' ').replace(/\s+/g,' ').trim().slice(0,n);}
+ function col(c){return /^#[0-9a-f]{6}$/i.test(c||'')?c:'#8b5cf6';}
+ function loadP(){try{PJ=(JSON.parse(localStorage.getItem('shoof.projects')||'[]')||[]).filter(function(p){return p&&ID.test(p.id);}).slice(0,60).map(function(p){return {id:p.id,name:txt(p.name,40)||'Project',color:col(p.color),kit:typeof p.kit==='string'&&/^[a-z0-9]{1,30}$/i.test(p.kit)?p.kit:'',created:+p.created||Date.now()};});}catch(e){PJ=[];}}
+ function saveP(){try{localStorage.setItem('shoof.projects',JSON.stringify(PJ));}catch(e){}}
+ function kits(){try{var k=JSON.parse(localStorage.getItem('shoof.kits')||'{}');return (k.kits||[]).filter(function(x){return x&&/^[a-z0-9]{1,30}$/i.test(x.id);});}catch(e){return [];}}
+ function db(fn){if(!window.indexedDB)return;var r;try{r=indexedDB.open('shoof',1);}catch(e){return;}r.onupgradeneeded=function(){try{r.result.createObjectStore('designs',{keyPath:'id'});}catch(e){}};r.onsuccess=function(){fn(r.result);};}
+ function loadD(done){db(function(d){var q;try{q=d.transaction('designs','readonly').objectStore('designs').getAll();}catch(e){d.close();return;}q.onsuccess=function(){d.close();DS=(q.result||[]).filter(function(x){return x&&DID.test(x.id);}).map(function(x){return {id:x.id,name:txt(x.name||x.auto,60)||'Untitled design',project:typeof x.project==='string'?x.project:'',updated:+x.updated||0,thumb:typeof x.thumb==='string'&&/^data:image\/(jpeg|png);base64,[A-Za-z0-9+\/=]+$/.test(x.thumb)?x.thumb:''};}).sort(function(a,b){return b.updated-a.updated;});done&&done();};});}
+ function move(id,pid){db(function(d){var st=d.transaction('designs','readwrite').objectStore('designs'),g=st.get(id);g.onsuccess=function(){var r=g.result;if(!r){d.close();return;}r.project=pid;st.put(r);};g.transaction.oncomplete=function(){d.close();var m=DS.find(function(x){return x.id===id;});if(m)m.project=pid;draw();};});}
+ function proj(id){return PJ.find(function(p){return p.id===id;});}
+ function chip(id,label,n,c){var b=document.createElement('button');b.type='button';b.className='pchip';b.setAttribute('aria-pressed',String(sel===id));b.dataset.p=id;if(c){var i=document.createElement('i');i.style.background=c;b.appendChild(i);}b.appendChild(document.createTextNode(label));if(n!=null){var s=document.createElement('small');s.textContent=n;b.appendChild(s);}return b;}
+ function draw(){if(sel!=='all'&&sel!=='none'&&!proj(sel))sel='all';
+  chips.textContent='';var cnt=function(f){return DS.filter(f).length;};
+  chips.appendChild(chip('all','All designs',DS.length));
+  PJ.forEach(function(p){chips.appendChild(chip(p.id,p.name,cnt(function(d){return d.project===p.id;}),p.color));});
+  if(PJ.length)chips.appendChild(chip('none','No project',cnt(function(d){return !proj(d.project);})));
+  var nb=document.createElement('button');nb.type='button';nb.className='pchip add';nb.id='prjAdd';nb.textContent='+ New project';chips.appendChild(nb);
+  var p=proj(sel),q=(qi.value||'').trim().toLowerCase();bar.hidden=!p;
+  var link=p?'&project='+p.id:'';[].forEach.call(document.querySelectorAll('#create .qt'),function(a){a.setAttribute('href',a.getAttribute('href').replace(/&project=p[a-z0-9]+/,'')+link);});
+  var hp=$('crProj');if(hp){hp.value=p?p.id:'';hp.disabled=!p;}
+  if(p){$('prjDot').style.background=p.color;$('prjNm').textContent=p.name;var k=p.kit&&kits().find(function(x){return x.id===p.kit;});$('prjInfo').textContent=k?'Brand kit: '+txt(k.name,30):'';$('prjGo').href='./editor?new=ig&project='+p.id;}
+  var list=DS.filter(function(d){return (sel==='all'||(sel==='none'?!proj(d.project):d.project===sel))&&(!q||d.name.toLowerCase().indexOf(q)>=0||((proj(d.project)||{}).name||'').toLowerCase().indexOf(q)>=0);});
+  row.textContent='';list.slice(0,60).forEach(function(m){var w=document.createElement('div');w.className='mcard';w.setAttribute('role','listitem');
+   var a=document.createElement('a');a.href='./editor?open='+m.id;var f=document.createElement('span');f.className='mt';if(m.thumb){var im=new Image();im.alt='';im.src=m.thumb;f.appendChild(im);}var n=document.createElement('span');n.className='mn';n.textContent=m.name;a.appendChild(f);a.appendChild(n);w.appendChild(a);
+   var pm=proj(m.project);if(pm){var tg=document.createElement('span');tg.className='mtag';var d=document.createElement('i');d.style.background=pm.color;tg.appendChild(d);tg.appendChild(document.createTextNode(pm.name));w.appendChild(tg);}
+   if(PJ.length){var s=document.createElement('select');s.className='mmove';s.setAttribute('aria-label','Move "'+m.name+'" to a project');var o=new Option('Move to…','__');o.disabled=true;s.add(o);s.add(new Option('No project',''));PJ.forEach(function(pp){s.add(new Option(pp.name,pp.id));});s.value='__';s.addEventListener('change',function(){if(s.value!=='__')move(m.id,s.value);});w.appendChild(s);}
+   row.appendChild(w);});
+  empty.hidden=!!list.length;empty.textContent=q?'No design matches "'+txt(q,40)+'".':(p?'No designs in this project yet. Start one with "New design here".':'Your designs will show up here. Pick a design type above to start.');
+  var sm=$('sideMine');if(sm)sm.setAttribute('href','#mine');}
+ chips.addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;if(b.id==='prjAdd'){openDlg(null);return;}sel=b.dataset.p;draw();});
+ qi.addEventListener('input',draw);
+ var dlg=$('prjDlg'),edit=null;
+ function openDlg(p){edit=p;var ks=$('prjKitIn');ks.length=1;kits().forEach(function(k){ks.add(new Option(txt(k.name,30)||'Brand kit',k.id));});$('prjIn').value=p?p.name:'';ks.value=p?p.kit:'';$('prjDlgH').textContent=p?'Rename project':'New project';$('prjOk').textContent=p?'Save':'Create';$('prjMsg').textContent='';if(dlg.showModal)dlg.showModal();$('prjIn').focus();}
+ $('prjOk').addEventListener('click',function(){var n=txt($('prjIn').value,40);if(!n){$('prjMsg').textContent='Give the project a name.';$('prjIn').focus();return;}var k=$('prjKitIn').value;loadP();
+  if(edit){var e=proj(edit.id);if(e){e.name=n;e.kit=k;}}else{if(PJ.length>=60){$('prjMsg').textContent='That is the most projects for now.';return;}var np={id:'p'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),name:n,color:COL[PJ.length%COL.length],kit:k,created:Date.now()};PJ.push(np);sel=np.id;}
+  saveP();dlg.close();draw();});
+ $('prjIn').addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();$('prjOk').click();}});
+ $('prjRen').addEventListener('click',function(){var p=proj(sel);if(p)openDlg(p);});
+ $('prjDel').addEventListener('click',function(){var p=proj(sel);if(!p||!confirm('Delete the project "'+p.name+'"? Its designs stay, without a project.'))return;loadP();PJ=PJ.filter(function(x){return x.id!==p.id;});saveP();sel='all';draw();});
+ addEventListener('storage',function(e){if(e.key==='shoof.projects'){loadP();draw();}});
+ window.shoofMine=function(){loadP();loadD(draw);};
+ loadP();loadD(draw);})();
 /* the carousel: every part of Shoof on one screen, moving on by itself (paused while you hover, focus, swipe or press pause; never under reduced motion) */
 (function(){var tr=$('dtrack');if(!tr)return;var sl=[].slice.call(tr.children),dots=[].slice.call(document.querySelectorAll('#dDots [data-s]')),pb=$('dPause'),cur=0,timer=0,hold=0,user=false,hov=false,foc=false,vis=true;
  function idx(){return Math.max(0,Math.min(sl.length-1,Math.round(tr.scrollLeft/tr.clientWidth)));}
