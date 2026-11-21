@@ -3426,6 +3426,12 @@ def t_landing(B):
         eq(pg.title(), 'Shoof — free design for everyone', 'title'); ok(pg.locator('h1').is_visible(), 'headline')
         eq(pg.evaluate("[...document.querySelectorAll('a.btn')].map(a=>a.getAttribute('href')).filter(x=>x!=='#examples')"), ['#create', '#create', '#templates', './editor?tool=cutout', './editor?tpl=neon_open', '#create', './editor?cat=all'], 'buttons lead to the create section or the editor')
         eq(pg.evaluate("document.querySelectorAll('a[href*=\"github.com\"]').length"), 0, 'no source-code links on the front page')
+        eq(pg.evaluate("[...document.querySelectorAll('a')].filter(a=>a.getAttribute('href')==='./editor').length"), 0, 'no link lands on the editor start screen')
+        if w == 1440:
+            ok(pg.evaluate("document.querySelector('#mine').hidden"), 'no My designs row before any design')
+            pg.evaluate("new Promise(r=>{const q=indexedDB.open('shoof',1);q.onupgradeneeded=()=>q.result.createObjectStore('designs',{keyPath:'id'});q.onsuccess=()=>{const tx=q.result.transaction('designs','readwrite');tx.objectStore('designs').put({id:'dtest1234',name:'Bake <b>sale',updated:Date.now(),thumb:'javascript:alert(1)'});tx.oncomplete=()=>{q.result.close();r()};}})")
+            pg.reload(); pg.wait_for_timeout(700)
+            ok(pg.evaluate("!document.querySelector('#mine').hidden&&document.querySelector('#mineRow a').getAttribute('href')==='./editor?open=dtest1234'&&document.querySelector('#mineRow .mn').textContent==='Bake <b>sale'&&!document.querySelector('#mineRow img')&&document.querySelector('#sideMine').getAttribute('href')==='#mine'"), 'My designs on the front page open straight in the editor (name as text, unsafe picture dropped)')
         eq(pg.evaluate("[...document.querySelectorAll('#dtrack>.slide')].map(s=>s.id)"), ['studio', 'ai', 'inside', 'cutout', 'try', 'examples', 'how'], 'one carousel holds every part')
         ok(pg.evaluate("[...document.querySelectorAll('#dtrack>.slide')].filter(s=>!s.inert).length===1"), 'only the shown slide can be used')
         eq(len(set(pg.evaluate("[...document.querySelectorAll('#dtrack>.slide')].map(s=>s.offsetHeight)"))), 1, 'every slide is the same size')
@@ -3752,6 +3758,11 @@ def t_copilot(B):
     ok(c.ev("!$('#prevOv').hidden&&document.body.classList.contains('preview')"), 'preview on'); before = c.ev('JSON.stringify(doc)')
     c.page.keyboard.press('Delete'); c.page.keyboard.press('Escape'); ok(c.ev("$('#prevOv').hidden"), 'Esc leaves preview'); eq(c.ev('JSON.stringify(doc)'), before, 'keys in preview change nothing')
     ok(not c.errors, c.errors); c.close()
+    # landing "My designs" link: ?open=<id> opens that saved design straight in the editor; ?go=1 skips the start screen
+    c = Ctx(B); c.ev("doc.pages[0].elements.find(e=>e.type==='text'&&e.fontSize>60).text='Open me later';fullRender();commit()"); c.ev("dsDirty=true"); c.ev("dsSave()"); c.page.wait_for_timeout(300); did = c.ev("curId")
+    c.page.goto(URL + '?open=' + did); c.page.wait_for_function("typeof homeOpen==='function'&&!homeOpen()&&curId==='%s'" % did, timeout=15000)
+    ok(c.ev("doc.pages[0].elements.some(e=>e.text==='Open me later')"), 'saved design opened from the link'); eq(c.ev('location.search'), '', 'address cleaned')
+    c.page.goto(URL + '?go=1'); c.page.wait_for_function("typeof homeOpen==='function'&&!homeOpen()", timeout=15000); ok(not c.errors, c.errors); c.close()
     for q_, chk in [('new=story', "!homeOpen()&&doc.width===1080&&doc.height===1920"), ('new=yt', "!homeOpen()&&doc.width===1280&&doc.height===720"), ('new=slides', "!homeOpen()&&!!document.querySelector('#pmTopic')"), ('tab=brand', "!homeOpen()&&curTab==='brand'")]:
         c = Ctx(B, home=True, wait=False); c.page.goto(URL + '?' + q_); c.page.wait_for_function("typeof homeOpen==='function'&&(" + chk + ")", timeout=15000)
         eq(c.ev('location.search'), '', f'{q_}: link opens straight in the editor, address cleaned'); ok(not c.errors, c.errors); c.close()

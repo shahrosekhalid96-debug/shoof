@@ -2302,14 +2302,17 @@ $('#home').addEventListener('click',ev=>{const b=ev.target.closest('button');if(
   if(k==='brand'){const rb=$('#rail button[data-tab="brand"]');if(rb)rb.click();}else if(k==='ask'){shOpen();}else if(k==='variations'){shOpen();shSend(t('shChip0')||'Design something new');}}
  else if(ds.recent!==undefined||b.id==='homeGo')hideHome();
  else if(b.id==='homeBlank')openNewDialog();});
-$('#homeBtn').onclick=showHome;
+$('#homeBtn').onclick=()=>goHome();
 $('#askBtn').onclick=()=>{if(SH.open){shClose&&shClose();}else shOpen();};
 /* Preview: the page alone, full screen, no editor chrome (a picture of the page, so nothing can be edited by accident); ← → pages, Esc / P / the pill leaves */
 function prevDraw(){const im=$('#prevImg');if(!im)return;try{im.src=renderExport('image/png',Math.min(2,Math.max(innerWidth,innerHeight)*1.5/Math.max(doc.width,doc.height)));}catch(e){}const n=$('#prevNum');if(n)n.textContent=doc.pages.length>1?`${doc.page+1} / ${doc.pages.length}`:'';}
 function setPreview(on){const ov=$('#prevOv');if(on===!!(ov&&!ov.hidden))return;if(on){select(null);hideEditor();closeMenus();let o=ov;if(!o){o=document.createElement('div');o.id='prevOv';o.className='prevov';o.setAttribute('role','dialog');o.setAttribute('aria-label',t('prevT'));o.innerHTML=`<img id="prevImg" alt=""><button class="prevexit" id="prevExit">${esc(t('prevExit'))} · Esc</button><span class="prevnum" id="prevNum"></span>`;document.body.appendChild(o);o.addEventListener('click',ev=>{if(ev.target.id==='prevExit'||ev.target===o)setPreview(false);});}o.hidden=false;document.body.classList.add('preview');prevDraw();setTimeout(()=>{const x=$('#prevExit');if(x)x.focus();},30);}
  else{ov.hidden=true;document.body.classList.remove('preview');}}
 $('#prevBtn').onclick=()=>setPreview(true);
-$('#brandHome').onclick=ev=>{ev.preventDefault();if(!homeOpen())showHome();};
+/* on the public website the front page is the start screen: Home goes back there (the design is saved first); elsewhere (app window, artifact, tests) the editor's own home screen opens */
+function frontHome(){return /(^|\.)shoof\.pages\.dev$|\.github\.io$/.test(location.hostname)&&!(matchMedia('(display-mode: standalone)').matches||navigator.standalone===true);}
+async function goHome(){if(frontHome()){try{dsDirty=true;await dsSave();}catch(e){}location.href='./#create';return;}if(!homeOpen())showHome();}
+$('#brandHome').onclick=ev=>{ev.preventDefault();goHome();};
 document.addEventListener('keydown',ev=>{if(!document.body.classList.contains('preview'))return;if(ev.key==='Escape'||ev.key==='p'||ev.key==='P'){ev.preventDefault();ev.stopPropagation();setPreview(false);}else if(/^(ArrowRight|ArrowLeft|PageDown|PageUp)$/.test(ev.key)&&doc.pages.length>1){ev.preventDefault();ev.stopPropagation();const d=/Right|Down/.test(ev.key)?1:-1,i=doc.page+d;if(i>=0&&i<doc.pages.length){gotoPage(i);setTimeout(prevDraw,60);}}else if(ev.key!=='Tab')ev.stopPropagation();},true);
 
 /* ============ pages ============ */
@@ -3375,7 +3378,7 @@ $('#shareBtn').onclick=()=>exportAs('link');
 document.addEventListener('click',ev=>{if(!ev.target.closest('#exportMenu,#moreMenu,#fileMenu'))closeMenus();});
 $('#exportMenu').addEventListener('click',ev=>{const b=ev.target.closest('[data-exp]');if(b)exportAs(b.dataset.exp);});
 $('#expEmb').checked=embOn();$('#expEmb').addEventListener('change',ev=>{try{localStorage.setItem('shoof.embed',ev.target.checked?'on':'off');}catch(e){}});
-$('#moreMenu').addEventListener('click',ev=>{const b=ev.target.closest('[data-more]');if(!b)return;const a=b.dataset.more;closeMenus();if(a==='new')$('#newBtn').click();else if(a==='open')$('#openFile').click();else if(a==='save')saveDesign();else if(a==='lang')switchLang();else if(a==='about')$('#rail .about-btn').click();else if(a==='buddy')bdSetOn(!BD.on);else if(a==='home')showHome();else if(a==='feedback')openFeedback();else if(a==='install')instGo();});
+$('#moreMenu').addEventListener('click',ev=>{const b=ev.target.closest('[data-more]');if(!b)return;const a=b.dataset.more;closeMenus();if(a==='new')$('#newBtn').click();else if(a==='open')$('#openFile').click();else if(a==='save')saveDesign();else if(a==='lang')switchLang();else if(a==='about')$('#rail .about-btn').click();else if(a==='buddy')bdSetOn(!BD.on);else if(a==='home')goHome();else if(a==='feedback')openFeedback();else if(a==='install')instGo();});
 /* Feedback box: what the visitor types is sent to api/feedback (Cloudflare Pages Function -> D1 table feedback). Only the message, its kind and an optional email are stored. Where the function is missing (local copy, GitHub backup, Claude artifact) the dialog offers GitHub instead. */
 let fbKind='idea',fbBusy=false;
 function openFeedback(){fbKind='idea';modal(`<h2>${esc(t('fbTitle'))}</h2><p>${esc(t('fbLead'))}</p><div class="fbk" role="radiogroup" aria-label="${esc(t('fbKind'))}">${['idea','problem','question'].map(k=>`<button type="button" role="radio" aria-checked="${k===fbKind}" data-fbk="${k}">${esc(t('fbK_'+k))}</button>`).join('')}</div><label class="fld"><span>${esc(t('fbText'))}</span><textarea id="fbText" maxlength="1500" rows="5" dir="auto" placeholder="${esc(t('fbPh'))}"></textarea></label><label class="fld"><span>${esc(t('fbMail'))}</span><input id="fbMail" type="email" maxlength="120" autocomplete="email" dir="ltr"></label><input id="fbTrap" class="fbtrap" name="website" tabindex="-1" autocomplete="off"><p class="fbnote">${esc(t('fbNote'))}</p><p id="fbMsg" class="fbmsg" role="status"></p><div class="newfoot"><span class="sp"></span><button data-close>${esc(t('cancel'))}</button><button class="primary" id="fbSend">${esc(t('fbSend'))}</button></div>`);setTimeout(()=>{const i=$('#fbText');if(i)i.focus();},30);}
@@ -3393,10 +3396,12 @@ window.addEventListener('appinstalled',()=>{instEv=null;instShow();toast(t('inst
 async function instGo(){if(instEv){const e=instEv;instEv=null;try{e.prompt();await e.userChoice;}catch(x){}instShow();return;}modal(`<h2>${esc(t('instTitle'))}</h2><p>${esc(t('instLead'))}</p><p>${esc(t(instIos()?'instIos':'instOther'))}</p><div class="newfoot"><span class="sp"></span><button class="primary" data-close>${esc(t('close'))}</button></div>`);}
 
 /* Links from the landing page: ./editor?tpl=<template key>&head=<headline> opens that template with the visitor's headline; ./editor?describe=<words> runs Describe it. The address is cleaned afterwards so a refresh does not repeat it. */
-async function openFromLink(){let q;try{q=new URLSearchParams(location.search);}catch(e){return;}const k=q.get('tpl')||'',d=clean1(q.get('describe'),300),sq=clean1(q.get('q'),60),sc=q.get('cat')||'',tb=q.get('tab')||'',nw=q.get('new')||'';if(!k&&!d&&!sq&&!sc&&!['ai','brand'].includes(tb)&&!/^(ig|story|a4|flyer|yt|card|slides|logo|blank)$/.test(nw))return;try{history.replaceState(null,'',location.pathname+location.hash);}catch(e){}
+async function openFromLink(){let q;try{q=new URLSearchParams(location.search);}catch(e){return;}const k=q.get('tpl')||'',d=clean1(q.get('describe'),300),sq=clean1(q.get('q'),60),sc=q.get('cat')||'',tb=q.get('tab')||'',nw=q.get('new')||'',od=q.get('open')||'',go=q.get('go')==='1';if(!k&&!d&&!sq&&!sc&&!go&&!/^d[a-z0-9]{6,20}$/.test(od)&&!['ai','brand'].includes(tb)&&!/^(ig|story|a4|flyer|yt|card|slides|logo|blank)$/.test(nw))return;try{history.replaceState(null,'',location.pathname+location.hash);}catch(e){}
  const i=/^[a-z0-9_]{1,40}$/.test(k)?TEMPLATES.findIndex(x=>x.key===k):-1;
+ if(/^d[a-z0-9]{6,20}$/.test(od)){/* landing page "My designs": open that saved design straight in the editor */await dsLoadList();if(dsList.some(x=>x.id===od)){await dsOpenDesign(od);}else hideHome();return;}
+ if(go){hideHome();return;}
  if(i>=0){const tp=TEMPLATES[i],h=clean1(q.get('head'),80);hideHome();applyDoc(withBgBlocks(sanitizeDoc(tp.make())));if(h){const fs=[...new Set(doc.pages[0].elements.filter(e=>e.type==='text').map(e=>e.fontFamily))];try{await Promise.all(fs.map(loadFont));}catch(e){}fillDescribed({headline:h});fullRender();}commit();}
- else if(d.length>=3){const inp=$('#homeDesc');if(inp){inp.value=d;describeGo();}}
+ else if(d.length>=3){if(!$('#homeDesc'))renderHome();const inp=$('#homeDesc');if(inp){inp.value=d;describeGo();}}
  else if(/^(ig|story|a4|flyer|yt|card|slides|logo|blank)$/.test(nw)){/* landing page: one click straight into a new design */hideHome();if(nw==='slides')openSlides();else if(nw==='logo')openLogoMaker();else if(nw==='blank')openNewDialog();else{const tl=HOME_TILES.find(x=>x[1]===nw);newFromTile(nw,tl&&tl[2]);}}
  else if(tb==='ai'||tb==='brand'){hideHome();const rb=$('#rail button[data-tab="'+tb+'"]');if(rb&&curTab!==tb)rb.click();if(tb==='ai'&&!isMob())shOpen();}
  else if(sq||sc){/* landing page search box / gallery category: open the Templates tab with it */tplQ=sq;hideHome();showTemplatesTab(TPL_CATS.includes(sc)?sc:'all');if(isMob())setDrawer(true);}}
@@ -4491,7 +4496,7 @@ function regSW(){try{if('serviceWorker'in navigator&&location.protocol==='https:
  applyLang();
  try{fullRender();}catch(e){doc=withBgBlocks(sanitizeDoc(starterTemplate().make()));resetHistory();fullRender();bad=true;}
  syncSize();fitZoom();
- renderPages();refreshPageThumbs(true);try{curId=localStorage.getItem('shoof.cur');}catch(e){}if(!curId||!/^d[a-z0-9]{6,20}$/.test(curId))dsNew();homeWork=restored;if(restored)dsQueue();showHome();bdShowEl();bdWake();if(/[?&]tool=cutout\b/.test(location.search))openCutout();openShared();openFromLink();instShow();
+ renderPages();refreshPageThumbs(true);try{curId=localStorage.getItem('shoof.cur');}catch(e){}if(!curId||!/^d[a-z0-9]{6,20}$/.test(curId))dsNew();homeWork=restored;if(restored)dsQueue();if(frontHome()){$('#home').hidden=true;document.body.classList.remove('home-on');fitZoom();showTips();}else showHome();bdShowEl();bdWake();if(/[?&]tool=cutout\b/.test(location.search))openCutout();openShared();openFromLink();instShow();
  if(bad)toast(t('autosaveBad'),4000);else if(restored)toast(t('restored'));
  const fams=CORE_FONTS.flatMap(f=>[`400 40px "${f}"`,`700 40px "${f}"`]);
  const fontsReady=Promise.all(fams.map(f=>document.fonts.load(f).catch(()=>{})));

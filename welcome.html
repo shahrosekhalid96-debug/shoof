@@ -405,6 +405,13 @@ footer.wrap a{color:var(--muted)}
 @media(max-width:860px){.ddots span{display:none}.ddots button{min-width:18px}.dmore{display:none}.slide{padding:12px 0 8px}}
 @media(max-width:600px){#studio .film,#studio .eyebrow,#studio .note,#inside .sub,#inside .card p,#cutout ul,#cutout .sub,#try .sub,#try .or{display:none}#studio h1{font-size:40px;margin:6px 0 14px}.slide h2{font-size:28px}#try .tryview{width:min(230px,100%)}#cutout .demo{max-width:300px;margin:0 auto}#inside .head{margin-bottom:14px}#inside .grid{grid-template-columns:1fr 1fr;gap:10px}#inside .card{padding:14px}#inside .card h3{font-size:15px}#inside .card p{font-size:12.5px;line-height:1.45}#inside .card .ic{width:34px;height:34px;border-radius:11px}#inside .card .ic svg{width:18px;height:18px}#inside .also{display:none}.qts{flex-wrap:nowrap;justify-content:flex-start;overflow-x:auto;margin:20px -20px 44px;padding:0 20px 4px;scrollbar-width:none}.qt{flex:none}.hub{padding-top:56px}}
 @media(prefers-reduced-motion:reduce){.ddots button.run i::after{animation:none}}
+.mine{margin-bottom:56px}.mine .mh{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:16px}.mine h2{font-size:clamp(24px,2.6vw,34px);margin:0}.mine .mh p{margin:0;color:var(--muted);font-size:15px}
+.mrow{display:flex;gap:14px;overflow-x:auto;padding:4px 2px 10px;scrollbar-width:thin}
+.mrow a{flex:0 0 170px;display:flex;flex-direction:column;gap:8px;text-decoration:none;color:var(--ink);font:600 14px Inter,sans-serif}
+.mrow .mt{display:grid;place-items:center;height:150px;border-radius:14px;background:rgba(255,255,255,.05);box-shadow:0 0 0 1px rgba(255,255,255,.1);overflow:hidden;transition:transform .2s var(--ease),box-shadow .2s}
+.mrow img{max-width:100%;max-height:100%;display:block}
+.mrow a:hover .mt{transform:translateY(-2px);box-shadow:0 0 0 1px rgba(168,85,247,.6),0 0 20px rgba(124,58,237,.35)}
+.mrow .mn{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 </style>
 </head>
 <body>
@@ -413,16 +420,16 @@ footer.wrap a{color:var(--muted)}
  <nav class="side" aria-label="Quick links">
   <a class="on" href="#top" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-7 8 7v9a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z"/></svg><span>Home</span></a>
   <a href="#create"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span>Templates</span></a>
-  <a href="./editor"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span>My designs</span></a>
+  <a href="#create" id="sideMine"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span>My designs</span></a>
   <a href="./editor?tab=brand"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18c1.2 0 2-.9 2-2 0-.6-.2-1-.5-1.4-.3-.4-.5-.8-.5-1.3 0-1.1.9-2 2-2h2.3A4.7 4.7 0 0 0 22 9.6C22 6 17.5 3 12 3z"/><circle cx="7.5" cy="10.5" r="1.2"/><circle cx="11" cy="7" r="1.2"/><circle cx="15.5" cy="7.5" r="1.2"/></svg><span>Brand kit</span></a>
   <a href="./editor?tab=ai"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.6 4.4L18 9l-4.4 1.6L12 15l-1.6-4.4L6 9l4.4-1.6z"/><path d="M19 14l.8 2.2 2.2.8-2.2.8L19 20l-.8-2.2L16 17l2.2-.8z"/></svg><span>AI assistant</span></a>
   <button type="button" data-fb hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg><span>Feedback</span></button>
-  <div class="free"><span class="fi" aria-hidden="true">✦</span><b>Free forever</b><small>No Pro plan</small><a href="./editor">Start →</a></div>
+  <div class="free"><span class="fi" aria-hidden="true">✦</span><b>Free forever</b><small>No Pro plan</small><a href="#create">Start →</a></div>
  </nav>
  
  <div class="wrap">
   <header class="top">
-   <a href="./editor" title="Open the editor">
+   <a href="#top" title="Shoof home">
     <svg class="logo" viewBox="0 0 140 40" role="img" aria-label="Shoof"><title>Shoof</title><defs><linearGradient id="lgx" x1="4" y1="16" x2="44" y2="32" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#a855f7"/><stop offset=".42" stop-color="#ec4899"/><stop offset=".58" stop-color="#8b5cf6"/><stop offset="1" stop-color="#22d3ee"/></linearGradient></defs><g transform="translate(-3 -4)"><path d="M24 24C27.5 18.2 31.6 15.8 35.6 15.8C40.6 15.8 43.6 19.6 43.6 24C43.6 28.4 40.6 32.2 35.6 32.2C31.6 32.2 27.5 29.8 24 24C20.5 18.2 16.4 15.8 12.4 15.8C7.4 15.8 4.4 19.6 4.4 24C4.4 28.4 7.4 32.2 12.4 32.2C16.4 32.2 20.5 29.8 24 24Z" fill="none" stroke="url(#lgx)" stroke-width="5" stroke-linejoin="round" class="lgl"/></g><text x="48" y="29" font-family="Poppins,Inter,system-ui,sans-serif" font-weight="700" font-size="26" letter-spacing="-.5" fill="currentColor">shoof</text></svg>
    </a>
    <span class="sp"></span>
@@ -603,6 +610,10 @@ footer.wrap a{color:var(--muted)}
   </form>
   <div class="qts" role="group" aria-label="Start a new design"><a class="qt" href="./editor?new=ig"><span class="qi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="3.5"/><circle cx="12" cy="12" r="3.5"/></svg></span>Instagram post</a><a class="qt" href="./editor?new=story"><span class="qi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="2.5" width="10" height="19" rx="2.5"/></svg></span>Instagram story</a><a class="qt" href="./editor?new=a4"><span class="qi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="1.5"/><path d="M8 7h8M8 10h5"/></svg></span>Poster</a><a class="qt" href="./editor?new=flyer"><span class="qi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4"/></svg></span>Flyer</a><a class="qt" href="./editor?new=slides"><span class="qi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M12 16v4M8 20h8"/></svg></span>Presentation</a><a class="qt" href="./editor?new=logo"><span class="qi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5l1.4 2.9 3.2.4-2.3 2.2.6 3.1-2.9-1.5-2.9 1.5.6-3.1-2.3-2.2 3.2-.4z"/></svg></span>Logo</a><a class="qt" href="./editor?new=yt"><span class="qi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="3.5"/><path d="M10 9.2v5.6l4.8-2.8z"/></svg></span>YouTube thumbnail</a><a class="qt" href="./editor?new=card"><span class="qi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="6" width="19" height="12" rx="2"/><circle cx="8" cy="12" r="2.2"/></svg></span>Business card</a><a class="qt" href="./editor?new=blank"><span class="qi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span>Blank design</a></div>
  </div>
+ <div class="wrap mine" id="mine" hidden>
+  <div class="mh"><h2 id="mineH">My designs</h2><p>Saved on this device. Click one to keep editing.</p></div>
+  <div class="mrow" id="mineRow" role="list" aria-labelledby="mineH"></div>
+ </div>
  <div id="templates">
  <div class="wrap">
   <div class="head">
@@ -646,7 +657,7 @@ footer.wrap a{color:var(--muted)}
   <span>© 2026 Shoof. Free to use, no account needed.</span>
   <span class="sp"></span>
   <button class="linkbtn" type="button" data-fb hidden>Send feedback</button>
-  <a href="./editor">Open the editor</a>
+  <a href="./editor?go=1">Open the editor</a>
 </footer>
 
 <button class="btn small fbpill" type="button" data-fb hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>Feedback</button>
@@ -811,6 +822,13 @@ function show(){var on=!alone&&(!!ev||(ios&&!!(d&&d.showModal)));btns.forEach(fu
 addEventListener('beforeinstallprompt',function(e){e.preventDefault();ev=e;show();});addEventListener('appinstalled',function(){ev=null;alone=true;show();});
 btns.forEach(function(b){b.addEventListener('click',function(){if(ev){var e=ev;ev=null;e.prompt();if(e.userChoice)e.userChoice.then(show,show);else show();}else if(d&&d.showModal)d.showModal();});});show();})();
 
+/* My designs: the editor keeps every design on this device (IndexedDB 'shoof' / 'designs'); show them here so one click opens one straight in the editor. Nothing leaves the device. */
+(function(){var box=$('mine'),row=$('mineRow');if(!box||!row||!window.indexedDB)return;var r;try{r=indexedDB.open('shoof',1);}catch(e){return;}
+ r.onupgradeneeded=function(){try{r.result.createObjectStore('designs',{keyPath:'id'});}catch(e){}};
+ r.onsuccess=function(){var db=r.result,q;try{q=db.transaction('designs','readonly').objectStore('designs').getAll();}catch(e){db.close();return;}
+  q.onsuccess=function(){db.close();var l=(q.result||[]).filter(function(x){return x&&/^d[a-z0-9]{6,20}$/.test(x.id);}).sort(function(a,b){return (b.updated||0)-(a.updated||0);}).slice(0,12);if(!l.length)return;
+   l.forEach(function(m){var a=document.createElement('a');a.href='./editor?open='+m.id;a.setAttribute('role','listitem');var f=document.createElement('span');f.className='mt';if(typeof m.thumb==='string'&&/^data:image\/(jpeg|png);base64,[A-Za-z0-9+\/=]+$/.test(m.thumb)){var im=new Image();im.alt='';im.src=m.thumb;f.appendChild(im);}var n=document.createElement('span');n.className='mn';n.textContent=String(m.name||m.auto||'Untitled design').slice(0,60);a.appendChild(f);a.appendChild(n);row.appendChild(a);});
+   box.hidden=false;var sm=$('sideMine');if(sm)sm.setAttribute('href','#mine');};};})();
 /* the carousel: every part of Shoof on one screen, moving on by itself (paused while you hover, focus, swipe or press pause; never under reduced motion) */
 (function(){var tr=$('dtrack');if(!tr)return;var sl=[].slice.call(tr.children),dots=[].slice.call(document.querySelectorAll('#dDots [data-s]')),pb=$('dPause'),cur=0,timer=0,hold=0,user=false,hov=false,foc=false,vis=true;
  function idx(){return Math.max(0,Math.min(sl.length-1,Math.round(tr.scrollLeft/tr.clientWidth)));}
