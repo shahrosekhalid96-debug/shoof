@@ -1140,9 +1140,9 @@ def t_downscale(B):
 def t_about(B):
     for lang in ['en', 'ar']:
         c = Ctx(B, lang=lang); c.tab('about'); txt = c.page.inner_text('#drawer')
-        for need in ['AGPL', '2026', 'Konva', 'jsPDF', 'OFL']:
+        for need in ['2026', 'Konva', 'jsPDF', 'OFL']:  # third-party credits stay; no source-code link since 2026-11-21 (Shary)
             ok(need in txt, f'{lang}: About lacks {need}')
-        ok(c.page.locator('#drawer a[href*="github.com"]').count() == 1, f'{lang}: no source-code link')
+        eq(c.page.locator('#drawer a[href*="github.com"]').count(), 0, f'{lang}: no source-code link in the app')
         c.close()
     ok('SPDX-License-Identifier: AGPL-3.0' in open(APP, encoding='utf-8').read(), 'SPDX header missing')
 
@@ -3425,6 +3425,7 @@ def t_landing(B):
         pg.goto(base + '/welcome.html'); pg.wait_for_timeout(900)
         eq(pg.title(), 'Shoof — free design for everyone', 'title'); ok(pg.locator('h1').is_visible(), 'headline')
         eq(pg.evaluate("[...document.querySelectorAll('a.btn')].map(a=>a.getAttribute('href')).filter(x=>x!=='#examples')"), ['#create', '#create', '#templates', './editor?tool=cutout', './editor?tpl=neon_open', '#create', './editor?cat=all'], 'buttons lead to the create section or the editor')
+        eq(pg.evaluate("document.querySelectorAll('a[href*=\"github.com\"]').length"), 0, 'no source-code links on the front page')
         eq(pg.evaluate("[...document.querySelectorAll('#dtrack>.slide')].map(s=>s.id)"), ['studio', 'ai', 'inside', 'cutout', 'try', 'examples', 'how'], 'one carousel holds every part')
         ok(pg.evaluate("[...document.querySelectorAll('#dtrack>.slide')].filter(s=>!s.inert).length===1"), 'only the shown slide can be used')
         eq(len(set(pg.evaluate("[...document.querySelectorAll('#dtrack>.slide')].map(s=>s.offsetHeight)"))), 1, 'every slide is the same size')
@@ -3538,8 +3539,8 @@ def t_feedback_install_front(B):
     eq(sent[0], {'kind': 'problem', 'page': 'editor', 'text': 'I could not find the font list <b>', 'contact': 'me@example.com', 'website': '', 'lang': 'en'}, 'only the message, kind and email are sent')
     c.errors.clear(); mode['s'] = 429; c.ev('openFeedback()'); p.fill('#fbText', 'one more message today'); p.click('#fbSend'); p.wait_for_function("document.querySelector('#fbMsg').textContent.length>5")
     ok('enough messages' in p.inner_text('#fbMsg'), 'daily limit explained')
-    mode['s'] = 503; p.click('#fbSend'); p.wait_for_function("!!document.querySelector('#fbMsg a')")
-    ok(c.ev("document.querySelector('#fbMsg a').href").startswith('https://github.com/shahrosekhalid96-debug/shoof/issues') and c.ev("!document.querySelector('#fbSend').disabled"), 'where it cannot be sent, GitHub is offered and Send works again')
+    mode['s'] = 503; p.click('#fbSend'); p.wait_for_function("document.querySelector('#fbMsg').textContent.includes('try again')")
+    ok(not c.ev("!!document.querySelector('#fbMsg a')") and c.ev("!document.querySelector('#fbSend').disabled"), 'where it cannot be sent: try again later (no GitHub link), Send works again')
     c.ev("closeModal()"); c.errors.clear()  # the two refused sends above log a failed request in the console, as intended
     # ---- editor: install button
     ok(c.ev("document.querySelector('#moreInst').hidden"), 'no install item until the browser can install')

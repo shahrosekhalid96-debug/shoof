@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Shoof — free design for everyone</title>
-<meta name="description" content="Shoof is a free, open-source design editor that runs in your browser. Posts, posters, logos and presentations, with no account and nothing uploaded.">
+<meta name="description" content="Shoof is a free design editor that runs in your browser. Posts, posters, logos and presentations, with no account and nothing uploaded.">
 <meta name="theme-color" content="#07060c">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 48 48%22%3E%3Cdefs%3E%3ClinearGradient id=%22lgx%22 x1=%224%22 y1=%2216%22 x2=%2244%22 y2=%2232%22 gradientUnits=%22userSpaceOnUse%22%3E%3Cstop offset=%220%22 stop-color=%22%23a855f7%22/%3E%3Cstop offset=%22.42%22 stop-color=%22%23ec4899%22/%3E%3Cstop offset=%22.58%22 stop-color=%22%238b5cf6%22/%3E%3Cstop offset=%221%22 stop-color=%22%2322d3ee%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%2248%22 height=%2248%22 rx=%2211%22 fill=%22%2314112a%22/%3E%3Cg transform=%22translate(4.8 4.8) scale(.8)%22%3E%3Cpath d=%22M24 24C27.5 18.2 31.6 15.8 35.6 15.8C40.6 15.8 43.6 19.6 43.6 24C43.6 28.4 40.6 32.2 35.6 32.2C31.6 32.2 27.5 29.8 24 24C20.5 18.2 16.4 15.8 12.4 15.8C7.4 15.8 4.4 19.6 4.4 24C4.4 28.4 7.4 32.2 12.4 32.2C16.4 32.2 20.5 29.8 24 24Z%22 fill=%22none%22 stroke=%22url(%23lgx)%22 stroke-width=%225.6%22 stroke-linejoin=%22round%22/%3E%3C/g%3E%3C/svg%3E">
@@ -299,9 +299,9 @@ html,body{overflow-x:clip}
 .side{display:none}
 @media(min-width:1240px){
  .side{display:flex;flex-direction:column;gap:6px;position:absolute;left:18px;top:104px;bottom:24px;width:108px;z-index:4;padding:10px 8px;border-radius:22px;background:rgba(14,12,28,.62);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);box-shadow:inset 0 0 0 1px rgba(255,255,255,.07)}
- .side>a{display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 4px;border-radius:16px;color:#cfcbe6;text-decoration:none;font:600 12.5px Inter,sans-serif;text-align:center}
- .side>a svg{width:24px;height:24px}
- .side>a:hover{background:rgba(255,255,255,.06);color:#fff}
+ .side>a,.side>button{display:flex;font-family:inherit;border:0;background:none;cursor:pointer;width:100%;flex-direction:column;align-items:center;gap:6px;padding:12px 4px;border-radius:16px;color:#cfcbe6;text-decoration:none;font:600 12.5px Inter,sans-serif;text-align:center}
+ .side>a svg,.side>button svg{width:24px;height:24px}
+ .side>a:hover,.side>button:hover{background:rgba(255,255,255,.06);color:#fff}
  .side>a.on{color:#fff;background:linear-gradient(160deg,rgba(124,58,237,.75),rgba(79,70,229,.55));box-shadow:0 0 0 1px rgba(196,160,255,.5) inset,0 0 26px rgba(124,58,237,.5)}
  .side .free{margin-top:auto;display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center;padding:14px 6px 10px;border-radius:16px;background:radial-gradient(120% 80% at 50% 0%,rgba(168,85,247,.45),rgba(20,16,40,.4));box-shadow:inset 0 0 0 1px rgba(196,160,255,.3)}
  .side .fi{color:#ffd27a;font-size:18px;filter:drop-shadow(0 0 8px #ffb547)}
@@ -416,7 +416,7 @@ footer.wrap a{color:var(--muted)}
   <a href="./editor"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span>My designs</span></a>
   <a href="./editor?tab=brand"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18c1.2 0 2-.9 2-2 0-.6-.2-1-.5-1.4-.3-.4-.5-.8-.5-1.3 0-1.1.9-2 2-2h2.3A4.7 4.7 0 0 0 22 9.6C22 6 17.5 3 12 3z"/><circle cx="7.5" cy="10.5" r="1.2"/><circle cx="11" cy="7" r="1.2"/><circle cx="15.5" cy="7.5" r="1.2"/></svg><span>Brand kit</span></a>
   <a href="./editor?tab=ai"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.6 4.4L18 9l-4.4 1.6L12 15l-1.6-4.4L6 9l4.4-1.6z"/><path d="M19 14l.8 2.2 2.2.8-2.2.8L19 20l-.8-2.2L16 17l2.2-.8z"/></svg><span>AI assistant</span></a>
-  <a href="https://github.com/shahrosekhalid96-debug/shoof" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 19c-4 1.5-4-2-6-2.5M15 21v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.2 4.2 0 0 0-.1-3.2s-1.1-.3-3.5 1.3a12 12 0 0 0-6.2 0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2 0 0 0-.1 3.2A4.6 4.6 0 0 0 4 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg><span>Open source</span></a>
+  <button type="button" data-fb hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg><span>Feedback</span></button>
   <div class="free"><span class="fi" aria-hidden="true">✦</span><b>Free forever</b><small>No Pro plan</small><a href="./editor">Start →</a></div>
  </nav>
  
@@ -443,7 +443,7 @@ footer.wrap a{color:var(--muted)}
 <section class="slide" id="studio" role="group" aria-roledescription="slide" aria-label="1 of 7: The studio" data-dwell="15000">
 <div class="wrap hgrid">
   <div>
-   <span class="eyebrow rise">Free <i></i> No account <i></i> Open source</span>
+   <span class="eyebrow rise">Free <i></i> No account <i></i> No watermark</span>
    <h1 class="rise">Posts. Posters. Slides. Logos. <span class="l2 neon">Designed in minutes.</span></h1>
    <p class="lede rise">A free design editor in your browser. Start from 122 templates or ask Shoofy, the built-in AI helper, to design with you.</p>
    <div class="cta rise">
@@ -643,9 +643,8 @@ footer.wrap a{color:var(--muted)}
 </section>
 
 <footer class="wrap">
-  <span>Shoof is free software under the AGPL-3.0 licence.</span>
+  <span>© 2026 Shoof. Free to use, no account needed.</span>
   <span class="sp"></span>
-  <a href="https://github.com/shahrosekhalid96-debug/shoof" rel="noopener">Source code on GitHub</a>
   <button class="linkbtn" type="button" data-fb hidden>Send feedback</button>
   <a href="./editor">Open the editor</a>
 </footer>
@@ -797,7 +796,7 @@ $('tryDescForm').addEventListener('submit',function(ev){ev.preventDefault();var 
  if(!RM&&'IntersectionObserver' in window){var io=new IntersectionObserver(function(es){if(es[0].isIntersecting){d.classList.add('seen');io.disconnect();}},{threshold:.6});io.observe(d);}})();
 /* dialogs: close buttons and a click on the dark area close them */
 [].forEach.call(document.querySelectorAll('dialog'),function(d){d.addEventListener('click',function(ev){if(ev.target===d||ev.target.closest('[data-x]'))d.close();});});
-/* Feedback: the message goes to api/feedback (saved in Shoof's own database). Nothing is sent until Send is pressed. Where that is not available the visitor gets the GitHub link instead. */
+/* Feedback: the message goes to api/feedback (saved in Shoof's own database). Nothing is sent until Send is pressed. Where that is not available the visitor is asked to try later. */
 (function(){var d=$('fbDlg');if(!d||!d.showModal||!window.fetch)return;var kind='idea',busy=false,tx=$('fbText'),msg=$('fbMsg'),btn=$('fbSend');
 [].forEach.call(document.querySelectorAll('[data-fb]'),function(b){b.hidden=false;b.addEventListener('click',function(){msg.textContent='';btn.disabled=false;d.showModal();tx.focus();});});
 $('fbKinds').addEventListener('click',function(ev){var k=ev.target.closest('[data-k]');if(!k)return;kind=k.getAttribute('data-k');[].forEach.call(this.children,function(c){c.setAttribute('aria-checked',String(c===k));});});
@@ -805,7 +804,7 @@ $('fbForm').addEventListener('submit',function(ev){ev.preventDefault();if(busy)r
  fetch('api/feedback',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({kind:kind,page:'home',text:t.slice(0,1500),contact:$('fbMail').value.trim().slice(0,120),website:$('fbTrap').value,lang:(navigator.language||'').slice(0,5)})})
  .then(function(r){return r.ok?r.json().then(function(j){return j&&j.ok?200:0;}):r.status;}).catch(function(){return 0;})
  .then(function(st){busy=false;btn.textContent='Send';if(st===200){tx.value='';msg.textContent='Thank you. Your message is saved and we will read it.';setTimeout(function(){if(d.open)d.close();},2200);return;}btn.disabled=false;
-  if(st===429)msg.textContent='That is enough messages for today. Thank you.';else{msg.textContent='It could not be sent from here. You can write to us on GitHub instead: ';var a=document.createElement('a');a.href='https://github.com/shahrosekhalid96-debug/shoof/issues/new';a.rel='noopener';a.target='_blank';a.textContent='open GitHub';msg.appendChild(a);}});});})();
+  if(st===429)msg.textContent='That is enough messages for today. Thank you.';else{msg.textContent='It could not be sent right now. Please try again a little later.';}});});})();
 /* Install as an app: shown when the browser says it can install, or on iPhones (which only have the Share menu route). Hidden when Shoof already runs as an app. */
 (function(){var ev=null,btns=[].slice.call(document.querySelectorAll('[data-inst]')),d=$('instDlg'),alone=matchMedia('(display-mode: standalone)').matches||navigator.standalone===true,ios=/iP(hone|ad|od)/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
 function show(){var on=!alone&&(!!ev||(ios&&!!(d&&d.showModal)));btns.forEach(function(b){b.hidden=!on;});}
