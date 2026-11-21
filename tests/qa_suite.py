@@ -3424,8 +3424,14 @@ def t_landing(B):
         pg = c.page.context.new_page(); pg.set_viewport_size({'width': w, 'height': h}); errs = []; pg.on('pageerror', lambda e: errs.append(str(e)))
         pg.goto(base + '/welcome.html'); pg.wait_for_timeout(900)
         eq(pg.title(), 'Shoof — free design for everyone', 'title'); ok(pg.locator('h1').is_visible(), 'headline')
-        eq(pg.evaluate("[...document.querySelectorAll('a.btn')].map(a=>a.getAttribute('href')).filter(x=>x!=='#examples')"), ['./editor', './editor', '#templates', './editor?cat=all', './editor?tpl=neon_open', './editor?tool=cutout', './editor'], 'buttons open the editor')
+        eq(pg.evaluate("[...document.querySelectorAll('a.btn')].map(a=>a.getAttribute('href')).filter(x=>x!=='#examples')"), ['#create', '#create', '#templates', './editor?tool=cutout', './editor?tpl=neon_open', '#create', './editor?cat=all'], 'buttons lead to the create section or the editor')
+        eq(pg.evaluate("[...document.querySelectorAll('#dtrack>.slide')].map(s=>s.id)"), ['studio', 'ai', 'inside', 'cutout', 'try', 'examples', 'how'], 'one carousel holds every part')
+        ok(pg.evaluate("[...document.querySelectorAll('#dtrack>.slide')].filter(s=>!s.inert).length===1"), 'only the shown slide can be used')
+        pg.click('#dNext'); pg.wait_for_timeout(900); eq(pg.evaluate("document.querySelector('#dDots [aria-current=true]').dataset.s"), '1', 'next slide')
+        eq(pg.evaluate("[...document.querySelectorAll('#create .qt')].map(a=>a.getAttribute('href'))"), ['./editor?new=' + k for k in ['ig', 'story', 'a4', 'flyer', 'slides', 'logo', 'yt', 'card', 'blank']], 'one click into a new design')
+        ok(pg.evaluate("!!document.querySelector('#create form.ask input[name=describe]')&&document.querySelectorAll('#create #gal a').length>=12"), 'create section: describe box and templates')
         eq(pg.evaluate("[document.querySelector('form.srch').getAttribute('action'),document.querySelector('form.srch input').name,document.querySelector('form.ask').getAttribute('action'),document.querySelector('form.ask input').name]"), ['./editor', 'q', './editor', 'describe'], 'search and describe go to the editor')
+        ok(pg.evaluate("(()=>{const r=document.querySelector('#deck').getBoundingClientRect();return r.top<innerHeight})()"), 'carousel on the first screen')
         eq(pg.evaluate("document.querySelectorAll('.ideas img').length"), 3, 'three AI designs')
         pg.evaluate("document.querySelector('#galCats [data-g=logo]').click()")
         ok(pg.evaluate("[...document.querySelectorAll('#gal a')].filter(a=>!a.hidden).every(a=>/logo/.test(a.dataset.c))&&document.querySelectorAll('#gal a:not([hidden])').length>=2"), 'gallery category filter')
@@ -3440,7 +3446,7 @@ def t_landing(B):
         pg.add_script_tag(path=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'vendor', 'axe.min.js'))
         bad = pg.evaluate("axe.run(document,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21a','wcag21aa']}}).then(r=>r.violations.map(v=>v.id+': '+v.nodes.length))")
         eq(bad, [], f'accessibility at {w}'); ok(not errs, errs); pg.close()
-    ok(os.path.getsize(os.path.join(APP_DIR, 'welcome.html')) < 100000, 'page stays light')  # 100 KB on 2026-11-21 (neon pass: side rail, editor window panel, popular strip); 85 KB on 2026-11-21 (design brief: AI section, gallery, search); 30 KB → 60 KB on 2026-11-16 (live preview, feedback, install), 70 KB on 2026-11-17 (holographic hero film)
+    ok(os.path.getsize(os.path.join(APP_DIR, 'welcome.html')) < 110000, 'page stays light')  # 110 KB on 2026-11-21 (one-screen carousel + create section); 100 KB on 2026-11-21 (neon pass: side rail, editor window panel, popular strip); 85 KB on 2026-11-21 (design brief: AI section, gallery, search); 30 KB → 60 KB on 2026-11-16 (live preview, feedback, install), 70 KB on 2026-11-17 (holographic hero film)
     ok(sum(os.path.getsize(os.path.join(APP_DIR, 'welcome', f)) for f in os.listdir(os.path.join(APP_DIR, 'welcome'))) < 360000, 'pictures stay light')  # 360 KB on 2026-11-21: three AI designs + gallery pictures, all lazy-loaded
     pg = c.page.context.new_page(); pg.emulate_media(reduced_motion='reduce'); pg.goto(base + '/welcome.html'); pg.wait_for_timeout(300)
     ok(pg.evaluate("getComputedStyle(document.querySelector('.track')).animationName==='none'&&!document.documentElement.classList.contains('js')"), 'motion is off when the visitor asks for less motion'); pg.close()
@@ -3555,7 +3561,7 @@ def t_feedback_install_front(B):
     for w, h in [(1440, 900), (390, 800)]:
         pg = c.page.context.new_page(); pg.set_viewport_size({'width': w, 'height': h}); errs = []; pg.on('pageerror', lambda e: errs.append(str(e))); sent = []
         pg.route('**/api/feedback', lambda route: (sent.append(json.loads(route.request.post_data)), route.fulfill(status=200, content_type='application/json', body='{"ok":true}')))
-        pg.goto(base + '/welcome.html'); pg.wait_for_timeout(700)
+        pg.goto(base + '/welcome.html'); pg.wait_for_timeout(700); pg.evaluate("shoofSlide('try')"); pg.wait_for_timeout(150)
         ok(pg.locator('#try').is_visible() and pg.locator('#tryLooks button').count() == 3, 'try-it section with three looks')
         head = "[...document.querySelectorAll('#tryStage div')].filter(n=>n.textContent&&!n.querySelector('svg')).sort((a,b)=>parseFloat(b.style.fontSize)-parseFloat(a.style.fontSize))[0]"
         eq(pg.evaluate(head + ".textContent"), 'OPEN\nLATE', 'shows the real template words first')
@@ -3566,14 +3572,14 @@ def t_feedback_install_front(B):
         eq(pg.evaluate(head + ".textContent"), 'Grand opening this Friday', 'other look keeps the headline'); eq(pg.get_attribute('#tryOpen', 'href'), './editor?tpl=min_spa&head=Grand%20opening%20this%20Friday', 'and the link follows')
         box = pg.evaluate("(()=>{const v=document.querySelector('#tryView').getBoundingClientRect(),s=document.querySelector('#tryStage').getBoundingClientRect();return Math.abs(v.width-s.width)<1.5&&Math.abs(v.height-s.height)<1.5})()"); ok(box, 'preview fills its frame')
         links = pg.evaluate("[...document.querySelectorAll('.track a, .fan a, #tryOpen')].map(a=>new URL(a.href).searchParams.get('tpl'))"); ok(len(links) >= 8 and all(k in keys for k in links), f'every example opens a real template {links}')  # the template row is a still swipe row since 2026-11-18, so no duplicate copies
-        pg.locator('#cutRange').fill('25'); ok(pg.evaluate("document.querySelector('.demo').classList.contains('used')&&Math.abs(parseFloat(getComputedStyle(document.querySelector('.demo .bar')).left)/document.querySelector('.demo').clientWidth-.25)<.01"), 'before/after can be dragged')
+        pg.evaluate("shoofSlide('cutout')"); pg.wait_for_timeout(150); pg.locator('#cutRange').fill('25'); ok(pg.evaluate("document.querySelector('.demo').classList.contains('used')&&Math.abs(parseFloat(getComputedStyle(document.querySelector('.demo .bar')).left)/document.querySelector('.demo').clientWidth-.25)<.01"), 'before/after can be dragged')
         ok(pg.evaluate("[...document.querySelectorAll('[data-inst]')].every(b=>b.hidden)"), 'no install button yet'); pg.evaluate(fake_inst); ok(pg.locator('.top [data-inst]').is_visible(), 'install button appears'); pg.locator('.top [data-inst]').click(); pg.wait_for_timeout(100); ok(pg.evaluate("window.__asked===1&&[...document.querySelectorAll('[data-inst]')].every(b=>b.hidden)"), 'asks once, then hides')
         pg.locator('.fbpill').click(); ok(pg.evaluate("document.querySelector('#fbDlg').open&&document.activeElement.id==='fbText'"), 'feedback box opens'); pg.click('#fbSend'); eq(pg.inner_text('#fbMsg'), 'Write a few more words first.', 'empty is not sent')
         pg.click('#fbKinds [data-k="question"]'); pg.fill('#fbText', 'Can I use my own logo?'); pg.click('#fbSend'); pg.wait_for_function("document.querySelector('#fbMsg').textContent.includes('Thank you')")
         eq({k: sent[0][k] for k in ('kind', 'page', 'text', 'contact', 'website')}, {'kind': 'question', 'page': 'home', 'text': 'Can I use my own logo?', 'contact': '', 'website': ''}, 'front page message sent')
         pg.wait_for_function("!document.querySelector('#fbDlg').open", timeout=5000)
         eq(pg.evaluate("document.documentElement.scrollWidth"), w, f'no sideways scroll at {w}')
-        pg.evaluate("shoofGo(document.querySelector('#tryDescForm'),'end',1)"); pg.wait_for_timeout(150)  # sections stack like cards, so the next one covers the bottom of this one once you scroll past it
+        pg.evaluate("shoofSlide('try')"); pg.wait_for_timeout(150)  # the parts of the front page are slides in one carousel since 2026-11-21
         pg.fill('#tryDesc', 'Poster for a bake sale'); pg.click('#tryDescForm button'); pg.wait_for_url('**/editor?describe=Poster%20for%20a%20bake%20sale'); ok(not errs, errs); pg.close()
     ok(not c.errors, c.errors); c.close()
 
@@ -3743,6 +3749,9 @@ def t_copilot(B):
     ok(c.ev("!$('#prevOv').hidden&&document.body.classList.contains('preview')"), 'preview on'); before = c.ev('JSON.stringify(doc)')
     c.page.keyboard.press('Delete'); c.page.keyboard.press('Escape'); ok(c.ev("$('#prevOv').hidden"), 'Esc leaves preview'); eq(c.ev('JSON.stringify(doc)'), before, 'keys in preview change nothing')
     ok(not c.errors, c.errors); c.close()
+    for q_, chk in [('new=story', "!homeOpen()&&doc.width===1080&&doc.height===1920"), ('new=yt', "!homeOpen()&&doc.width===1280&&doc.height===720"), ('new=slides', "!homeOpen()&&!!document.querySelector('#pmTopic')"), ('tab=brand', "!homeOpen()&&curTab==='brand'")]:
+        c = Ctx(B, home=True, wait=False); c.page.goto(URL + '?' + q_); c.page.wait_for_function("typeof homeOpen==='function'&&(" + chk + ")", timeout=15000)
+        eq(c.ev('location.search'), '', f'{q_}: link opens straight in the editor, address cleaned'); ok(not c.errors, c.errors); c.close()
 
 
 def main():
