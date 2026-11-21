@@ -13,6 +13,7 @@
 /* Shoof landing page: one file, no libraries, no outside requests.
    The hero is a live film: a holographic light field (WebGL, drawn on the visitor's device) behind a real Shoof editor window in which a real template builds and edits itself.
    Everything that moves stops for people who ask for reduced motion, and the page still reads fine without the script. */
+@font-face{font-family:'Poppins';font-weight:700;font-display:swap;src:url(fonts/poppins-latin-700-normal.woff2) format('woff2')}
 @font-face{font-family:'Syne';font-weight:700;font-display:swap;src:url(fonts/lib/syne-700.woff2) format('woff2')}
 @font-face{font-family:'Inter';font-weight:400;font-display:swap;src:url(fonts/inter-latin-400-normal.woff2) format('woff2')}
 @font-face{font-family:'Inter';font-weight:700;font-display:swap;src:url(fonts/inter-latin-700-normal.woff2) format('woff2')}
@@ -67,7 +68,7 @@ a{color:inherit}
  background:radial-gradient(60% 70% at 78% 40%,rgba(108,76,245,.35),transparent 70%),radial-gradient(40% 50% at 95% 90%,rgba(255,111,216,.18),transparent 70%),radial-gradient(35% 45% at 60% 0%,rgba(111,243,255,.14),transparent 70%),var(--bg)}
 #holo{position:absolute;inset:0;width:100%;height:100%;z-index:-2;opacity:0;transition:opacity 1.6s ease;display:block}
 #holo.on{opacity:1}
-.hero::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(7,6,12,.92) 0%,rgba(7,6,12,.62) 38%,rgba(7,6,12,0) 66%),linear-gradient(0deg,var(--bg) 0%,rgba(7,6,12,0) 22%)}
+.hero::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(7,6,12,.7) 0%,rgba(7,6,12,.35) 34%,rgba(7,6,12,0) 60%),linear-gradient(0deg,var(--bg) 0%,rgba(7,6,12,0) 22%)}
 .hgrid{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center;padding:12px 0 72px}
 .eyebrow{display:inline-flex;gap:10px;align-items:center;font:700 12.5px Inter,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--hi);border:1px solid var(--line);background:rgba(255,255,255,.04);padding:7px 14px;border-radius:999px}
 .eyebrow i{width:5px;height:5px;border-radius:50%;background:var(--spark);display:block;box-shadow:0 0 10px var(--spark)}
@@ -306,24 +307,116 @@ html,body{overflow-x:clip}
 @media(max-width:860px){.aigrid{grid-template-columns:1fr;gap:36px}.nav{display:none}}
 @media(max-width:600px){.gal{columns:2 140px;column-gap:10px}.gal a{margin-bottom:10px}.ideas{gap:10px}.ideas figure:nth-child(2){transform:none}.ask .askrow{flex-wrap:wrap;padding:8px}.ask .askrow .btn{width:100%;justify-content:center}.ask .spark{display:none}}
 @media(prefers-reduced-motion:reduce){.gal a,.gal img,.ideas img{transition:none}}
+
+/* 2026-11-21 neon pass (Shary's mockup): gradient loop logo, side rail, neon editor window, popular strip, Shoofy card */
+:root{--neon:linear-gradient(95deg,#e040fb 0%,#a855f7 38%,#6366f1 62%,#22d3ee 100%);--glow:0 0 0 1px rgba(168,85,247,.45),0 0 40px rgba(139,92,246,.35)}
+.neon{background:var(--neon);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 22px rgba(168,85,247,.35))}
+.logo{height:34px}
+.top a.link.on{color:#fff;background:rgba(139,92,246,.22);box-shadow:inset 0 0 0 1px rgba(168,85,247,.55),0 0 18px rgba(139,92,246,.35)}
+.spk{color:#e9b8ff;font-size:12px}
+.srch kbd{position:absolute;right:12px;font:600 11px Inter,sans-serif;color:#8f8aab;border:1px solid var(--line);border-radius:6px;padding:1px 5px}
+.srch input{padding-right:46px;width:230px}
+.btn.primary{background:linear-gradient(95deg,#7c3aed,#6366f1 55%,#3b82f6);box-shadow:0 0 0 1px rgba(255,255,255,.18) inset,0 10px 34px rgba(124,58,237,.55),0 0 26px rgba(99,102,241,.45)}
+.btn.primary:hover{background:linear-gradient(95deg,#8b5cf6,#6d70f5 55%,#4f8ff7)}
+.btn.ghost{border-color:rgba(168,85,247,.55);background:rgba(20,16,40,.5)}
+.btn.ghost svg{width:16px;height:16px}
+.side{display:none}
+@media(min-width:1240px){
+ .side{display:flex;flex-direction:column;gap:6px;position:absolute;left:18px;top:104px;bottom:24px;width:108px;z-index:4;padding:10px 8px;border-radius:22px;background:rgba(14,12,28,.62);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);box-shadow:inset 0 0 0 1px rgba(255,255,255,.07)}
+ .side>a{display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 4px;border-radius:16px;color:#cfcbe6;text-decoration:none;font:600 12.5px Inter,sans-serif;text-align:center}
+ .side>a svg{width:24px;height:24px}
+ .side>a:hover{background:rgba(255,255,255,.06);color:#fff}
+ .side>a.on{color:#fff;background:linear-gradient(160deg,rgba(124,58,237,.75),rgba(79,70,229,.55));box-shadow:0 0 0 1px rgba(196,160,255,.5) inset,0 0 26px rgba(124,58,237,.5)}
+ .side .free{margin-top:auto;display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center;padding:14px 6px 10px;border-radius:16px;background:radial-gradient(120% 80% at 50% 0%,rgba(168,85,247,.45),rgba(20,16,40,.4));box-shadow:inset 0 0 0 1px rgba(196,160,255,.3)}
+ .side .fi{color:#ffd27a;font-size:18px;filter:drop-shadow(0 0 8px #ffb547)}
+ .side .free b{font:700 13px Inter,sans-serif}.side .free small{font-size:11.5px;color:#cfc8ee}
+ .side .free a{margin-top:6px;font:700 12.5px Inter,sans-serif;color:#fff;text-decoration:none;padding:6px 12px;border-radius:999px;background:linear-gradient(95deg,#7c3aed,#4f46e5)}
+ .hero>.wrap,.hero>main.wrap,.hero>.hpop{width:auto;max-width:none;margin-left:150px;margin-right:36px}
+ .hero>div.wrap:not(.hpop){margin-left:28px}
+}
+@media(min-width:861px){.hgrid{grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr);gap:40px;padding:4px 0 28px}}
+.app{border-radius:22px;background:rgba(14,12,30,.8);box-shadow:0 40px 120px rgba(0,0,0,.6),0 0 60px rgba(124,58,237,.35),0 0 0 1px rgba(255,255,255,.06) inset}
+.app::before{background:linear-gradient(135deg,#a855f7,#6366f1 40%,#22d3ee 70%,#ec4899);background-size:100% 100%;padding:1.5px}
+.tb{height:54px;gap:10px;font-size:13px}
+.tb i{width:12px;height:12px}.tb i.r{background:#ff5f57}.tb i.y{background:#febc2e}.tb i.g{background:#28c840}
+.tb .pill{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:9px;background:rgba(255,255,255,.06);color:var(--ink)}
+.tb .pill:first-of-type{margin-left:10px}
+.tb svg{width:14px;height:14px}.tb .ic{display:grid;place-items:center;color:#d6d2ec}.tb .ic.dim{opacity:.45}
+.tb .dl{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:999px;background:linear-gradient(95deg,#7c3aed,#4f46e5);box-shadow:0 0 20px rgba(124,58,237,.55);font-weight:700}
+.bd{grid-template-columns:56px minmax(0,1fr) 190px}
+.rail{position:relative;gap:10px}
+.rail b{width:34px;height:34px;border-radius:10px;background:transparent;display:grid;place-items:center;color:#d6d2ec}
+.rail b svg{width:19px;height:19px}
+.rail b.on,.rail b:first-child{background:linear-gradient(150deg,#8b5cf6,#4f46e5);color:#fff;box-shadow:0 0 18px rgba(139,92,246,.6)}
+.rail .tip{position:absolute;left:50px;top:18px;white-space:nowrap;font:600 12.5px Inter,sans-serif;color:#fff;padding:7px 11px;border-radius:9px;background:rgba(10,8,20,.92);box-shadow:0 0 0 1px rgba(255,255,255,.12);z-index:3}
+.cv{padding:22px 18px}
+.pg{box-shadow:0 0 0 1px rgba(168,85,247,.5),0 0 40px rgba(139,92,246,.45),0 22px 60px rgba(0,0,0,.5);border-radius:10px}
+.rp{border-left:1px solid rgba(255,255,255,.07);padding:12px 12px 14px;font:600 12.5px Inter,sans-serif;color:var(--ink);display:flex;flex-direction:column;gap:9px}
+.rp .tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-bottom:4px}
+.rp .tabs span{display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 2px;border-radius:9px;color:var(--muted);font-size:11.5px}
+.rp .tabs span.on{color:#fff;background:rgba(139,92,246,.22);box-shadow:inset 0 0 0 1px rgba(168,85,247,.5)}
+.rp .tabs svg{width:14px;height:14px}
+.rp h4{margin:2px 0 0;font:600 12.5px Inter,sans-serif;color:#d6d2ec}
+.rp .sw{display:flex;gap:6px}.rp .sw i{width:22px;height:22px;border-radius:50%;background:var(--c);box-shadow:0 0 0 2px rgba(255,255,255,.12),0 0 10px var(--c)}
+.rp .sw i.add{background:transparent;display:grid;place-items:center;font-style:normal;color:#d6d2ec;box-shadow:0 0 0 1px rgba(255,255,255,.25)}
+.rp .fsel{display:flex;justify-content:space-between;align-items:center;padding:8px 10px;border-radius:9px;background:rgba(255,255,255,.06)}.rp .fsel svg{width:13px;height:13px}
+.rp .fx{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.rp .fx span{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:11px;color:#cfcbe6}
+.rp .fx i{width:100%;aspect-ratio:1;border-radius:10px;background:rgba(255,255,255,.05);box-shadow:inset 0 0 0 1px rgba(255,255,255,.1)}
+.rp .fx span.on i{box-shadow:inset 0 0 0 1.5px #a855f7,0 0 14px rgba(168,85,247,.5)}
+.rp .fx i.glow{background:radial-gradient(circle,transparent 30%,#7c3aed 34%,#7c3aed 44%,transparent 50%),rgba(255,255,255,.04)}
+.rp .fx i.shad{background:linear-gradient(135deg,transparent 35%,#a855f7 36% 60%,transparent 61%),rgba(255,255,255,.04)}
+.rp .fx i.blur{background:radial-gradient(circle at 60% 40%,#60a5fa,transparent 55%),rgba(255,255,255,.04)}
+.rp .apply{margin-top:auto;display:flex;justify-content:center;align-items:center;gap:6px;padding:9px;border-radius:10px;background:rgba(255,255,255,.06)}.rp .apply svg{width:13px;height:13px}
+.hpop{display:grid;grid-template-columns:minmax(0,1fr) 250px;gap:18px;align-items:end;padding-bottom:24px;position:relative;z-index:3}
+.pop{border-radius:20px;padding:14px 16px 16px;background:rgba(14,12,28,.66);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);box-shadow:inset 0 0 0 1px rgba(255,255,255,.08),0 0 40px rgba(99,102,241,.15)}
+.ph{display:flex;align-items:center;gap:8px;margin-bottom:12px;font:600 15px Inter,sans-serif}.ph a{margin-left:auto;color:#c4b5fd;text-decoration:none;font-size:14px}.ph a:hover{color:#fff}
+.pt{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px}
+.pt a{display:block;border-radius:12px;overflow:hidden;aspect-ratio:16/11;box-shadow:0 0 0 1px rgba(255,255,255,.08);transition:transform .25s var(--ease),box-shadow .25s ease}
+.pt a:hover{transform:translateY(-2px);box-shadow:0 0 0 1px rgba(168,85,247,.6),0 0 22px rgba(139,92,246,.45)}
+.pt img{width:100%;height:100%;object-fit:cover;object-position:50% 22%;display:block;background:#1b1930}
+.shy{display:flex;align-items:center;gap:12px;padding:14px 14px 14px 12px;border-radius:20px;text-decoration:none;color:#fff;background:linear-gradient(150deg,rgba(124,58,237,.45),rgba(30,27,60,.75));box-shadow:inset 0 0 0 1px rgba(196,160,255,.45),0 0 34px rgba(124,58,237,.45);margin-bottom:60px}
+.shy .mascot{width:44px;height:48px;flex:none;filter:drop-shadow(0 0 12px rgba(139,92,246,.8))}
+.shy span{display:flex;flex-direction:column;gap:2px;flex:1}.shy b{font:700 15px Inter,sans-serif}.shy small{font-size:12.5px;color:#d6d0f5}
+.shy i{font-style:normal;width:34px;height:34px;flex:none;display:grid;place-items:center;border-radius:50%;background:linear-gradient(150deg,#8b5cf6,#4f46e5);box-shadow:0 0 16px rgba(139,92,246,.7)}
+.shy:hover i{transform:translateX(2px)}
+.hero{background:radial-gradient(60% 50% at 80% 30%,rgba(124,58,237,.22),transparent 70%),radial-gradient(50% 40% at 30% 100%,rgba(79,70,229,.25),transparent 70%),var(--bg)}
+.holo{background:var(--neon);-webkit-background-clip:text;background-clip:text}
+.card .ic{background:linear-gradient(150deg,#a855f7,#6366f1 55%,#22d3ee);color:#fff;box-shadow:0 0 22px rgba(139,92,246,.45)}
+.card:hover{border-color:rgba(168,85,247,.55);box-shadow:0 0 30px rgba(124,58,237,.25)}
+@media(max-width:1239px){.hpop{grid-template-columns:1fr}.shy{display:none}}
+@media(max-width:1100px){.bd{grid-template-columns:52px minmax(0,1fr)}.rp{display:none}}
+@media(max-width:860px){.pt{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:600px){.pt{display:flex;overflow-x:auto;scrollbar-width:none}.pt a{flex:0 0 132px}.tb .pill,.tb .ic{display:none}.rail .tip{display:none}.logo{height:30px}}
 </style>
 </head>
 <body>
-<div class="hero">
+<div class="hero" id="top">
  <canvas id="holo" aria-hidden="true"></canvas>
+ <nav class="side" aria-label="Quick links">
+  <a class="on" href="#top" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-7 8 7v9a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z"/></svg><span>Home</span></a>
+  <a href="#templates"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span>Templates</span></a>
+  <a href="./editor"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span>My designs</span></a>
+  <a href="./editor?tab=brand"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18c1.2 0 2-.9 2-2 0-.6-.2-1-.5-1.4-.3-.4-.5-.8-.5-1.3 0-1.1.9-2 2-2h2.3A4.7 4.7 0 0 0 22 9.6C22 6 17.5 3 12 3z"/><circle cx="7.5" cy="10.5" r="1.2"/><circle cx="11" cy="7" r="1.2"/><circle cx="15.5" cy="7.5" r="1.2"/></svg><span>Brand kit</span></a>
+  <a href="./editor?tab=ai"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.6 4.4L18 9l-4.4 1.6L12 15l-1.6-4.4L6 9l4.4-1.6z"/><path d="M19 14l.8 2.2 2.2.8-2.2.8L19 20l-.8-2.2L16 17l2.2-.8z"/></svg><span>AI assistant</span></a>
+  <a href="https://github.com/shahrosekhalid96-debug/shoof" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 19c-4 1.5-4-2-6-2.5M15 21v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.2 4.2 0 0 0-.1-3.2s-1.1-.3-3.5 1.3a12 12 0 0 0-6.2 0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2 0 0 0-.1 3.2A4.6 4.6 0 0 0 4 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg><span>Open source</span></a>
+  <div class="free"><span class="fi" aria-hidden="true">✦</span><b>Free forever</b><small>No Pro plan</small><a href="./editor">Start →</a></div>
+ </nav>
+ 
  <div class="wrap">
   <header class="top">
    <a href="./editor" title="Open the editor">
-    <svg class="logo" viewBox="0 0 132 40" role="img" aria-label="Shoof"><title>Shoof</title><g transform="translate(-4 -4)"><path d="M24 24C27.5 18.2 31.6 15.8 35.6 15.8C40.6 15.8 43.6 19.6 43.6 24C43.6 28.4 40.6 32.2 35.6 32.2C31.6 32.2 27.5 29.8 24 24C20.5 18.2 16.4 15.8 12.4 15.8C7.4 15.8 4.4 19.6 4.4 24C4.4 28.4 7.4 32.2 12.4 32.2C16.4 32.2 20.5 29.8 24 24Z" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linejoin="round"/><circle class="pupil" cx="14.2" cy="25" r="4.2" fill="#ff7a3d"/><circle class="pupil" cx="36.6" cy="25" r="4.2" fill="#ff7a3d"/></g><text x="46" y="28.5" font-family="Syne,Inter,system-ui,sans-serif" font-weight="700" font-size="25" fill="currentColor">shoof</text></svg>
+    <svg class="logo" viewBox="0 0 140 40" role="img" aria-label="Shoof"><title>Shoof</title><defs><linearGradient id="lgx" x1="4" y1="16" x2="44" y2="32" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#a855f7"/><stop offset=".42" stop-color="#ec4899"/><stop offset=".58" stop-color="#8b5cf6"/><stop offset="1" stop-color="#22d3ee"/></linearGradient></defs><g transform="translate(-3 -4)"><path d="M24 24C27.5 18.2 31.6 15.8 35.6 15.8C40.6 15.8 43.6 19.6 43.6 24C43.6 28.4 40.6 32.2 35.6 32.2C31.6 32.2 27.5 29.8 24 24C20.5 18.2 16.4 15.8 12.4 15.8C7.4 15.8 4.4 19.6 4.4 24C4.4 28.4 7.4 32.2 12.4 32.2C16.4 32.2 20.5 29.8 24 24Z" fill="none" stroke="url(#lgx)" stroke-width="5" stroke-linejoin="round" class="lgl"/></g><text x="48" y="29" font-family="Poppins,Inter,system-ui,sans-serif" font-weight="700" font-size="26" letter-spacing="-.5" fill="currentColor">shoof</text></svg>
    </a>
    <span class="sp"></span>
    <nav class="nav" aria-label="Main">
+    <a class="link on" href="#top" aria-current="page">Home</a>
     <a class="link" href="./editor">Create</a>
     <a class="link" href="#templates">Templates</a>
-    <a class="link" href="#inside">AI tools</a>
+    <a class="link" href="#inside">AI tools <span class="spk" aria-hidden="true">✦</span></a>
     <a class="link" href="#examples">Explore</a>
    </nav>
-   <form class="srch" action="./editor" role="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input type="search" name="q" maxlength="60" placeholder="Search templates" aria-label="Search templates"></form>
+   <form class="srch" action="./editor" role="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input type="search" name="q" maxlength="60" placeholder="Search templates" aria-label="Search templates"><kbd aria-hidden="true">⌘K</kbd></form>
    <button class="btn small" type="button" data-inst hidden>Install app</button>
    <a class="btn primary small" href="./editor">Start designing</a>
   </header>
@@ -331,30 +424,38 @@ html,body{overflow-x:clip}
  <main class="wrap hgrid">
   <div>
    <span class="eyebrow rise">Free <i></i> No account <i></i> Open source</span>
-   <h1 class="rise">Posts. Posters. Slides. Logos. <span class="l2 holo">Designed in minutes.</span></h1>
-   <p class="lede rise">Describe what you need, start from one of 122 templates, or begin on a blank page. A free AI design studio that runs in your browser.</p>
+   <h1 class="rise">Posts. Posters. Slides. Logos. <span class="l2 neon">Designed in minutes.</span></h1>
+   <p class="lede rise">A free design editor in your browser. Start from 122 templates or ask Shoofy, the built-in AI helper, to design with you.</p>
    <div class="cta rise">
     <a class="btn primary" href="./editor">Start designing <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
-    <a class="btn" href="#templates">Explore templates</a>
+    <a class="btn ghost" href="#templates"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" aria-hidden="true"><path d="M7 4.5v15l12-7.5z"/></svg>Explore templates</a>
    </div>
    <p class="note rise">No sign-up. Your designs stay on your device.</p>
   </div>
   <div class="film">
    <div class="app" id="heroApp" role="img" aria-label="A Shoof template building itself in the editor, then being edited and downloaded">
-    <div class="tb"><i></i><i></i><i></i><span class="ttl">Instagram post · 1080 × 1080</span><span class="sp"></span><span class="dl" id="heroDl">Download</span></div>
+    <div class="tb"><i class="r"></i><i class="y"></i><i class="g"></i><span class="pill">1080 × 1080 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14L4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg></span><span class="ic dim"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14l5-5-5-5"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13"/></svg></span><span class="pill"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>100% <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span><span class="sp"></span><span class="dl" id="heroDl">Download <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12M7 11l5 5 5-5M5 20h14"/></svg></span></div>
     <div class="bd">
-     <div class="rail"><b></b><b></b><b></b><b></b><b></b><b></b></div>
+     <div class="rail"><b class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 6V4h14v2M12 4v16M9 20h6"/></svg></b><b><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.6"/><path d="M21 16l-5-5-9 9"/></svg></b><b><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l4 7H8z"/><circle cx="7" cy="17" r="4"/><rect x="13" y="13" width="8" height="8" rx="1"/></svg></b><b><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3L3 7.5l9 4.5 9-4.5z"/><path d="M3 12l9 4.5 9-4.5M3 16.5L12 21l9-4.5"/></svg></b><b><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg></b><span class="tip">Add text</span></div>
      <div class="cv"><div class="pg" id="heroPage"><div id="heroStage"></div><div class="scan" id="heroScan"></div></div></div>
+     <div class="rp" aria-hidden="true"><div class="tabs"><span class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>Design</span><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3L3 7.5l9 4.5 9-4.5z"/><path d="M3 12l9 4.5 9-4.5"/></svg>Layers</span><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.6 4.4L18 9l-4.4 1.6L12 15l-1.6-4.4L6 9l4.4-1.6z"/></svg>Effects</span></div>
+      <h4>Colours</h4><div class="sw"><i style="--c:#8b5cf6"></i><i style="--c:#6366f1"></i><i style="--c:#22d3ee"></i><i style="--c:#ec4899"></i><i style="--c:#1e1b2e"></i><i class="add">+</i></div>
+      <h4>Fonts</h4><div class="fsel">Montserrat <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></div>
+      <h4>Effects</h4><div class="fx"><span class="on"><i class="glow"></i>Glow</span><span><i class="shad"></i>Shadow</span><span><i class="blur"></i>Blur</span></div>
+      <div class="apply"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg>Apply to all</div></div>
     </div>
     <div class="sel" id="heroSel"><i></i><i></i><i></i><i></i></div>
     <svg class="cur" id="heroCur" viewBox="0 0 24 24"><path d="M4 2.5l15 8.2-6.6 1.6 3.9 7.3-2.7 1.4-3.9-7.3-4.8 4.6z" fill="#fff" stroke="#07060c" stroke-width="1.4" stroke-linejoin="round"/></svg>
    </div>
    <button type="button" class="replay" id="heroReplay" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>Replay</button>
-   <div class="fchip c1" aria-hidden="true"><span class="d"></span>441 icons · 446 fonts</div>
    <div class="fchip c2 pop" id="chipSave" aria-hidden="true"><span class="d"></span>Saved: PNG, PDF, PowerPoint</div>
    <div class="fchip c3 pop" id="chipShoofy" aria-hidden="true"><svg class="mascot" viewBox="0 0 22 24"><path d="M11 1.5C7 6 3 9.8 3 14.4A8 8 0 0 0 19 14.4C19 9.8 15 6 11 1.5z" fill="#7b5cf5"/><circle cx="8.2" cy="14" r="2.6" fill="#fff"/><circle cx="13.8" cy="14" r="2.6" fill="#fff"/><circle cx="8.6" cy="14.4" r="1.2" fill="#07060c"/><circle cx="14.2" cy="14.4" r="1.2" fill="#07060c"/></svg>Shoofy: want to try another look?</div>
   </div>
  </main>
+ <div class="wrap hpop rise">
+  <div class="pop"><div class="ph"><span class="spk" aria-hidden="true">✦</span><b>Popular templates</b><a href="#templates">View all →</a></div><div class="pt"><a href="./editor?tpl=big_sale" title="Use this template"><img src="welcome/big_sale.webp" alt="Big sale post" width="440" height="440" loading="lazy" decoding="async"></a><a href="./editor?tpl=summer_sale" title="Use this template"><img src="welcome/summer_sale.webp" alt="Summer sale post" width="440" height="440" loading="lazy" decoding="async"></a><a href="./editor?tpl=deck_swiss" title="Use this template"><img src="welcome/deck_swiss.webp" alt="Pitch deck title slide" width="440" height="248" loading="lazy" decoding="async"></a><a href="./editor?tpl=stat_growth" title="Use this template"><img src="welcome/stat_growth.webp" alt="Business stat post" width="440" height="440" loading="lazy" decoding="async"></a><a href="./editor?tpl=retro_coffee" title="Use this template"><img src="welcome/retro_coffee.webp" alt="Retro coffee badge" width="440" height="440" loading="lazy" decoding="async"></a><a href="./editor?tpl=poster_halftone" title="Use this template"><img src="welcome/poster_halftone.webp" alt="Music festival poster" width="440" height="440" loading="lazy" decoding="async"></a></div></div>
+  <a class="shy" href="./editor?tab=ai"><svg class="mascot" viewBox="0 0 22 24" aria-hidden="true"><path d="M11 1.5C7 6 3 9.8 3 14.4A8 8 0 0 0 19 14.4C19 9.8 15 6 11 1.5z" fill="#7b5cf5"/><circle cx="8.2" cy="14" r="2.6" fill="#fff"/><circle cx="13.8" cy="14" r="2.6" fill="#fff"/><circle cx="8.6" cy="14.4" r="1.2" fill="#07060c"/><circle cx="14.2" cy="14.4" r="1.2" fill="#07060c"/><circle cx="11" cy="1.6" r="1.4" fill="#ff7a3d"/></svg><span><b>Hi! I'm Shoofy</b><small>How can I help you today?</small></span><i aria-hidden="true">→</i></a>
+ </div>
 </div>
 
 <section id="ai" aria-labelledby="aiH">
@@ -557,17 +658,18 @@ document.querySelectorAll('.reveal').forEach(function(n){io.observe(n);});})();
  'float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}'+
  'float n(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(h(i),h(i+vec2(1,0)),f.x),mix(h(i+vec2(0,1)),h(i+vec2(1,1)),f.x),f.y);}'+
  'float fb(vec2 p){float v=0.,a=.5;for(int k=0;k<5;k++){v+=a*n(p);p=p*2.03+vec2(1.7,9.2);a*=.5;}return v;}'+
- 'vec3 pal(float x){x=fract(x)*4.;vec3 a=vec3(.43,.95,1.),b=vec3(.6,.48,1.),c=vec3(1.,.44,.85),d=vec3(1.,.82,.48);if(x<1.)return mix(a,b,smoothstep(0.,1.,x));if(x<2.)return mix(b,c,smoothstep(1.,2.,x));if(x<3.)return mix(c,d,smoothstep(2.,3.,x));return mix(d,a,smoothstep(3.,4.,x));}'+
- 'void main(){vec2 u=gl_FragCoord.xy/r;vec2 p=(gl_FragCoord.xy-.5*r)/r.y;p+=(m-.5)*.25;'+
- 'vec2 q=vec2(fb(p*1.4+vec2(0.,t*.05)),fb(p*1.4+vec2(5.2,-t*.04)));'+
- 'vec2 w=vec2(fb(p*1.7+q*2.2+vec2(1.7,9.2)+t*.03),fb(p*1.7+q*2.2+vec2(8.3,2.8)-t*.025));'+
- 'float f=fb(p*1.9+w*2.4);'+
- 'vec3 film=pal(f*3.2+length(w)*1.5+u.x*.6+t*.03);'+
- 'float sheet=smoothstep(.38,.8,f)*(.45+.55*smoothstep(.2,.9,length(q)));'+
- 'float glint=pow(max(0.,1.-abs(f-.58)*9.),3.)*.9;'+
- 'vec3 c=mix(vec3(.028,.024,.05),film*.78,sheet*.85)+mix(film,vec3(1.),.4)*glint*.7;'+
- 'c+=vec3(.42,.3,1.)*.07*(1.-length(u-vec2(.78,.45)));'+
- 'c*=1.-.6*pow(length(u-vec2(.62,.48))*1.1,2.);'+
+ 'vec3 pal(float x){x=clamp(x,0.,1.);vec3 a=vec3(.93,.25,.98),b=vec3(.55,.3,1.),c=vec3(.3,.42,1.),d=vec3(.13,.83,.93);if(x<.33)return mix(a,b,x/.33);if(x<.66)return mix(b,c,(x-.33)/.33);return mix(c,d,(x-.66)/.34);}'+
+ 'void main(){vec2 u=gl_FragCoord.xy/r;float asp=r.x/r.y;vec2 p=vec2(u.x*asp,u.y);float tm=t*.22;'+
+ 'vec3 c=vec3(.02,.017,.05)+vec3(.24,.1,.5)*.35*smoothstep(.9,0.,length((u-vec2(.78,.62))*vec2(1.,1.3)))+vec3(.1,.12,.5)*.25*smoothstep(.8,0.,length(u-vec2(.25,.05)));'+
+ 'for(int i=0;i<7;i++){float fi=float(i);'+
+ 'float base=-.05+.62*pow(u.x,1.25)+fi*.035;'+
+ 'float y=base+.07*sin(p.x*1.7+fi*.8+tm)+.035*sin(p.x*3.3-fi*1.3-tm*1.4)+(m.y-.5)*.04*(1.+fi*.2)+(m.x-.5)*.03*u.x;'+
+ 'float d=abs(u.y-y);float w=.0016+.0012*fi;'+
+ 'float g=w/(d+w)*.55+exp(-d*d/(w*w*.35))*.9;'+
+ 'float fade=smoothstep(0.,.35,u.x)*(.55+.45*sin(fi*1.7+p.x*.9+tm*.6));'+
+ 'c+=pal(fract(u.x*.8+fi*.13+.05))*g*fade*(.38+.08*fi);}'+
+ 'float gr=n(gl_FragCoord.xy*.7);c+=(gr-.5)*.012;'+
+ 'c*=1.-.45*pow(length(u-vec2(.6,.5))*1.15,2.);'+
  'gl_FragColor=vec4(c,1.);}';
  function sh(type,src){var s=gl.createShader(type);gl.shaderSource(s,src);gl.compileShader(s);return gl.getShaderParameter(s,gl.COMPILE_STATUS)?s:null;}
  var vs=sh(gl.VERTEX_SHADER,V),fs=sh(gl.FRAGMENT_SHADER,F);if(!vs||!fs)return;var pr=gl.createProgram();gl.attachShader(pr,vs);gl.attachShader(pr,fs);gl.linkProgram(pr);if(!gl.getProgramParameter(pr,gl.LINK_STATUS))return;gl.useProgram(pr);

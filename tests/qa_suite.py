@@ -3440,7 +3440,7 @@ def t_landing(B):
         pg.add_script_tag(path=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'vendor', 'axe.min.js'))
         bad = pg.evaluate("axe.run(document,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21a','wcag21aa']}}).then(r=>r.violations.map(v=>v.id+': '+v.nodes.length))")
         eq(bad, [], f'accessibility at {w}'); ok(not errs, errs); pg.close()
-    ok(os.path.getsize(os.path.join(APP_DIR, 'welcome.html')) < 85000, 'page stays light')  # 85 KB on 2026-11-21 (design brief: AI section, gallery, search); 30 KB → 60 KB on 2026-11-16 (live preview, feedback, install), 70 KB on 2026-11-17 (holographic hero film)
+    ok(os.path.getsize(os.path.join(APP_DIR, 'welcome.html')) < 100000, 'page stays light')  # 100 KB on 2026-11-21 (neon pass: side rail, editor window panel, popular strip); 85 KB on 2026-11-21 (design brief: AI section, gallery, search); 30 KB → 60 KB on 2026-11-16 (live preview, feedback, install), 70 KB on 2026-11-17 (holographic hero film)
     ok(sum(os.path.getsize(os.path.join(APP_DIR, 'welcome', f)) for f in os.listdir(os.path.join(APP_DIR, 'welcome'))) < 360000, 'pictures stay light')  # 360 KB on 2026-11-21: three AI designs + gallery pictures, all lazy-loaded
     pg = c.page.context.new_page(); pg.emulate_media(reduced_motion='reduce'); pg.goto(base + '/welcome.html'); pg.wait_for_timeout(300)
     ok(pg.evaluate("getComputedStyle(document.querySelector('.track')).animationName==='none'&&!document.documentElement.classList.contains('js')"), 'motion is off when the visitor asks for less motion'); pg.close()
