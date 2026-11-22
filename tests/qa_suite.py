@@ -3869,6 +3869,9 @@ def t_shoofy_vague(B):
     ok(p.locator('#shMsgs .shm.bot:last-child [data-shtpl]').count() == 0, 'AI template answer to an edit is not shown')
     say('show me bakery posters')
     ok(p.locator('#shMsgs .shm.bot:last-child [data-shtpl]').count() >= 1, 'template asks still show templates')
+    for q in ['no change the font type', 'change the font', 'try another font']:
+        say(q); ok(p.locator('#shMsgs .shm.bot:last-child [data-shfont]').count() >= 3, q + ': shows font choices')
+    say('change the font to Poppins'); ok(c.ev("doc.elements.some(e=>e.type==='text'&&(e.fontFamily||e.font)==='Poppins')"), 'named font is applied, not just listed')
     tid = c.ev("doc.elements.find(e=>e.type==='text').id"); c.ev(f"setSel(['{tid}'])"); say('change text')
     ok(p.locator('#shMsgs .shm.bot:last-child [data-sha^="edtx:"]').count() == 1, 'selected text: offers editing it on the page')
     ok(not c.errors, c.errors); c.close()
