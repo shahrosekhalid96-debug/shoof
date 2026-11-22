@@ -581,6 +581,36 @@ header{background:#17161f}
 .prjlist button i{width:12px;height:12px;border-radius:4px;flex:none}
 .prjlist button[aria-current]{border-color:var(--accent-ink);background:var(--accent-soft)}
 #prjBtn small{color:var(--muted);font-size:12px}
+
+/* Compact desktop chrome (2026-11-22, Shary: fonts and boxes too big, wants a clean minimal look). Desktop only; phones keep big touch targets. */
+@media (min-width:981px){
+ .app{grid-template-rows:46px 1fr}
+ header{gap:6px;padding:0 10px;font-size:13px}
+ header button{font-size:13px;padding:0 11px;height:32px;min-height:32px;border-radius:8px}
+ header button.icon{width:32px;min-width:32px;padding:0}
+ header button svg{width:16px;height:16px}
+ header select{font-size:13px;height:32px;padding:0 8px;max-width:240px}
+ header .askbtn{height:32px;padding:0 12px;font-size:13px}
+ header .askbtn svg{width:14px;height:14px}
+ header .brand .logo{height:24px}
+ header .brand{margin-inline-end:4px}
+ .main{grid-template-columns:64px 248px minmax(0,1fr) 256px}
+ .rail{padding:6px 4px;gap:2px}
+ .rail button{min-height:46px;padding:6px 0;gap:2px}
+ .rail button svg{width:18px;height:18px}
+ .rail button span{font-size:10px}
+ .drawer{padding:12px;font-size:13px}
+ .drawer input,.drawer select,.props input,.props select{font-size:13px}
+ .drawer button,.props button{font-size:12.5px}
+ .drawer h3,.props h3{font-size:11px}
+ .tpl span{font-size:11px;padding:5px 7px}
+ .chips button{font-size:11.5px;padding:4px 9px}
+ .props{padding:12px;font-size:12.5px}
+}
+.prjchip{display:inline-flex;align-items:center;gap:6px;max-width:200px;border-radius:999px!important;background:transparent;border:1px solid var(--line);color:var(--muted)}
+.prjchip:hover{color:var(--ink);background:var(--hover)}
+.prjchip i{width:8px;height:8px;border-radius:50%;flex:none;background:var(--accent)}
+.prjchip span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 </style>
 </head>
 <body>
@@ -595,6 +625,7 @@ header{background:#17161f}
   <button class="icon flip" id="redoBtn" data-i18n-title="redoTitle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14l5-5-5-5"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13"/></svg></button>
   <div class="sp"></div>
   <button id="propsToggle" class="mob-only" data-i18n-title="propsTitle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg><span class="lbl" data-i18n="edit">Edit</span></button>
+  <button id="prjChip" class="prjchip wide-only" hidden data-i18n-title="prjChipT" title="Project. Click to change"><i></i><span></span></button>
   <button id="fileBtn" class="wide-only filebtn" aria-haspopup="true" aria-expanded="false"><span data-i18n="fileMenu">File</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
   <div class="menu filemenu" id="fileMenu">
     <button id="newBtn" data-i18n="new">New</button>
@@ -790,6 +821,7 @@ searchEl:'Search icons, shapes, stickers…',elShapes:'Shapes',elLines:'Lines',e
   st_sale:'Sale badge',st_new:'New star',st_offer:'Limited offer',st_hello:'Hello bubble',st_follow:'Follow us',st_price:'Price tag',st_check:'Check badge',st_open:'We are open',st_swipe:'Swipe',
   sz_flyer:'Flyer A5',sz_logo:'Logo',sz_card:'Business card',sz_pres:'Presentation 16:9',
   acMenu:'Account',acTitle:'Sign in to use the AI tools',acLead:'Shoof stays free. The AI tools run on our server, so they need a free account. That keeps them fair for everyone and keeps bots out. Editing, templates and downloads work without one.',acP1:'We keep only your email, your name and a daily count of your AI uses.',acP2:'Your designs stay on your device. No ads, and we never sell your data.',acP3:'You can delete your account any time from ⋯ → Account.',acAgree:'I am 13 or older and agree to the {link}.',acPriv:'Privacy Policy and Terms',acGoogle:'Continue with Google',acLater:'Not now',acTick:'Please tick the box first.',acWait:'Finish signing in in the Google window. This updates by itself.',acPopup:'The sign-in window was blocked. Allow pop-ups for this site and try again.',acHi:'Signed in as {e}.',acAs:'Signed in as',acToday:'AI uses left today',acLeft:'{n} of {m} left',acReset:'Allowances start again every day at midnight (UTC).',acDel:'Delete my account',acDelSure:'Click again to delete for good',acDeleted:'Your account was deleted.',acOut:'Sign out',acOuted:'Signed out.',acDone:'Done',acOff:'You don’t need an account here. The AI tools work without signing in.',acFail:'Could not reach Shoof. Check your connection and try again.',acLoading:'Loading…',acAgain:'Our Privacy Policy and Terms have changed. Please read them and accept to keep using the AI tools.',acK_describe:'Describe it',acK_slides:'Presentation maker',acK_chat:'Ask Shoof chat',
+  prjChipT:'Project. Click to change',
   fbBtn:'Feedback',fbTitle:'Help us make Shoof better',fbLead:'Tell us what went wrong or what you wish Shoof could do. We read every message.',fbKind:'What is it about?',fbK_idea:'An idea or a wish',fbK_problem:'Something is not working',fbK_question:'A question',fbText:'Your message',fbPh:'e.g. I could not find where to change the font colour',fbMail:'Email (only if you want an answer)',fbSend:'Send',fbSending:'Sending…',fbThanks:'Thank you. Your message is saved and we will read it.',fbShort:'Write a few more words first.',fbLimit:'That is enough messages for today. Thank you.',fbFail:'It could not be sent right now. Please try again a little later.',fbGit:'',fbNote:'Only your message is saved, plus the email if you add one. Please leave out private details.',
   instBtn:'Install app',instTitle:'Install Shoof as an app',instLead:'Shoof then opens in its own window and works offline.',instIos:'On iPhone or iPad: tap the Share button, then "Add to Home Screen".',instOther:'In your browser menu, choose "Install app" or "Add to Home screen".',instDone:'Shoof is installed.'},
  ar:{docTitle:'شوف — محرر تصاميم مجاني ومفتوح المصدر',brand:'شوف',tag:'تصميم مجاني للجميع',new:'جديد',open:'فتح',save:'حفظ',export:'تنزيل',langTitle:'اللغة',sizeTitle:'حجم التصميم',undoTitle:'تراجع (Ctrl+Z)',redoTitle:'إعادة (Ctrl+Y)',propsTitle:'الخصائص',edit:'تعديل',more:'المزيد',
@@ -2229,7 +2261,7 @@ const DS_MAX=200;let dsDb=null,dsList=[],dsTimer=null,curId=null,curName='';
 function dsId(){return 'd'+Date.now().toString(36)+Math.random().toString(36).slice(2,7);}
 function dsOpen(){if(dsDb)return dsDb;dsDb=new Promise(res=>{try{const r=indexedDB.open('shoof',1);r.onupgradeneeded=()=>{r.result.createObjectStore('designs',{keyPath:'id'});};r.onsuccess=()=>res(r.result);r.onerror=()=>res(null);r.onblocked=()=>res(null);}catch(e){res(null);}});return dsDb;}
 async function dsTx(mode,fn){const db=await dsOpen();if(!db)return null;return new Promise(res=>{try{const tx=db.transaction('designs',mode),st=tx.objectStore('designs');let out=null;const r=fn(st);if(r)r.onsuccess=()=>{out=r.result;};tx.oncomplete=()=>res(out===null?true:out);tx.onerror=tx.onabort=()=>res(null);}catch(e){res(null);}});}
-async function dsLoadList(){const all=await dsTx('readonly',st=>st.getAll());dsList=Array.isArray(all)?all.map(({doc:_d,...m})=>m).sort((a,b)=>b.updated-a.updated):[];return dsList;}
+async function dsLoadList(){const all=await dsTx('readonly',st=>st.getAll());dsList=Array.isArray(all)?all.map(({doc:_d,...m})=>m).sort((a,b)=>b.updated-a.updated):[];try{prjLoad();prjLabel();}catch(e){}return dsList;}
 function dsHasWork(d){return d.pages.length>1||d.pages.some(pg=>pg.elements.some(e=>e.role!=='bg'));}
 function dsAutoName(d){const tx=(d.pages[0]||{elements:[]}).elements.filter(e=>e.type==='text'&&(String(e.text||'').match(/[\p{L}\p{N}]/gu)||[]).length>=3).sort((a,b)=>b.fontSize-a.fontSize)[0];return tx?String(tx.text).replace(/\s+/g,' ').trim().slice(0,40):'';}
 /* ============ Projects: a folder for designs (per client / brand), kept on this device in localStorage shoof.projects; each design record carries project:<id> ============ */
@@ -2240,8 +2272,9 @@ function prjSaveList(){try{localStorage.setItem('shoof.projects',JSON.stringify(
 function prjById(id){return PRJ.find(p=>p.id===id)||null;}
 function prjNew(name,kit,color){prjLoad();if(PRJ.length>=PRJ_MAX)return null;const p={id:'p'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),name:clean1(name,40)||'Project',color:safeColor(color)||['#8b5cf6','#ec4899','#22d3ee','#f59e0b','#10b981','#6366f1'][PRJ.length%6],kit:kit||'',created:Date.now()};PRJ.push(p);prjSaveList();return p;}
 function prjUseKit(p){if(p&&p.kit&&KITS.kits.some(k=>k.id===p.kit)&&brand.id!==p.kit)kitSwitch(p.kit);}
-function prjLabel(){const n=$('#prjNow');if(n){if(curProj===null){const m=dsList.find(x=>x.id===curId);if(m)curProj=m.project||'';}const p=prjById(curProj);n.textContent=p?' · '+p.name:'';}}
+function prjLabel(){const n=$('#prjNow');if(n){if(curProj===null){const m=dsList.find(x=>x.id===curId);if(m)curProj=m.project||'';}const p=prjById(curProj);n.textContent=p?' · '+p.name:'';}const c=$('#prjChip');if(c){const p=prjById(curProj);c.hidden=!p;if(p){c.querySelector('span').textContent=p.name;c.querySelector('i').style.background=p.color;c.setAttribute('aria-label',t('prjChipT')+': '+p.name);}}}
 async function prjSet(id){prjLoad();curProj=prjById(id)?id:'';prjLabel();dsDirty=true;await dsSave();const p=prjById(curProj);prjUseKit(p);toast(p?t('prjMoved',{name:p.name}):t('prjNoneMoved'),2500);}
+document.addEventListener('click',ev=>{if(ev.target.closest('#prjChip'))openProjDlg();});
 function openProjDlg(){prjLoad();const kits=KITS.kits||[];modal(`<h2>${esc(t('prjTitle'))}</h2><p class="note">${esc(t('prjNote'))}</p><div class="prjlist">${[{id:'',name:t('prjNone'),color:'#4a4766'}].concat(PRJ).map(p=>`<button data-prj="${esc(p.id)}"${p.id===curProj?' aria-current="true"':''}><i style="background:${esc(p.color)}"></i>${esc(p.name)}</button>`).join('')}</div>
  <label class="fld"><span>${esc(t('prjNew'))}</span><input id="prjName" maxlength="40" dir="auto"></label><label class="fld"><span>${esc(t('prjBrand'))}</span><select id="prjKit"><option value="">${esc(t('prjNoBrand'))}</option>${kits.map(k=>`<option value="${esc(k.id)}">${esc(k.name||t('brandKit'))}</option>`).join('')}</select></label>
  <div class="newfoot"><span class="sp"></span><button data-close>${esc(t('cancel'))}</button><button class="primary" id="prjMake">${esc(t('prjCreate'))}</button></div>`);setTimeout(()=>{const i=$('#prjName');if(i)i.focus();},30);}
