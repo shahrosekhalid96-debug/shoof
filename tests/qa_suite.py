@@ -3846,6 +3846,33 @@ def t_shoofy_retry(B):
     c.ev("SH.msgs.push({who:'bot',text:'x',designs:[]})"); eq(c.ev("shRetryAsk('try again')"), None, 'design rounds keep their own handling')
     ok(not c.errors, c.errors); c.close()
 
+@test('shoofy_vague_text_edit_asks')
+def t_shoofy_vague(B):
+    c = Ctx(B, init="localStorage.setItem('shoof.buddy','on')"); p = c.page
+    c.ev("shOpen()"); p.wait_for_selector('#shChat:not([hidden])')
+    def say(q):
+        n = c.ev("SH.msgs.length"); p.fill('#shIn', q); p.press('#shIn', 'Enter')
+        p.wait_for_function(f"SH.msgs.length>={n+2}&&!SH.busy&&!SH.tw", timeout=10000)
+    for q in ['change text', 'edit the headline', 'change the words']:
+        say(q); last = '#shMsgs .shm.bot:last-child'
+        ok(p.locator(last + ' [data-shtpl]').count() == 0, q + ': no template cards')
+        ok('which text' in p.inner_text(last).lower(), q + ': asks which text')
+    p.click('#shMsgs .shm.bot:last-child [data-sha^="fill:change the headline"]')
+    eq(c.ev("$('#shIn').value"), 'change the headline to ""', 'button fills the chat box')
+    ok(c.ev("$('#shIn').selectionStart") == len('change the headline to "'), 'cursor sits between the quotes')
+    p.fill('#shIn', ''); say('change the headline to Summer sale')
+    ok(c.ev("doc.elements.filter(e=>e.type==='text').some(e=>e.text==='Summer sale')"), 'unquoted new words are used')
+    # AI answering an edit with templates is replaced by the question
+    c.ev("localStorage.setItem('shoof.shAI','1')")
+    p.route('**/api/shoofy', lambda r: r.fulfill(status=200, content_type='application/json', body=json.dumps({'reply': 'Here', 'actions': [{'do': 'show_templates', 'keys': ['big_hiring']}]})))
+    say('please fix the wording of the button somehow')
+    ok(p.locator('#shMsgs .shm.bot:last-child [data-shtpl]').count() == 0, 'AI template answer to an edit is not shown')
+    say('show me bakery posters')
+    ok(p.locator('#shMsgs .shm.bot:last-child [data-shtpl]').count() >= 1, 'template asks still show templates')
+    tid = c.ev("doc.elements.find(e=>e.type==='text').id"); c.ev(f"setSel(['{tid}'])"); say('change text')
+    ok(p.locator('#shMsgs .shm.bot:last-child [data-sha^="edtx:"]').count() == 1, 'selected text: offers editing it on the page')
+    ok(not c.errors, c.errors); c.close()
+
 
 def main():
     only = [x for x in os.environ.get('QA_ONLY', '').split(',') if x]
