@@ -3781,6 +3781,45 @@ def t_copilot(B):
         c = Ctx(B, home=True, wait=False); c.page.goto(URL + '?' + q_); c.page.wait_for_function("typeof homeOpen==='function'&&(" + chk + ")", timeout=15000)
         eq(c.ev('location.search'), '', f'{q_}: link opens straight in the editor, address cleaned'); ok(not c.errors, c.errors); c.close()
 
+@test('accounts_signin_and_privacy')
+def t_accounts(B):
+    import subprocess
+    r = subprocess.run(['node', os.path.join(ROOT, 'tests', 'server', 'auth.mjs')], capture_output=True, text=True, timeout=60); ok(r.returncode == 0 and 'auth: ok' in r.stdout, 'auth server: ' + r.stdout + r.stderr)
+    pv = open(os.path.join(APP_DIR, 'privacy.html'), encoding='utf-8').read()
+    for w in ['Privacy Policy and Terms of Use', 'Version 1', 'Cloudflare D1', 'Delete my account', 'Terms of Use', 'never sell']: ok(w in pv, 'privacy page mentions ' + w)
+    ok('<script' not in pv, 'privacy page has no scripts'); ok('privacy.html' in open(os.path.join(APP_DIR, 'tools', 'build-site.sh')).read(), 'privacy page published')
+    ok('href="./privacy"' in open(os.path.join(APP_DIR, 'welcome.html'), encoding='utf-8').read(), 'front page links the privacy page')
+    c = Ctx(B); p = c.page; st = {'me': {'auth': 'on', 'user': None}, 'calls': 0, 'posts': []}
+    def me(route): route.fulfill(status=200, content_type='application/json', body=json.dumps(st['me']))
+    def desc(route):
+        st['calls'] += 1
+        if st['me'].get('user'): route.fulfill(status=200, content_type='application/json', headers={'x-shoof-left': '24'}, body='{"ok":true}')
+        else: route.fulfill(status=401, content_type='application/json', body='{"error":"sign_in"}')
+    def post(route): st['posts'].append(route.request.url.split('/')[-1]); route.fulfill(status=200, content_type='application/json', body='{"ok":true}')
+    p.route('**/api/auth/me', me); p.route('**/api/describe', desc); p.route('**/api/auth/logout', post); p.route('**/api/auth/delete', post)
+    c.ev("window.__open=[];window.open=(u)=>{window.__open.push(u);return {}};window.__r=null;aiFetch('api/describe',{method:'POST',body:'{}'}).then(r=>window.__r=r.status);0")
+    p.wait_for_selector('#modal.open #acAgree'); ok(p.locator('#modal a[href="privacy"]').count() == 1, 'sign-in links the privacy page')
+    p.click('#acGo'); eq(c.ev("window.__open.length"), 0, 'Google not opened before the box is ticked'); ok('tick' in p.inner_text('#acMsg').lower(), 'asks to tick the box')
+    p.check('#acAgree'); p.click('#acGo'); eq(c.ev("window.__open[0]"), 'api/auth/google?accept=1', 'opens Google with acceptance')
+    p.screenshot(path=os.path.join(WORK, 'acct_signin.png'))
+    st['me'] = {'auth': 'on', 'user': {'email': 'shary@example.com', 'name': 'Shary'}, 'usage': {'describe': {'used': 1, 'limit': 25}, 'slides': {'used': 0, 'limit': 8}, 'chat': {'used': 3, 'limit': 40}}}
+    c.ev("new BroadcastChannel('shoof-auth').postMessage('signed-in')")
+    p.wait_for_function("window.__r!==null", timeout=10000); eq(c.ev("window.__r"), 200, 'request retried after sign-in'); eq(st['calls'], 2, 'two calls: refused, then allowed')
+    ok(not c.ev("$('#modal').classList.contains('open')"), 'dialog closed after sign-in')
+    c.ev("openAccount()"); p.wait_for_selector('#modal.open #acDel'); txt = p.inner_text('#modalBox')
+    ok('shary@example.com' in txt and '24 of 25 left' in txt and '37 of 40 left' in txt, 'account shows email and allowance: ' + txt)
+    p.screenshot(path=os.path.join(WORK, 'acct_account.png'))
+    p.click('#acDel'); eq(st['posts'], [], 'first click only asks again'); p.click('#acDel'); p.wait_for_timeout(300); eq(st['posts'], ['delete'], 'second click deletes')
+    # "Not now": falls back without asking again for a while
+    st['me'] = {'auth': 'on', 'user': None}; st['calls'] = 0
+    c.ev("window.__r=null;aiFetch('api/describe',{method:'POST',body:'{}'}).then(r=>window.__r=r.status);0"); p.wait_for_selector('#modal.open #acAgree')
+    p.click('#modal button[data-close]'); p.wait_for_function("window.__r!==null", timeout=5000); eq(c.ev("window.__r"), 401, 'Not now returns the refusal (on-device fallback)')
+    c.ev("window.__r=null;aiFetch('api/describe',{method:'POST',body:'{}'}).then(r=>window.__r=r.status);0"); p.wait_for_function("window.__r!==null", timeout=5000)
+    ok(not c.ev("$('#modal').classList.contains('open')"), 'not asked again right away')
+    # accounts off: account menu says no account needed
+    st['me'] = {'auth': 'off'}; c.ev("openAccount()"); p.wait_for_selector('#modal.open .acpl'); ok("need an account" in p.inner_text('#modalBox'), 'accounts off message')
+    errs = [e for e in c.errors if 'status of 401' not in e]; ok(not errs, errs); c.close()  # the 401s are the server asking to sign in
+
 
 def main():
     only = [x for x in os.environ.get('QA_ONLY', '').split(',') if x]
