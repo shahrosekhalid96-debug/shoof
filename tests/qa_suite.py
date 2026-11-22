@@ -3820,6 +3820,32 @@ def t_accounts(B):
     st['me'] = {'auth': 'off'}; c.ev("openAccount()"); p.wait_for_selector('#modal.open .acpl'); ok("need an account" in p.inner_text('#modalBox'), 'accounts off message')
     errs = [e for e in c.errors if 'status of 401' not in e]; ok(not errs, errs); c.close()  # the 401s are the server asking to sign in
 
+@test('shoofy_try_again_repeats_the_ask')
+def t_shoofy_retry(B):
+    c = Ctx(B, init="localStorage.setItem('shoof.buddy','on')"); p = c.page
+    c.ev("shOpen()"); p.wait_for_selector('#shChat:not([hidden])')
+    def say(q):
+        n = c.ev("SH.msgs.length"); p.fill('#shIn', q); p.press('#shIn', 'Enter')
+        p.wait_for_function(f"SH.msgs.length>={n+2}&&!SH.busy&&!SH.tw", timeout=10000)
+    say('make the background navy'); bg1 = c.ev("bgBlock().fill.toLowerCase()"); eq(bg1, '#1b2a4a', 'first ask changed the background')
+    u0 = c.ev("undoStack.length")
+    say('try again')
+    ok(c.ev("!document.querySelector('#shMsgs .shm.bot:last-child [data-shtpl]')"), 'try again does not answer with templates')
+    eq(c.ev("undoStack.length"), u0, 'old change undone, new one made (one undo step, not stacked)')
+    ok(c.ev("SH.msgs.filter(m=>m.who==='me').pop().text") == 'try again', 'chat shows what the user typed')
+    ok(c.ev("bgBlock().fill.toLowerCase()") != '#ffffff', 'background still set by the repeated ask')
+    # mocked AI: the server gets the previous ask, not just "try again"
+    sent = []
+    def api(r):
+        sent.append(json.loads(r.request.post_data or '{}')); r.fulfill(status=200, content_type='application/json', body=json.dumps({'reply': 'Done.', 'actions': [{'do': 'set_background', 'color': '#2d6a4f'}]}))
+    p.route('**/api/shoofy', api); c.ev("localStorage.setItem('shoof.shAI','1')")
+    say('give the headline a glow and make the page dark green'); say('try again')
+    last = sent[-1]['messages'][-1]['content']
+    ok('glow' in last and 'try again' in last.lower(), 'AI gets the earlier ask with a retry note: ' + last)
+    # after design ideas, "try again" still means more designs
+    c.ev("SH.msgs.push({who:'bot',text:'x',designs:[]})"); eq(c.ev("shRetryAsk('try again')"), None, 'design rounds keep their own handling')
+    ok(not c.errors, c.errors); c.close()
+
 
 def main():
     only = [x for x in os.environ.get('QA_ONLY', '').split(',') if x]
