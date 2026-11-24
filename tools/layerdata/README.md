@@ -11,3 +11,10 @@ Teaches Magic layers to take any poster apart into layers (LayerD idea, ICCV 202
 | `kaggle/1-make-data.ipynb`, `kaggle/2-train-model.ipynb` | Run on Kaggle (CPU for data, GPU T4 for training). |
 
 Content: only Shoof templates / generated layouts, OFL fonts, Lucide icons and CC0 photos. Never scraped designs.
+
+## Photos (round 2, 2026-11-24)
+The first model saw only flat designs, so on photos it treated the whole picture as one layer. Round 2 adds photo posters:
+- `cutouts.py` cuts people / animals / objects out of free CC0 photos with IS-Net (Shoof's background remover model), keeps only clean cut-outs (one main blob, crisp edge), cleans the old background colour off soft edges, and remembers where each sat (`<name>.json`).
+- `photo_gen.py` builds posters with exact layers: photo background (colour graded) → cut-outs with their own drop shadow or rim light → text with glow / drop shadow / outline / gradient (glow and shadow are their own layers) → sometimes a flat badge. A third are **real** photos (`"real": true`): the original photo plus its own subject layer at the exact spot; the trainer only uses their first peel. Seeds start at 1,000,000 so they never clash with `gen.py`.
+- Kaggle: `kaggle/3-make-photo-data.ipynb` (CPU, Internet on) → `lp-*.tar`; `2-train-model.ipynb` takes `ld-*.tar` and `lp-*.tar` together.
+Shary's two test pictures are never used for training.

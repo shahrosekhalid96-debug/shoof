@@ -18,13 +18,15 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--out', required=True)
     ap.add_argument('--n', type=int, default=800)
+    ap.add_argument('--topics', default='', help='space-separated search words (default: a general mix)')
     a = ap.parse_args()
+    topics = a.topics.split() or TOPICS
     os.makedirs(a.out, exist_ok=True)
     seen, n = set(os.listdir(a.out)), len([f for f in os.listdir(a.out) if f.endswith('.jpg')])
     src = open(os.path.join(a.out, 'SOURCES.tsv'), 'a')
     page, fails = 1, 0
     while n < a.n and page < 40:
-        for t in TOPICS:
+        for t in topics:
             if n >= a.n:
                 break
             q = urllib.parse.urlencode({'q': t, 'license': 'cc0,pdm', 'page_size': 20, 'page': page, 'mature': 'false'})

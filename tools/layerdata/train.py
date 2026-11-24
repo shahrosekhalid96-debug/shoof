@@ -19,8 +19,12 @@ OVERLAP = 0.004     # a layer is not on top if more than this share of it is cov
 
 
 # ---------------------------------------------------------------- data
+REAL = {}
+
+
 def load_design(folder):
     m = json.load(open(os.path.join(folder, 'meta.json')))
+    REAL[folder] = bool(m.get('real'))
     W, H = m['w'], m['h']
     L = []
     for i, l in enumerate(m['layers']):
@@ -99,7 +103,8 @@ def make_example(folder, rnd):
         rem = [l for i, l in enumerate(rem) if i not in t]
         if len(rounds) > 12:
             break
-    k = rnd.randrange(len(rounds)) if rounds else 0
+    # real photos: the subject is still in the background underneath, so only the first peel is true
+    k = rnd.randrange(len(rounds)) if rounds and not REAL.get(folder) else 0
     rem = list(L)
     for _ in range(k):
         t = top_set(rem, W, H)
