@@ -186,10 +186,11 @@ def text_layers(layers, W, H, fonts, rnd, uid, dark_bg):
 def sample(seed, a, bgs, cuts, fonts):
     rnd = random.Random(seed * 7919 + 17)
     long = a.size
-    real = bool(cuts and a.subj) and rnd.random() < 0.33
+    paired = [c for c in cuts if os.path.exists(c[:-4] + '.json')]   # cut-outs that know their source photo
+    real = bool(paired and a.subj) and rnd.random() < 0.33
     layers = []
     if real:
-        c = rnd.choice(cuts)
+        c = rnd.choice(paired)
         info = json.load(open(c[:-4] + '.json'))
         photo = Image.open(os.path.join(a.subj, info['photo'])).convert('RGB')
         s = long / max(photo.size)
@@ -273,7 +274,7 @@ def main():
         if a.sheet:
             sheet(a.out, a.start, a.sheet)
         return
-    bgs = sorted(glob.glob(os.path.join(a.bgs, '*.jpg')) + glob.glob(os.path.join(a.bgs, '*.png')))
+    bgs = sorted(f for e in ('jpg', 'jpeg', 'png', 'webp') for f in glob.glob(os.path.join(a.bgs, '*.' + e)))
     cuts = sorted(glob.glob(os.path.join(a.cuts, '*.png'))) if a.cuts else []
     fonts = font_files(a.fontcache)
     assert bgs and fonts, 'need background photos and fonts'
