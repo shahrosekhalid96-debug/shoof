@@ -18,3 +18,6 @@ The first model saw only flat designs, so on photos it treated the whole picture
 - `photo_gen.py` builds posters with exact layers: photo background (colour graded) → cut-outs with their own drop shadow or rim light → text with glow / drop shadow / outline / gradient (glow and shadow are their own layers) → sometimes a flat badge. A third are **real** photos (`"real": true`): the original photo plus its own subject layer at the exact spot; the trainer only uses their first peel. Seeds start at 1,000,000 so they never clash with `gen.py`.
 - Kaggle: `kaggle/3-make-photo-data.ipynb` (CPU, Internet on) → `lp-*.tar`; `2-train-model.ipynb` takes `ld-*.tar` and `lp-*.tar` together.
 Shary's two test pictures are never used for training.
+
+## Fill model (2026-11-28)
+`train_fill.py` trains Shoof's own fill model (`shoof-fill-fp16.onnx`, ~20 MB): paints what was behind lifted layers. Ground truth comes for free from the layered data (picture at peel k → picture at peel k+1, exact); real photos add made-up holes (object outlines + brush strokes). Gated-conv U-Net with a dilated bottleneck, L1 + VGG perceptual + PatchGAN. Kaggle: `kaggle/4-train-fill.ipynb` (GPU, inputs = step 1 + step 1b, stops after 10.5 h). Plan in the app: Magic layers peels with the layer model and fills with this model, round after round, as one click; MI-GAN / PatchMatch stay as the fallback.
